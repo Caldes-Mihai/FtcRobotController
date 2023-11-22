@@ -134,7 +134,7 @@ public class DriveTicksOpMode extends LinearOpMode {
             xRot=tickToRot((double)(-rlTicks+rrTicks+flTicks-frTicks)/4);
 
             ///calculeaza distanta parcursa pe axa y
-            yPos=xRot*wheelDiameter*Math.PI;
+            yPos=yRot*wheelDiameter*Math.PI;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value

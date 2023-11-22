@@ -30,7 +30,7 @@ public class AutoDriveToProp extends LinearOpMode {
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal visionPortal;
-    private List<String> spawnPositions = Arrays.asList("lowerLeft", "upperLeft", "lowerRight", "upperRight");
+    private List<String> spawnPositions = Arrays.asList("down", "up");
     private String currentSpawnPosition = spawnPositions.get(0);
     private boolean isRed = false;
     private boolean held = false;
@@ -72,14 +72,17 @@ public class AutoDriveToProp extends LinearOpMode {
         }
         waitForStart();
         Pose2d startPose = null;
-        if(currentSpawnPosition.equals("lowerLeft"))
-            startPose = new Pose2d(-36, 63, Math.toRadians(-90));
-        else if(currentSpawnPosition.equals("upperLeft"))
-            startPose = new Pose2d(12, 63, Math.toRadians(-90));
-        else if(currentSpawnPosition.equals("upperRight"))
-            startPose = new Pose2d(12, -63, Math.toRadians(90));
-        else
-            startPose = new Pose2d(-36, -63, Math.toRadians(90));
+        if(!isRed) {
+            if(currentSpawnPosition.equals("down"))
+                startPose = new Pose2d(-36, 63, Math.toRadians(-90));
+            else
+                startPose = new Pose2d(12, 63, Math.toRadians(-90));
+        } else {
+            if(currentSpawnPosition.equals("down"))
+                startPose = new Pose2d(-36, -63, Math.toRadians(90));
+            else
+                startPose = new Pose2d(12, -63, Math.toRadians(90));
+        }
         drive.setPoseEstimate(startPose);
         adjustPosition(drive);
         TrajectorySequenceBuilder propPath = drive.trajectorySequenceBuilder(startPose)
