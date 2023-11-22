@@ -37,7 +37,6 @@ public class AutoDriveToProp extends LinearOpMode {
     private double degrees = 0;
     int lineY = 0;
     int strafe = 0;
-    int pixels = 6;
     @Override
     public void runOpMode() {
         processor = new PropProcessor(telemetry);
@@ -90,11 +89,11 @@ public class AutoDriveToProp extends LinearOpMode {
             lineY = -36;
         else
             lineY = 36;
-        if (propPosition.equals("LEFT")) {
+        if (propPosition.equals(PropProcessor.Positions.LEFT)) {
             degrees = Math.toRadians(90);
             strafe = 5;
         }
-        else if (propPosition.equals("RIGHT")) {
+        else if (propPosition.equals(PropProcessor.Positions.CENTER)) {
             degrees = Math.toRadians(-90);
             strafe = -5;
         }
@@ -114,31 +113,19 @@ public class AutoDriveToProp extends LinearOpMode {
             drive.turn(isRed ? -2 * degrees : 0);
         }
         //get pixel then place
-        for(int i = 0; i < pixels; i++) {
-            TrajectorySequenceBuilder linePath = drive.trajectorySequenceBuilder(drive.getPoseEstimate());
-            if(i != 0)
-                if(strafe > 0)
-                    linePath.strafeLeft(strafe);
-                else if(strafe < 0)
-                    linePath.strafeRight(strafe);
-            linePath.lineTo(new Vector2d(-54, lineY))
-                    .turn(Math.toRadians(180));
-            drive.followTrajectorySequence(linePath.build());
-            pickup();
-            TrajectorySequenceBuilder destinationPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                    .lineTo(new Vector2d(45, isRed ? -36 : 36));
-            if(strafe > 0)
-                destinationPath.strafeLeft(strafe);
-            else if(strafe < 0)
-                destinationPath.strafeRight(strafe);
-            drive.followTrajectorySequence(destinationPath.build());
-            place();
-            if(getRuntime() >= 25) {
-                stop();
-                return;
-            }
-            drive.turn(Math.toRadians(180));
-        }
+        TrajectorySequenceBuilder linePath = drive.trajectorySequenceBuilder(drive.getPoseEstimate());
+        linePath.lineTo(new Vector2d(-54, lineY))
+                .turn(Math.toRadians(180));
+        drive.followTrajectorySequence(linePath.build());
+        pickup();
+        TrajectorySequenceBuilder destinationPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineTo(new Vector2d(45, isRed ? -36 : 36));
+        if(strafe > 0)
+            destinationPath.strafeLeft(strafe);
+        else if(strafe < 0)
+            destinationPath.strafeRight(strafe);
+        drive.followTrajectorySequence(destinationPath.build());
+        place();
         visionPortal.close();
     }
     public void adjustPosition(SampleMecanumDrive drive) {
