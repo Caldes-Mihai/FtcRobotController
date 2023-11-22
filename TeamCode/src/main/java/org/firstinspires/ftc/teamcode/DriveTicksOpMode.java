@@ -181,7 +181,7 @@ public class DriveTicksOpMode extends LinearOpMode {
                     .addData(" fl: ",flTicks)
                     .addData(" fr: ",frTicks);
             telemetry.addLine()
-                    .addData("xPos= ",xPos);
+                    .addData("xPos= ",yPos);
             telemetry.update();
         }
     }
