@@ -66,7 +66,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Main Drive OpMode", group="Drive OpMode")
 @Disabled
-public class MainDriveOpMode extends LinearOpMode {
+public class DriveTicksOpMode extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -77,6 +77,16 @@ public class MainDriveOpMode extends LinearOpMode {
 
     private Servo cleste1 = null;
     private Servo cleste2 = null;
+    double ticks=537.7;
+    double wheelDiameter =100;
+    double xRot;
+    double xPos;
+    double yRot;
+    double yPos;
+    double rlTicks;
+    double rrTicks;
+    double flTicks;
+    double frTicks;
 
     @Override
     public void runOpMode() {
@@ -87,6 +97,11 @@ public class MainDriveOpMode extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         cleste1 = hardwareMap.get(Servo.class, "cleste1");
         cleste2 = hardwareMap.get(Servo.class, "cleste2");
 
@@ -110,6 +125,16 @@ public class MainDriveOpMode extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             double max;
+            rlTicks=leftBackDrive.getCurrentPosition();
+            rrTicks=rightBackDrive.getCurrentPosition();
+            flTicks=leftFrontDrive.getCurrentPosition();
+            frTicks=rightFrontDrive.getCurrentPosition();
+            ///calculeaza nr de "rotatii" pe cele 2 axe
+            yRot=tickToRot((double)(rlTicks+rrTicks+flTicks+frTicks)/4);
+            xRot=tickToRot((double)(-rlTicks+rrTicks+flTicks-frTicks)/4);
+
+            ///calculeaza distanta parcursa pe axa y
+            yPos=xRot*wheelDiameter*Math.PI;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
@@ -150,10 +175,17 @@ public class MainDriveOpMode extends LinearOpMode {
                 cleste2.setPosition(Utils.degreesToPos(45));
             }
             // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addLine()
+                    .addData("rl: ",rlTicks)
+                    .addData(" rr: ",rrTicks)
+                    .addData(" fl: ",flTicks)
+                    .addData(" fr: ",frTicks);
+            telemetry.addLine()
+                    .addData("xPos= ",xPos);
             telemetry.update();
         }
+    }
+    public double tickToRot(double tickVal){
+        return (double)tickVal/ticks;
     }
 }
