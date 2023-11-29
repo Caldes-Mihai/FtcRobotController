@@ -69,7 +69,7 @@ public class AutoDriveToProp extends LinearOpMode {
             telemetry.addData("TEAM", isRed ? "RED" : "BLUE");
             telemetry.update();
         }
-        //processor.setRed(isRed);
+        processor.setRed(isRed);
         waitForStart();
         Pose2d startPose = null;
         if(!isRed) {
