@@ -43,7 +43,6 @@ public class AutoDriveToProp extends LinearOpMode {
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .build();
-        processor.setRed(true);
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "0"))
                 .addProcessors(processor, aprilTagProcessor)
@@ -70,6 +69,7 @@ public class AutoDriveToProp extends LinearOpMode {
             telemetry.addData("TEAM", isRed ? "RED" : "BLUE");
             telemetry.update();
         }
+        processor.setRed(isRed);
         waitForStart();
         Pose2d startPose = null;
         if(!isRed) {
