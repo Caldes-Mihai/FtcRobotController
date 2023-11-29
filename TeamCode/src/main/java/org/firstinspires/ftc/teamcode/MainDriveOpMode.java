@@ -65,7 +65,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Main Drive OpMode", group="Drive OpMode")
-@Disabled
 public class MainDriveOpMode extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -78,15 +77,20 @@ public class MainDriveOpMode extends LinearOpMode {
     private Servo cleste1 = null;
     private Servo cleste2 = null;
 
+    private double current = 1;
+    private double multiplier = 0.3;
+    private boolean slowdown = false;
+    private boolean held = false;
+
     @Override
     public void runOpMode() {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "front_left_motor");
+        leftBackDrive  = hardwareMap.get(DcMotor.class, "back_left_motor");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "front_right_motor");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "back_right_motor");
         cleste1 = hardwareMap.get(Servo.class, "cleste1");
         cleste2 = hardwareMap.get(Servo.class, "cleste2");
 
@@ -115,13 +119,24 @@ public class MainDriveOpMode extends LinearOpMode {
             double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
+            if(gamepad1.square) {
+                if(!held)
+                    slowdown = !slowdown;
+                held = true;
+            } else
+                held = false;
+
+            if(slowdown)
+                current = multiplier;
+            else
+                current = 1;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = Utils.accel(axial + lateral + yaw);
-            double rightFrontPower = Utils.accel(axial - lateral - yaw);
-            double leftBackPower   = Utils.accel(axial - lateral + yaw);
-            double rightBackPower  = Utils.accel(axial + lateral - yaw);
+            double leftFrontPower  = Utils.accel(axial + lateral + yaw) * current;
+            double rightFrontPower = Utils.accel(axial - lateral - yaw) * current;
+            double leftBackPower   = Utils.accel(axial - lateral + yaw) * current;
+            double rightBackPower  = Utils.accel(axial + lateral - yaw) * current;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
