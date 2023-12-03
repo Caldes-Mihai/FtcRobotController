@@ -59,12 +59,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * This code is written assuming that the right-side motors need to be reversed for the robot to drive forward.
  * When you first test your robot, if it moves backward when you push the left stick forward, then you must flip
  * the direction of all 4 motors (see code below).
- *
+ **
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Main Drive OpMode", group="Drive OpMode")
+@TeleOp(name="Drive Ticks OpMode", group="Drive OpMode")
 @Disabled
 public class DriveTicksOpMode extends LinearOpMode {
 
@@ -143,10 +143,10 @@ public class DriveTicksOpMode extends LinearOpMode {
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = Utils.accel(axial + lateral + yaw);
-            double rightFrontPower = Utils.accel(axial - lateral - yaw);
-            double leftBackPower   = Utils.accel(axial - lateral + yaw);
-            double rightBackPower  = Utils.accel(axial + lateral - yaw);
+            double leftFrontPower  = Utils.accel(axial + lateral + yaw, 1, 0);
+            double rightFrontPower = Utils.accel(axial - lateral - yaw, 1, 0);
+            double leftBackPower   = Utils.accel(axial - lateral + yaw, 1, 0);
+            double rightBackPower  = Utils.accel(axial + lateral - yaw, 1, 0);
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
