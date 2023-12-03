@@ -143,10 +143,10 @@ public class DriveTicksOpMode extends LinearOpMode {
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = Utils.accel(axial + lateral + yaw, 1, 0);
-            double rightFrontPower = Utils.accel(axial - lateral - yaw, 1, 0);
-            double leftBackPower   = Utils.accel(axial - lateral + yaw, 1, 0);
-            double rightBackPower  = Utils.accel(axial + lateral - yaw, 1, 0);
+            double leftFrontPower  = Utils.accel(axial + lateral + yaw, 1);
+            double rightFrontPower = Utils.accel(axial - lateral - yaw, 1);
+            double leftBackPower   = Utils.accel(axial - lateral + yaw, 1);
+            double rightBackPower  = Utils.accel(axial + lateral - yaw, 1);
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.

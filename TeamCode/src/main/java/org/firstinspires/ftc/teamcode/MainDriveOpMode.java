@@ -29,13 +29,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -70,6 +74,7 @@ public class MainDriveOpMode extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
+    private IMU imu = null;
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
@@ -77,8 +82,11 @@ public class MainDriveOpMode extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
-        // Initialize the hardware variables. Note that the strings used here must correspond
+        imu = hardwareMap.get(IMU.class, "imu");
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+        imu.initialize(parameters);        // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
         leftFrontDrive  = hardwareMap.get(DcMotor.class, "front_left_motor");
         leftBackDrive  = hardwareMap.get(DcMotor.class, "back_left_motor");
@@ -102,18 +110,22 @@ public class MainDriveOpMode extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = gamepad1.dpad_down ? 1 : gamepad1.dpad_up ? -1 : 0;
-            double lateral =  (gamepad1.dpad_left ? 1 : gamepad1.dpad_right ? -1 : 0) * 1.1;
-            double yaw     =  gamepad1.left_bumper ? 1 : gamepad1.right_bumper ? -1 : 0;
+            if (gamepad1.options) {
+                imu.resetYaw();
+            }
+            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+            double accel = 1 - gamepad1.right_trigger;
+            double axial   = gamepad1.dpad_down ? accel : gamepad1.dpad_up ? -accel : 0;
+            double lateral =  (gamepad1.dpad_left ? 1 : gamepad1.dpad_right ? -accel : 0);
+            double yaw     =  gamepad1.left_bumper ? 1 : gamepad1.right_bumper ? -accel : 0;
             double denominator = Math.max(Math.abs(axial) + Math.abs(lateral) + Math.abs(yaw), 1);
-            double brake = 1 - gamepad1.right_trigger;
-
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = Utils.accel(axial + lateral + yaw, denominator, brake);
-            double rightFrontPower = Utils.accel(axial - lateral - yaw, denominator, brake);
-            double leftBackPower   = Utils.accel(axial - lateral + yaw, denominator, brake);
-            double rightBackPower  = Utils.accel(axial + lateral - yaw, denominator, brake);
+            double rotX = lateral * Math.cos(-botHeading) - axial * Math.sin(-botHeading);
+            double rotY = lateral * Math.sin(-botHeading) + axial * Math.cos(-botHeading);
+            double leftFrontPower  = Utils.accel(rotY + rotX + yaw, denominator);
+            double rightFrontPower = Utils.accel(rotY - rotX - yaw, denominator);
+            double leftBackPower   = Utils.accel(rotY - rotX + yaw, denominator);
+            double rightBackPower  = Utils.accel(rotY + rotX - yaw, denominator);
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
