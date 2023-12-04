@@ -5,6 +5,6 @@ public class Utils {
         return number / 180;
     }
     public static double accel(double power, double denominator) {
-        return Math.signum(power) * Math.pow(Math.abs(power / denominator), 5D / 3) * 0.9;
+        return power / denominator;
     }
 }

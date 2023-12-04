@@ -119,9 +119,9 @@ public class MainDriveOpMode extends LinearOpMode {
             double axial   = gamepad1.dpad_down ? accel : gamepad1.dpad_up ? -accel : 0;
             double lateral =  (gamepad1.dpad_left ? 1 : gamepad1.dpad_right ? -accel : 0);
             double yaw     =  gamepad1.left_bumper ? 1 : gamepad1.right_bumper ? -accel : 0;
-            double denominator = Math.max(Math.abs(axial) + Math.abs(lateral) + Math.abs(yaw), 1);
             double rotX = lateral * Math.cos(-botHeading) - axial * Math.sin(-botHeading);
             double rotY = lateral * Math.sin(-botHeading) + axial * Math.cos(-botHeading);
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1);
             double leftFrontPower  = Utils.accel(rotY + rotX + yaw, denominator);
             double rightFrontPower = Utils.accel(rotY - rotX - yaw, denominator);
             double leftBackPower   = Utils.accel(rotY - rotX + yaw, denominator);
