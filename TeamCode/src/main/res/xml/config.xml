@@ -4,9 +4,9 @@
     <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ3DI86U" parentModuleAddress="2">
         <LynxModule name="Expansion Hub 2" port="2">
 <!--            <LynxEmbeddedIMU name="imu 1" port="0" bus="0" />-->
-            <goBILDA5202SeriesMotor name="brat" port="0" />
+<!--            <goBILDA5202SeriesMotor name="brat" port="0" />-->
 
-            <Servo name="cleste" port="0" />
+<!--            <Servo name="cleste" port="0" />-->
         </LynxModule>
     </LynxUsbDevice>
 
@@ -16,7 +16,7 @@
             <goBILDA5202SeriesMotor name="back_right_motor" port="1" />
             <goBILDA5202SeriesMotor name="back_left_motor" port="2" />
             <goBILDA5202SeriesMotor name="front_left_motor" port="3" />
-            <ControlHubImuBHI260AP name="imu" port="0" bus="0" />
+            <ControlHubImuBNO055 name="imu" port="0" bus="0" />
 <!--            <ContinuousRotationServo name="activeOuttake" port="1" />-->
         </LynxModule>
     </LynxUsbDevice>
