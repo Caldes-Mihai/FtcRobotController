@@ -117,8 +117,8 @@ public class MainDriveOpMode extends LinearOpMode {
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double accel = 1 - gamepad1.right_trigger;
             double axial   = gamepad1.dpad_down ? accel : gamepad1.dpad_up ? -accel : 0;
-            double lateral =  (gamepad1.dpad_left ? 1 : gamepad1.dpad_right ? -accel : 0);
-            double yaw     =  gamepad1.left_bumper ? 1 : gamepad1.right_bumper ? -accel : 0;
+            double lateral =  (gamepad1.dpad_left ? accel : gamepad1.dpad_right ? -accel : 0);
+            double yaw     =  gamepad1.left_bumper ? accel : gamepad1.right_bumper ? -accel : 0;
             double rotX = lateral * Math.cos(-botHeading) - axial * Math.sin(-botHeading);
             double rotY = lateral * Math.sin(-botHeading) + axial * Math.cos(-botHeading);
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1);
