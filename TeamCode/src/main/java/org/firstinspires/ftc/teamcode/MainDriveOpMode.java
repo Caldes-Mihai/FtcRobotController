@@ -93,7 +93,7 @@ public class MainDriveOpMode extends LinearOpMode {
         rightFrontDrive = hardwareMap.get(DcMotor.class, "front_right_motor");
         rightBackDrive = hardwareMap.get(DcMotor.class, "back_right_motor");
 
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
