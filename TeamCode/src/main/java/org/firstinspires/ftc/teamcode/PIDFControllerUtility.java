@@ -10,12 +10,12 @@ public class PIDFControllerUtility {
     private double ticksToDeg;
     private PIDController controller;
 
-    public PIDFControllerUtility(double p, double i, double d, double f, double ticksToDeg) {
+    public PIDFControllerUtility(double p, double i, double d, double f, double rpm) {
         this.p = p;
         this.i = i;
         this.d = d;
         this.f = f;
-        this.ticksToDeg = ticksToDeg;
+        this.ticksToDeg = rpm / 180;
         controller = new PIDController(p, i, d);
     }
 
