@@ -29,17 +29,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.commands.DriveCommand;
+import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -70,76 +70,45 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 
 @TeleOp(name="Main Drive OpMode", group="Drive OpMode")
-public class MainDriveOpMode extends LinearOpMode {
+public class MainDriveOpMode extends CommandOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     private IMU imu = null;
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
+    private Motor leftFrontDrive = null;
+    private Motor leftBackDrive = null;
+    private Motor rightFrontDrive = null;
+    private Motor rightBackDrive = null;
+    private GamepadEx driver = null;
 
     @Override
-    public void runOpMode() {
+    public void initialize() {
+        driver = new GamepadEx(gamepad1);
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
-        imu.initialize(parameters);        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "front_left_motor");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "back_left_motor");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "front_right_motor");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "back_right_motor");
+        imu.initialize(parameters);
+        leftFrontDrive = new Motor(hardwareMap, "front_left_motor");
+        leftBackDrive = new Motor(hardwareMap, "back_left_motor");
+        rightFrontDrive = new Motor(hardwareMap, "front_right_motor");
+        rightBackDrive = new Motor(hardwareMap, "back_right_motor");
+        leftFrontDrive.setInverted(true);
+        rightBackDrive.setInverted(true);
 
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // Wait for the game to start (driver presses PLAY)
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        waitForStart();
-        runtime.reset();
-
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            if (gamepad1.options) {
-                imu.resetYaw();
-            }
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double accel = 1 - gamepad1.right_trigger;
-            double axial   = gamepad1.dpad_down ? accel : gamepad1.dpad_up ? -accel : 0;
-            double lateral =  (gamepad1.dpad_left ? accel : gamepad1.dpad_right ? -accel : 0);
-            double yaw     =  gamepad1.left_bumper ? accel : gamepad1.right_bumper ? -accel : 0;
-            double rotX = lateral * Math.cos(-botHeading) - axial * Math.sin(-botHeading);
-            double rotY = lateral * Math.sin(-botHeading) + axial * Math.cos(-botHeading);
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(yaw), 1);
-            double leftFrontPower  = Utils.accel(rotY + rotX + yaw, denominator);
-            double rightFrontPower = Utils.accel(rotY - rotX - yaw, denominator);
-            double leftBackPower   = Utils.accel(rotY - rotX + yaw, denominator);
-            double rightBackPower  = Utils.accel(rotY + rotX - yaw, denominator);
-
-            // Normalize the values so no wheel power exceeds 100%
-            // This ensures that the robot maintains the desired motion.
-
-            // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.update();
-        }
+        DriveSubsystem driveSystem = new DriveSubsystem(
+                leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu,
+                driver
+        );
+        // sets the default command to the drive command so that it is always looking
+        // at the value on the joysticks
+        register(driveSystem);
+        driveSystem.setDefaultCommand(new DriveCommand(driveSystem));
+        schedule(new RunCommand(telemetry::update));
     }
 }
