@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.PickupCommand;
 import org.firstinspires.ftc.teamcode.commands.PlaceCommand;
@@ -20,14 +19,10 @@ import org.firstinspires.ftc.teamcode.commands.TurnCommand;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AdjustPositionSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
