@@ -9,8 +9,10 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectorySequenceCommand;
@@ -28,37 +30,34 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name = "Auto Drive To Prop")
-public class AutoDriveToProp extends CommandOpMode {
+public class HandleAuto {
 
     /**
      * The variable to store our instance of the AprilTag processor.
      */
-    private PropProcessor processor;
-    private AprilTagProcessor aprilTagProcessor;
+    private static PropProcessor processor;
+    private static AprilTagProcessor aprilTagProcessor;
 
     /**
      * The variable to store our instance of the vision portal.
      */
-    private VisionPortal visionPortal;
-    private List<String> spawnPositions = Arrays.asList("down", "up");
-    private String currentSpawnPosition = spawnPositions.get(0);
-    private boolean isRed;
-    private double degrees = 0;
-    int lineY = 0;
-    int strafe = 0;
-    private GamepadEx driver;
-    private SampleMecanumDrive drive;
-    private MecanumDriveSubsystem mecanumDriveSubsystem;
-    private AdjustPositionSubsystem adjustPositionSubsystem;
-    private IntakeSubsystem intakeSubsystem;
-    private Pose2d startPose;
-    private PropProcessor.Positions propPosition;
-    private Motor intake;
-    @Override
-    public void initialize() {
+    private static VisionPortal visionPortal;
+    private static double degrees = 0;
+    private static int lineY = 0;
+    private static int strafe = 0;
+    private static GamepadEx driver;
+    private static SampleMecanumDrive drive;
+    private static MecanumDriveSubsystem mecanumDriveSubsystem;
+    private static AdjustPositionSubsystem adjustPositionSubsystem;
+    private static IntakeSubsystem intakeSubsystem;
+    private static Pose2d startPose;
+    private static PropProcessor.Positions propPosition;
+    private static Motor intake;
+    public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode opMode) {
+        HardwareMap hardwareMap = opMode.hardwareMap;
+        Gamepad gamepad1 = opMode.gamepad1;
         intake = new Motor(hardwareMap, "intake");
-        processor = new PropProcessor(telemetry);
+        processor = new PropProcessor(opMode.telemetry);
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .build();
@@ -68,33 +67,11 @@ public class AutoDriveToProp extends CommandOpMode {
                 .build();
         drive = new SampleMecanumDrive(hardwareMap);
         driver = new GamepadEx(gamepad1);
-        driver.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenReleased(new InstantCommand(() -> {
-            int pos = spawnPositions.indexOf(currentSpawnPosition);
-            if (pos != 0)
-                currentSpawnPosition = spawnPositions.get(pos - 1);
-            telemetry.addData("spawn", currentSpawnPosition);
-            telemetry.addData("isRed", isRed);
-            telemetry.update();
-        }));
-        driver.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenReleased(new InstantCommand(() -> {
-            int pos = spawnPositions.indexOf(currentSpawnPosition);
-            if (pos != spawnPositions.size() - 1)
-                currentSpawnPosition = spawnPositions.get(pos + 1);
-            telemetry.addData("spawn", currentSpawnPosition);
-            telemetry.addData("isRed", isRed);
-            telemetry.update();
-        }));
-        driver.getGamepadButton(GamepadKeys.Button.A).whenReleased(new InstantCommand(() -> {
-            isRed = !isRed;
-            telemetry.addData("spawn", currentSpawnPosition);
-            telemetry.addData("isRed", isRed);
-            telemetry.update();
-        }));
         processor.setRed(isRed);
         mecanumDriveSubsystem = new MecanumDriveSubsystem(drive, false);
         adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor);
         intakeSubsystem = new IntakeSubsystem(intake);
-        register(mecanumDriveSubsystem, adjustPositionSubsystem, intakeSubsystem);
+        opMode.register(mecanumDriveSubsystem, adjustPositionSubsystem, intakeSubsystem);
         adjustPositionSubsystem.setDefaultCommand(new AdjustPositionCommand(adjustPositionSubsystem));
         if (!isRed) {
             if (currentSpawnPosition.equals("down"))
@@ -143,7 +120,7 @@ public class AutoDriveToProp extends CommandOpMode {
             destinationPath.strafeLeft(strafe);
         else if (strafe < 0)
             destinationPath.strafeRight(strafe);
-        schedule(new SequentialCommandGroup(
+        opMode.schedule(new SequentialCommandGroup(
                 new FollowTrajectorySequenceCommand(mecanumDriveSubsystem, propPath.build()),
                 new PlaceCommand(),
                 new FollowTrajectorySequenceCommand(mecanumDriveSubsystem, linePath.build()),
