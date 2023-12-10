@@ -3,13 +3,13 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.localization.Localizer;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import java.util.List;
 
@@ -84,8 +84,8 @@ public class MecanumDriveSubsystem extends SubsystemBase {
         return drive.trajectoryBuilder(startPose, startHeading);
     }
 
-    public void followTrajectory(Trajectory trajectory) {
-        drive.followTrajectoryAsync(trajectory);
+    public void followTrajectory(TrajectorySequence trajectory) {
+        drive.followTrajectorySequenceAsync(trajectory);
     }
 
     public boolean isBusy() {

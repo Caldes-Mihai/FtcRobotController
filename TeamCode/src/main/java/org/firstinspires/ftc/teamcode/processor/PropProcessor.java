@@ -67,7 +67,7 @@ public class PropProcessor implements VisionProcessor {
         RIGHT
     }
 
-    public static Positions position;
+    public static Positions position = Positions.LEFT;
     int maxWProp = 0;
     int maxHProp = 0;
     Rect foundProp = null;

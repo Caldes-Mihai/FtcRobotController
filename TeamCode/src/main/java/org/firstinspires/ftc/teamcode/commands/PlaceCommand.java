@@ -10,4 +10,8 @@ public class PlaceCommand extends CommandBase {
     public PlaceCommand() {
 
     }
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
 }

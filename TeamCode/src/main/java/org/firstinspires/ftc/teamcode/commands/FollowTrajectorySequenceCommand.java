@@ -1,23 +1,25 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
 
-public class TurnCommand extends CommandBase {
+import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+
+public class FollowTrajectorySequenceCommand extends CommandBase {
 
     private final MecanumDriveSubsystem drive;
-    private final double angle;
+    private final TrajectorySequence trajectory;
 
-    public TurnCommand(MecanumDriveSubsystem drive, double angle) {
+    public FollowTrajectorySequenceCommand(MecanumDriveSubsystem drive, TrajectorySequence trajectory) {
         this.drive = drive;
-        this.angle = angle;
+        this.trajectory = trajectory;
 
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
-        drive.turn(angle);
+        drive.followTrajectory(trajectory);
     }
 
     @Override
@@ -36,4 +38,5 @@ public class TurnCommand extends CommandBase {
     public boolean isFinished() {
         return Thread.currentThread().isInterrupted() || !drive.isBusy();
     }
+
 }

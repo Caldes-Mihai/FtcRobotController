@@ -2,34 +2,33 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
+import org.firstinspires.ftc.teamcode.commands.FollowTrajectorySequenceCommand;
 import org.firstinspires.ftc.teamcode.commands.PickupCommand;
 import org.firstinspires.ftc.teamcode.commands.PlaceCommand;
-import org.firstinspires.ftc.teamcode.commands.TurnCommand;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AdjustPositionSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name = "Example VisionPortal OpMode")
+@Autonomous(name = "Auto Drive To Prop")
 public class AutoDriveToProp extends CommandOpMode {
 
     /**
@@ -69,17 +68,28 @@ public class AutoDriveToProp extends CommandOpMode {
                 .build();
         drive = new SampleMecanumDrive(hardwareMap);
         driver = new GamepadEx(gamepad1);
-        driver.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenReleased(() -> {
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenReleased(new InstantCommand(() -> {
             int pos = spawnPositions.indexOf(currentSpawnPosition);
             if (pos != 0)
                 currentSpawnPosition = spawnPositions.get(pos - 1);
-        });
-        driver.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenReleased(() -> {
+            telemetry.addData("spawn", currentSpawnPosition);
+            telemetry.addData("isRed", isRed);
+            telemetry.update();
+        }));
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenReleased(new InstantCommand(() -> {
             int pos = spawnPositions.indexOf(currentSpawnPosition);
             if (pos != spawnPositions.size() - 1)
                 currentSpawnPosition = spawnPositions.get(pos + 1);
-        });
-        driver.getGamepadButton(GamepadKeys.Button.A).whenReleased(() -> isRed = !isRed);
+            telemetry.addData("spawn", currentSpawnPosition);
+            telemetry.addData("isRed", isRed);
+            telemetry.update();
+        }));
+        driver.getGamepadButton(GamepadKeys.Button.A).whenReleased(new InstantCommand(() -> {
+            isRed = !isRed;
+            telemetry.addData("spawn", currentSpawnPosition);
+            telemetry.addData("isRed", isRed);
+            telemetry.update();
+        }));
         processor.setRed(isRed);
         mecanumDriveSubsystem = new MecanumDriveSubsystem(drive, false);
         adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor);
@@ -98,7 +108,7 @@ public class AutoDriveToProp extends CommandOpMode {
                 startPose = new Pose2d(12, -63, Math.toRadians(90));
         }
         drive.setPoseEstimate(startPose);
-        TrajectoryBuilder propPath = drive.trajectoryBuilder(startPose)
+        TrajectorySequenceBuilder propPath = drive.trajectorySequenceBuilder(startPose)
                 .forward(27);
         propPosition = processor.getPropPosition();
         if (isRed)
@@ -116,31 +126,29 @@ public class AutoDriveToProp extends CommandOpMode {
             else propPath.strafeRight(5);
             strafe = 0;
         }
-        TurnCommand turn = null;
+        double turn = 0;
         if (propPosition.equals(PropProcessor.Positions.LEFT))
-            turn = new TurnCommand(mecanumDriveSubsystem, isRed ? 0 : -2 * degrees);
+            turn = isRed ? 0 : -2 * degrees;
         else if (propPosition.equals(PropProcessor.Positions.CENTER))
-            turn = new TurnCommand(mecanumDriveSubsystem, isRed ? 90 : -90);
+            turn = isRed ? 90 : -90;
         else
-            turn = new TurnCommand(mecanumDriveSubsystem, isRed ? -2 * degrees : 0);
+            turn = isRed ? -2 * degrees : 0;
+        propPath.turn(degrees);
         //get pixel then place
-        TrajectoryBuilder linePath = drive.trajectoryBuilder(propPath.build().end());
-        linePath.lineTo(new Vector2d(-54, lineY));
-        TrajectoryBuilder destinationPath = drive.trajectoryBuilder(linePath.build().end())
+        TrajectorySequenceBuilder linePath = drive.trajectorySequenceBuilder(propPath.build().end()).turn(turn);
+        linePath.lineTo(new Vector2d(-54, lineY)).turn( Math.toRadians(180));
+        TrajectorySequenceBuilder destinationPath = drive.trajectorySequenceBuilder(linePath.build().end())
                 .lineTo(new Vector2d(45, isRed ? -36 : 36));
         if (strafe > 0)
             destinationPath.strafeLeft(strafe);
         else if (strafe < 0)
             destinationPath.strafeRight(strafe);
         schedule(new SequentialCommandGroup(
-                new FollowTrajectoryCommand(mecanumDriveSubsystem, propPath.build()),
-                new TurnCommand(mecanumDriveSubsystem, degrees),
+                new FollowTrajectorySequenceCommand(mecanumDriveSubsystem, propPath.build()),
                 new PlaceCommand(),
-                turn,
-                new FollowTrajectoryCommand(mecanumDriveSubsystem, linePath.build()),
-                new TurnCommand(mecanumDriveSubsystem, Math.toRadians(180)),
+                new FollowTrajectorySequenceCommand(mecanumDriveSubsystem, linePath.build()),
                 new PickupCommand(intakeSubsystem),
-                new FollowTrajectoryCommand(mecanumDriveSubsystem, destinationPath.build()),
+                new FollowTrajectorySequenceCommand(mecanumDriveSubsystem, destinationPath.build()),
                 new PlaceCommand(),
                 new RunCommand(() -> visionPortal.close())
         ));

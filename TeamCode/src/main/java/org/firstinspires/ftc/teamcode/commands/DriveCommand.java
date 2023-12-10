@@ -15,9 +15,4 @@ public class DriveCommand extends CommandBase {
     public void execute() {
         subsystem.drive();
     }
-
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
 }

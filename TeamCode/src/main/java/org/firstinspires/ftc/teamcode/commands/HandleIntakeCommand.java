@@ -15,9 +15,4 @@ public class HandleIntakeCommand extends CommandBase {
     public void execute() {
         subsystem.handle();
     }
-
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
 }
