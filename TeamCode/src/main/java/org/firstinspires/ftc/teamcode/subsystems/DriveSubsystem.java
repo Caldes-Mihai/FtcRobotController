@@ -15,18 +15,24 @@ public class DriveSubsystem extends SubsystemBase {
     private IMU imu;
     private GamepadEx gamepad;
 
-    public DriveSubsystem(Motor frontLeftMotor, Motor backLeftMotor, Motor frontRightMotor, Motor backRightMotor, IMU imu,
+    public DriveSubsystem(Motor leftFrontDrive, Motor leftBackDrive, Motor rightFrontDrive, Motor rightBackDrive, IMU imu,
                           GamepadEx gamepad) {
-        drive = new MecanumDrive(false, frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor);
+        leftFrontDrive.setInverted(true);
+        rightBackDrive.setInverted(true);
+        leftFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        this.drive = new MecanumDrive(false, leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive);
         this.imu = imu;
         this.gamepad = gamepad;
     }
 
     public void drive() {
         accel = 1 - gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-        axial = gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).get() ? accel : gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).get() ? -accel : 0;
-        lateral = gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).get() ? accel : gamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).get() ? -accel : 0;
-        yaw = gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).get() ? accel : gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).get() ? -accel : 0;
+        axial = gamepad.getButton(GamepadKeys.Button.DPAD_DOWN) ? accel : gamepad.getButton(GamepadKeys.Button.DPAD_UP) ? -accel : 0;
+        lateral = gamepad.getButton(GamepadKeys.Button.DPAD_LEFT) ? accel : gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT) ? -accel : 0;
+        yaw = gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) ? accel : gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) ? -accel : 0;
         drive.driveFieldCentric(lateral, axial, yaw, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
     }
 }

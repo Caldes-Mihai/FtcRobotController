@@ -12,7 +12,7 @@ public class AdjustPositionCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() {
+    public void execute() {
         subsystem.adjustPosition();
     }
 

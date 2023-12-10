@@ -8,7 +8,9 @@ import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
@@ -19,6 +21,7 @@ import org.firstinspires.ftc.teamcode.commands.TurnCommand;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AdjustPositionSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -41,13 +44,21 @@ public class AutoDriveToProp extends CommandOpMode {
     private VisionPortal visionPortal;
     private List<String> spawnPositions = Arrays.asList("down", "up");
     private String currentSpawnPosition = spawnPositions.get(0);
-    private boolean isRed = false;
+    private boolean isRed;
     private double degrees = 0;
     int lineY = 0;
     int strafe = 0;
     private GamepadEx driver;
+    private SampleMecanumDrive drive;
+    private MecanumDriveSubsystem mecanumDriveSubsystem;
+    private AdjustPositionSubsystem adjustPositionSubsystem;
+    private IntakeSubsystem intakeSubsystem;
+    private Pose2d startPose;
+    private PropProcessor.Positions propPosition;
+    private Motor intake;
     @Override
     public void initialize() {
+        intake = new Motor(hardwareMap, "intake");
         processor = new PropProcessor(telemetry);
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -56,7 +67,7 @@ public class AutoDriveToProp extends CommandOpMode {
                 .setCamera(hardwareMap.get(WebcamName.class, "0"))
                 .addProcessors(processor, aprilTagProcessor)
                 .build();
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
         driver = new GamepadEx(gamepad1);
         driver.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenReleased(() -> {
             int pos = spawnPositions.indexOf(currentSpawnPosition);
@@ -70,13 +81,11 @@ public class AutoDriveToProp extends CommandOpMode {
         });
         driver.getGamepadButton(GamepadKeys.Button.A).whenReleased(() -> isRed = !isRed);
         processor.setRed(isRed);
-        MecanumDriveSubsystem mecanumDriveSubsystem = new MecanumDriveSubsystem(drive, false);
-        AdjustPositionSubsystem adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor);
-        // sets the default command to the drive command so that it is always looking
-        // at the value on the joysticks
-        register(adjustPositionSubsystem, mecanumDriveSubsystem);
+        mecanumDriveSubsystem = new MecanumDriveSubsystem(drive, false);
+        adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor);
+        intakeSubsystem = new IntakeSubsystem(intake);
+        register(mecanumDriveSubsystem, adjustPositionSubsystem, intakeSubsystem);
         adjustPositionSubsystem.setDefaultCommand(new AdjustPositionCommand(adjustPositionSubsystem));
-        Pose2d startPose = null;
         if (!isRed) {
             if (currentSpawnPosition.equals("down"))
                 startPose = new Pose2d(-36, 63, Math.toRadians(-90));
@@ -91,7 +100,7 @@ public class AutoDriveToProp extends CommandOpMode {
         drive.setPoseEstimate(startPose);
         TrajectoryBuilder propPath = drive.trajectoryBuilder(startPose)
                 .forward(27);
-        PropProcessor.Positions propPosition = processor.getPropPosition();
+        propPosition = processor.getPropPosition();
         if (isRed)
             lineY = -36;
         else
@@ -115,9 +124,9 @@ public class AutoDriveToProp extends CommandOpMode {
         else
             turn = new TurnCommand(mecanumDriveSubsystem, isRed ? -2 * degrees : 0);
         //get pixel then place
-        TrajectoryBuilder linePath = drive.trajectoryBuilder(drive.getPoseEstimate());
+        TrajectoryBuilder linePath = drive.trajectoryBuilder(propPath.build().end());
         linePath.lineTo(new Vector2d(-54, lineY));
-        TrajectoryBuilder destinationPath = drive.trajectoryBuilder(drive.getPoseEstimate())
+        TrajectoryBuilder destinationPath = drive.trajectoryBuilder(linePath.build().end())
                 .lineTo(new Vector2d(45, isRed ? -36 : 36));
         if (strafe > 0)
             destinationPath.strafeLeft(strafe);
@@ -130,7 +139,7 @@ public class AutoDriveToProp extends CommandOpMode {
                 turn,
                 new FollowTrajectoryCommand(mecanumDriveSubsystem, linePath.build()),
                 new TurnCommand(mecanumDriveSubsystem, Math.toRadians(180)),
-                new PickupCommand(),
+                new PickupCommand(intakeSubsystem),
                 new FollowTrajectoryCommand(mecanumDriveSubsystem, destinationPath.build()),
                 new PlaceCommand(),
                 new RunCommand(() -> visionPortal.close())

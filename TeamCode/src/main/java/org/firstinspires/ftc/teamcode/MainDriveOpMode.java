@@ -39,7 +39,9 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
+import org.firstinspires.ftc.teamcode.commands.HandleIntakeCommand;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -74,18 +76,23 @@ public class MainDriveOpMode extends CommandOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private IMU imu = null;
-    private Motor leftFrontDrive = null;
-    private Motor leftBackDrive = null;
-    private Motor rightFrontDrive = null;
-    private Motor rightBackDrive = null;
-    private GamepadEx driver = null;
-
+    private IMU imu;
+    private Motor leftFrontDrive;
+    private Motor leftBackDrive;
+    private Motor rightFrontDrive;
+    private Motor rightBackDrive;
+    private Motor intake;
+    private GamepadEx driver;
+    private GamepadEx tool;
+    private IMU.Parameters parameters;
+    private DriveSubsystem driveSubsystem;
+    private IntakeSubsystem intakeSubsystem;
     @Override
     public void initialize() {
         driver = new GamepadEx(gamepad1);
+        tool = new GamepadEx(gamepad2);
         imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+        parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         imu.initialize(parameters);
@@ -93,22 +100,18 @@ public class MainDriveOpMode extends CommandOpMode {
         leftBackDrive = new Motor(hardwareMap, "back_left_motor");
         rightFrontDrive = new Motor(hardwareMap, "front_right_motor");
         rightBackDrive = new Motor(hardwareMap, "back_right_motor");
-        leftFrontDrive.setInverted(true);
-        rightBackDrive.setInverted(true);
+        intake = new Motor(hardwareMap, "intake");
 
-        leftFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-
-        DriveSubsystem driveSystem = new DriveSubsystem(
+        driveSubsystem = new DriveSubsystem(
                 leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu,
                 driver
         );
+        intakeSubsystem = new IntakeSubsystem(intake, tool);
         // sets the default command to the drive command so that it is always looking
         // at the value on the joysticks
-        register(driveSystem);
-        driveSystem.setDefaultCommand(new DriveCommand(driveSystem));
+        register(driveSubsystem, intakeSubsystem);
+        driveSubsystem.setDefaultCommand(new DriveCommand(driveSubsystem));
+        intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));
         schedule(new RunCommand(telemetry::update));
     }
 }

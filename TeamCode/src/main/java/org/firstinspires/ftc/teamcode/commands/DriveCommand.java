@@ -12,7 +12,7 @@ public class DriveCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() {
+    public void execute() {
         subsystem.drive();
     }
 
