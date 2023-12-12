@@ -64,17 +64,17 @@ public class PropProcessor implements VisionProcessor {
     public Point A = new Point(100, 100);
     public Point B = new Point(500, 300);
     public int range = 1000;
-    public boolean isRed = false;
-    enum Positions {
+    public boolean isRed;
+    public enum Positions {
         LEFT,
         CENTER,
         RIGHT
     }
 
-    public static Positions position;
+    public static Positions position = Positions.LEFT;
     int maxWProp = 0;
     int maxHProp = 0;
-    Rect foundProp = null;
+    Rect foundProp;
     /**
      * This will allow us to choose the color
      * space we want to use on the live field
@@ -164,7 +164,7 @@ public class PropProcessor implements VisionProcessor {
         return new android.graphics.Rect(left, top, right, bottom);
     }
 
-    public static Positions getPropPosition() {
+    public Positions getPropPosition() {
         return position;
     }
 

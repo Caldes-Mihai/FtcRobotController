@@ -26,6 +26,8 @@ public class GoToBoardCommand extends CommandBase {
     public void initialize() {
         propPosition = processor.getPropPosition();
         TrajectorySequenceBuilder destinationPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineTo(new Vector2d(drive.getPoseEstimate().getX(), isRed ? -12 : 12))
+                .lineTo(new Vector2d(45, isRed ? -12 : 12))
                 .lineTo(new Vector2d(45, isRed ? -36 : 36));
         if (propPosition.equals(PropProcessor.Positions.LEFT)) {
             destinationPath.strafeLeft(5);
