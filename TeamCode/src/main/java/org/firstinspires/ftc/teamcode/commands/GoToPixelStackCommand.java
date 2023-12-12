@@ -12,19 +12,21 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuild
 public class GoToPixelStackCommand extends CommandBase {
 
     private final MecanumDriveSubsystem drive;
-    private final PropProcessor.Positions propPosition;
+    private final PropProcessor processor;
     private final boolean isRed;
+    private PropProcessor.Positions propPosition;
     private double turn;
     private double stackY;
-    public GoToPixelStackCommand(MecanumDriveSubsystem drive, PropProcessor.Positions propPosition, boolean isRed) {
+    public GoToPixelStackCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed) {
         this.drive = drive;
-        this.propPosition = propPosition;
+        this.processor = processor;
         this.isRed = isRed;
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
+        propPosition = processor.getPropPosition();
         if (isRed)
             stackY = -36;
         else

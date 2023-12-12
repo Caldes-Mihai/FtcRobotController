@@ -12,17 +12,19 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuild
 public class GoToBoardCommand extends CommandBase {
 
     private final MecanumDriveSubsystem drive;
-    private final PropProcessor.Positions propPosition;
+    private final PropProcessor processor;
     private final boolean isRed;
-    public GoToBoardCommand(MecanumDriveSubsystem drive, PropProcessor.Positions propPosition, boolean isRed) {
+    private PropProcessor.Positions propPosition;
+    public GoToBoardCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed) {
         this.drive = drive;
-        this.propPosition = propPosition;
+        this.processor = processor;
         this.isRed = isRed;
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
+        propPosition = processor.getPropPosition();
         TrajectorySequenceBuilder destinationPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineTo(new Vector2d(45, isRed ? -36 : 36));
         if (propPosition.equals(PropProcessor.Positions.LEFT)) {

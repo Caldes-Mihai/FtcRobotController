@@ -50,12 +50,11 @@ public class HandleAuto {
     private static AdjustPositionSubsystem adjustPositionSubsystem;
     private static IntakeSubsystem intakeSubsystem;
     private static Pose2d startPose;
-    private static PropProcessor.Positions propPosition;
     private static Motor intake;
     public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode opMode) {
         HardwareMap hardwareMap = opMode.hardwareMap;
         intake = new Motor(hardwareMap, "intake");
-        processor = new PropProcessor(opMode.telemetry);
+        processor = new PropProcessor(opMode.telemetry, isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .build();
@@ -64,7 +63,6 @@ public class HandleAuto {
                 .addProcessors(processor, aprilTagProcessor)
                 .build();
         drive = new SampleMecanumDrive(hardwareMap);
-        processor.setRed(isRed);
         mecanumDriveSubsystem = new MecanumDriveSubsystem(drive, false);
         adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor);
         intakeSubsystem = new IntakeSubsystem(intake);
@@ -82,13 +80,12 @@ public class HandleAuto {
                 startPose = new Pose2d(12, -63, Math.toRadians(90));
         }
         drive.setPoseEstimate(startPose);
-        propPosition = processor.getPropPosition();
         opMode.schedule(new SequentialCommandGroup(
-                new GoToPropCommand(mecanumDriveSubsystem, propPosition, isRed),
+                new GoToPropCommand(mecanumDriveSubsystem, processor, isRed),
                 new PlaceCommand(),
-                new GoToPixelStackCommand(mecanumDriveSubsystem, propPosition, isRed),
+                new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed),
                 new PickupCommand(intakeSubsystem),
-                new GoToBoardCommand(mecanumDriveSubsystem, propPosition, isRed),
+                new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed),
                 new PlaceCommand(),
                 new RunCommand(() -> visionPortal.close())
         ));

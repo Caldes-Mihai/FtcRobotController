@@ -33,6 +33,7 @@ import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -56,18 +57,21 @@ public class PropProcessor implements VisionProcessor {
      * min and max values here for now, meaning
      * that all pixels will be shown.
      */
-    public Scalar lower = new Scalar(108, 135, 126);
-    public Scalar upper = new Scalar(138, 180, 232);
-    public Scalar lower2 = new Scalar(84, 72, 151);
-    public Scalar upper2 = new Scalar(99, 198, 223);
+    public Scalar lower2 = new Scalar(30, 93, 0);
+    public Scalar upper2 = new Scalar(100, 255, 255);
+    public Scalar lower = new Scalar(0, 0, 135);
+    public Scalar upper = new Scalar(162, 39, 255);
+    public Point A = new Point(100, 100);
+    public Point B = new Point(500, 300);
+    public int range = 1000;
     public boolean isRed = false;
-     public enum Positions {
+    enum Positions {
         LEFT,
-         CENTER,
+        CENTER,
         RIGHT
     }
 
-    public static Positions position = Positions.LEFT;
+    public static Positions position;
     int maxWProp = 0;
     int maxHProp = 0;
     Rect foundProp = null;
@@ -95,12 +99,9 @@ public class PropProcessor implements VisionProcessor {
      * hardcoding it.
      */
 
-    public PropProcessor(Telemetry t) {
+    public PropProcessor(Telemetry t, boolean isRed) {
         this.t = t;
-    }
-
-    public void setRed(boolean value) {
-        this.isRed = value;
+        this.isRed = isRed;
     }
 
     @Override
@@ -134,7 +135,8 @@ public class PropProcessor implements VisionProcessor {
             double value = Imgproc.contourArea(c);
             if(value > 100) {
                 Rect rect = Imgproc.boundingRect(c);
-                if ((rect.width > maxWProp || rect.height > maxHProp) && withinRange(rect.width * scaleBmpPxToCanvasPx, rect.height * scaleBmpPxToCanvasPx, 10)) {
+                if(rect.x < A.x || rect.y < A.y || rect.x + rect.width > B.x || rect.y + rect.height > B.y) continue;
+                if ((rect.width > maxWProp || rect.height > maxHProp) && withinRange(rect.width * scaleBmpPxToCanvasPx, rect.height * scaleBmpPxToCanvasPx, range)) {
                     maxWProp = rect.width;
                     maxHProp = rect.height;
                     foundProp = rect;
@@ -150,6 +152,8 @@ public class PropProcessor implements VisionProcessor {
                 position = position.CENTER;
             canvas.drawRect(makeGraphicsRect(foundProp, scaleBmpPxToCanvasPx), rectPaint);
         }
+        rectPaint.setColor(Color.GREEN);
+        canvas.drawRect(makeGraphicsRect(new Rect(A, B), scaleBmpPxToCanvasPx), rectPaint);
     }
 
     private android.graphics.Rect makeGraphicsRect(Rect rect, float scaleBmpPxToCanvasPx) {
@@ -160,7 +164,7 @@ public class PropProcessor implements VisionProcessor {
         return new android.graphics.Rect(left, top, right, bottom);
     }
 
-    public Positions getPropPosition() {
+    public static Positions getPropPosition() {
         return position;
     }
 

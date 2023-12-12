@@ -11,18 +11,20 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuild
 public class GoToPropCommand extends CommandBase {
 
     private final MecanumDriveSubsystem drive;
-    private final PropProcessor.Positions propPosition;
+    private final PropProcessor processor;
     private final boolean isRed;
+    private PropProcessor.Positions propPosition;
     private double degrees;
-    public GoToPropCommand(MecanumDriveSubsystem drive, PropProcessor.Positions propPosition, boolean isRed) {
+    public GoToPropCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed) {
         this.drive = drive;
-        this.propPosition = propPosition;
+        this.processor = processor;
         this.isRed = isRed;
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
+        propPosition = processor.getPropPosition();
         TrajectorySequenceBuilder propPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .forward(27);
         if (propPosition.equals(PropProcessor.Positions.LEFT))
