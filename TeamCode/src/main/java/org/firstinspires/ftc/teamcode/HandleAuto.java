@@ -54,7 +54,8 @@ public class HandleAuto {
     public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode opMode) {
         HardwareMap hardwareMap = opMode.hardwareMap;
         intake = new Motor(hardwareMap, "intake");
-        processor = new PropProcessor(opMode.telemetry, isRed);
+        processor = new PropProcessor(opMode.telemetry);
+        processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .build();

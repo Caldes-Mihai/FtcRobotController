@@ -99,11 +99,12 @@ public class PropProcessor implements VisionProcessor {
      * hardcoding it.
      */
 
-    public PropProcessor(Telemetry t, boolean isRed) {
+    public PropProcessor(Telemetry t) {
         this.t = t;
+    }
+    public void setRed(boolean isRed) {
         this.isRed = isRed;
     }
-
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
     }
