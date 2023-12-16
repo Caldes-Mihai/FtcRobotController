@@ -23,8 +23,8 @@ public class AdjustPositionSubsystem extends SubsystemBase {
         //calculate for apriltags (test april tag angle)
         AprilTagDetection aprilTag = aprilTags.get(0);
         if(aprilTag.id == 7 || aprilTag.id == 8 || aprilTag.id == 9 || aprilTag.id == 10) {
-            drive.setPoseEstimate(new Pose2d(-aprilTag.metadata.fieldPosition.get(0) + aprilTag.ftcPose.y, -aprilTag.ftcPose.x - aprilTag.metadata.fieldPosition.get(1),  aprilTag.ftcPose.yaw));
+            drive.setPoseEstimate(new Pose2d(aprilTag.metadata.fieldPosition.get(0) + aprilTag.ftcPose.y, -aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1), aprilTag.ftcPose.yaw));
         } else
-            drive.setPoseEstimate(new Pose2d(aprilTag.metadata.fieldPosition.get(0) - aprilTag.ftcPose.y, aprilTag.ftcPose.x - aprilTag.metadata.fieldPosition.get(1), aprilTag.ftcPose.yaw));
+            drive.setPoseEstimate(new Pose2d(aprilTag.metadata.fieldPosition.get(0) - aprilTag.ftcPose.y, aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1), aprilTag.ftcPose.yaw));
     }
 }
