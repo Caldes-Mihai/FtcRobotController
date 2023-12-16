@@ -153,9 +153,9 @@ public class PropProcessor implements VisionProcessor {
         }
         Rect area = new Rect(A, B);
         if(foundProp != null) {
-            if (foundProp.x - area.x <= area.width / 3)
+            if (foundProp.x - area.x + foundProp.width / 2 <= area.width / 3)
                 position = Positions.LEFT;
-            else if (foundProp.x - area.x >= area.width * 2 / 3)
+            else if (foundProp.x - area.x + foundProp.width / 2 >= area.width * 2 / 3)
                 position = position.RIGHT;
             else
                 position = position.CENTER;
