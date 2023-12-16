@@ -36,6 +36,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -116,7 +117,13 @@ public class PropProcessor implements VisionProcessor {
         List<MatOfPoint> propContours = new ArrayList<>();
         Mat hierarchy = new Mat();
         try {
-            Imgproc.findContours(propMat, propContours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+            Imgproc.findContours(propMat, propContours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+            if(foundProp != null) {
+                int baseline[] = {0};
+                Size textSize = Imgproc.getTextSize(position.toString(), Imgproc.FONT_HERSHEY_PLAIN, 1, 2, baseline);
+                Point pos = new Point(foundProp.x + (foundProp.width - textSize.width) / 2, foundProp.y + foundProp.height + textSize.height + 4);
+                Imgproc.putText(frame, position.toString(), pos, Imgproc.FONT_HERSHEY_PLAIN, 1, new Scalar(0, 0,0), 2);
+            }
         } catch (Exception e) {}
         propMat.release();
         return propContours;
@@ -144,17 +151,18 @@ public class PropProcessor implements VisionProcessor {
                 }
             }
         }
+        Rect area = new Rect(A, B);
         if(foundProp != null) {
-            if (foundProp.x * scaleBmpPxToCanvasPx <= onscreenWidth / 3)
-                position = Positions.RIGHT;
-            else if (foundProp.x * scaleBmpPxToCanvasPx >= onscreenWidth * 2 / 3)
-                position = position.LEFT;
+            if (foundProp.x - area.x <= area.width / 3)
+                position = Positions.LEFT;
+            else if (foundProp.x - area.x >= area.width * 2 / 3)
+                position = position.RIGHT;
             else
                 position = position.CENTER;
             canvas.drawRect(makeGraphicsRect(foundProp, scaleBmpPxToCanvasPx), rectPaint);
         }
         rectPaint.setColor(Color.GREEN);
-        canvas.drawRect(makeGraphicsRect(new Rect(A, B), scaleBmpPxToCanvasPx), rectPaint);
+        canvas.drawRect(makeGraphicsRect(area, scaleBmpPxToCanvasPx), rectPaint);
     }
 
     private android.graphics.Rect makeGraphicsRect(Rect rect, float scaleBmpPxToCanvasPx) {
