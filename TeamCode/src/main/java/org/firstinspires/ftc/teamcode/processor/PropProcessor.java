@@ -58,7 +58,7 @@ public class PropProcessor implements VisionProcessor {
      * min and max values here for now, meaning
      * that all pixels will be shown.
      */
-    public Scalar lower2 = new Scalar(30, 93, 0);
+    public Scalar lower2 = new Scalar(90, 102, 166);
     public Scalar upper2 = new Scalar(100, 255, 255);
     public Scalar lower = new Scalar(0, 0, 135);
     public Scalar upper = new Scalar(162, 39, 255);
