@@ -22,22 +22,9 @@ public class AdjustPositionSubsystem extends SubsystemBase {
             return;
         //calculate for apriltags (test april tag angle)
         AprilTagDetection aprilTag = aprilTags.get(0);
-        if(aprilTag.id == 10) {
-            drive.setPoseEstimate(new Pose2d(-72 + aprilTag.ftcPose.y , -aprilTag.ftcPose.x + 42, aprilTag.ftcPose.yaw));
-        } else if(aprilTag.id == 7) {
-            drive.setPoseEstimate(new Pose2d(-72 + aprilTag.ftcPose.y, -aprilTag.ftcPose.x - 42, aprilTag.ftcPose.yaw));
-        } else if(aprilTag.id == 1) {
-            drive.setPoseEstimate(new Pose2d(61 - aprilTag.ftcPose.y, aprilTag.ftcPose.x + 42, aprilTag.ftcPose.yaw));
-        } else if(aprilTag.id == 2) {
-            drive.setPoseEstimate(new Pose2d(61 - aprilTag.ftcPose.y, aprilTag.ftcPose.x + 36, aprilTag.ftcPose.yaw));
-        } else if(aprilTag.id == 3) {
-            drive.setPoseEstimate(new Pose2d(61 - aprilTag.ftcPose.y, aprilTag.ftcPose.x + 30, aprilTag.ftcPose.yaw));
-        }  else if(aprilTag.id == 4) {
-            drive.setPoseEstimate(new Pose2d(61 - aprilTag.ftcPose.y, aprilTag.ftcPose.x -30, aprilTag.ftcPose.yaw));
-        } else if(aprilTag.id == 5) {
-            drive.setPoseEstimate(new Pose2d(61 - aprilTag.ftcPose.y, aprilTag.ftcPose.x - 36, aprilTag.ftcPose.yaw));
-        } else if(aprilTag.id == 6) {
-            drive.setPoseEstimate(new Pose2d(61 - aprilTag.ftcPose.y, aprilTag.ftcPose.x - 42, aprilTag.ftcPose.yaw));
-        }
+        if(aprilTag.id == 7 || aprilTag.id == 8 || aprilTag.id == 9 || aprilTag.id == 10) {
+            drive.setPoseEstimate(new Pose2d(-aprilTag.metadata.fieldPosition.get(0) + aprilTag.ftcPose.y, -aprilTag.ftcPose.x - aprilTag.metadata.fieldPosition.get(1),  aprilTag.ftcPose.yaw));
+        } else
+            drive.setPoseEstimate(new Pose2d(aprilTag.metadata.fieldPosition.get(0) - aprilTag.ftcPose.y, aprilTag.ftcPose.x - aprilTag.metadata.fieldPosition.get(1) , aprilTag.ftcPose.yaw));
     }
 }
