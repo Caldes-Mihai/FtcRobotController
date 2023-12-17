@@ -20,6 +20,8 @@ public class AdjustPositionSubsystem extends SubsystemBase {
     private double sumX;
     private double sumY;
     private double sumHeading;
+    //camera offset from center (in inches)
+    private double offset = 12;
     public AdjustPositionSubsystem(SampleMecanumDrive drive, AprilTagProcessor processor, boolean isRed) {
         this.drive = drive;
         this.processor = processor;
@@ -43,8 +45,8 @@ public class AdjustPositionSubsystem extends SubsystemBase {
                 }
                 x =  aprilTag.metadata.fieldPosition.get(0) + aprilTag.ftcPose.y;
                 y = -aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1);
-                x = x - Math.sin(Math.toRadians(heading)) * 12;
-                y = y - Math.cos(Math.toRadians(heading)) * 12;
+                x = x - Math.sin(Math.toRadians(heading)) * offset;
+                y = y - Math.cos(Math.toRadians(heading)) * offset;
             } else {
                 if(isRed) {
                     heading = 90 + aprilTag.ftcPose.yaw;
@@ -53,8 +55,8 @@ public class AdjustPositionSubsystem extends SubsystemBase {
                 }
                 x = aprilTag.metadata.fieldPosition.get(0) - aprilTag.ftcPose.y;
                 y = aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1);
-                x = x - Math.sin(Math.toRadians(heading)) * 12;
-                y = y - Math.cos(Math.toRadians(heading)) * 12;
+                x = x - Math.sin(Math.toRadians(heading)) * offset;
+                y = y - Math.cos(Math.toRadians(heading)) * offset;
             }
             sumX += x;
             sumY += y;
