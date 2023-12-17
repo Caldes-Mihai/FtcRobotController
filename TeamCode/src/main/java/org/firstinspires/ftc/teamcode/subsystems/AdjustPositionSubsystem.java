@@ -12,19 +12,54 @@ import java.util.ArrayList;
 public class AdjustPositionSubsystem extends SubsystemBase {
     private SampleMecanumDrive drive;
     private AprilTagProcessor processor;
-    public AdjustPositionSubsystem(SampleMecanumDrive drive, AprilTagProcessor processor) {
+    private boolean isRed;
+    private double heading;
+    private double x;
+    private double y;
+    private double size;
+    private double sumX;
+    private double sumY;
+    private double sumHeading;
+    public AdjustPositionSubsystem(SampleMecanumDrive drive, AprilTagProcessor processor, boolean isRed) {
         this.drive = drive;
         this.processor = processor;
+        this.isRed = isRed;
     }
     public void adjustPosition() {
         ArrayList<AprilTagDetection> aprilTags = processor.getDetections();
-        if(aprilTags.size() == 0)
+        size = aprilTags.size();
+        if(size == 0)
             return;
-        //calculate for apriltags (test april tag angle)
-        AprilTagDetection aprilTag = aprilTags.get(0);
-        if(aprilTag.id == 7 || aprilTag.id == 8 || aprilTag.id == 9 || aprilTag.id == 10) {
-            drive.setPoseEstimate(new Pose2d(aprilTag.metadata.fieldPosition.get(0) + aprilTag.ftcPose.y, -aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1), aprilTag.ftcPose.yaw));
-        } else
-            drive.setPoseEstimate(new Pose2d(aprilTag.metadata.fieldPosition.get(0) - aprilTag.ftcPose.y, aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1), aprilTag.ftcPose.yaw));
+        //TO DO: not sure if heading readjusting works properly (might need to swap + with -)
+        sumX = 0;
+        sumY = 0;
+        sumHeading = 0;
+        aprilTags.forEach(aprilTag -> {
+            if(aprilTag.id == 7 || aprilTag.id == 8 || aprilTag.id == 9 || aprilTag.id == 10) {
+                if(isRed) {
+                    heading = -90 + aprilTag.ftcPose.yaw;
+                } else {
+                    heading = 90 + aprilTag.ftcPose.yaw;
+                }
+                x =  aprilTag.metadata.fieldPosition.get(0) + aprilTag.ftcPose.y;
+                y = -aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1);
+                x = x - Math.sin(Math.toRadians(heading)) * 12;
+                y = y - Math.cos(Math.toRadians(heading)) * 12;
+            } else {
+                if(isRed) {
+                    heading = 90 + aprilTag.ftcPose.yaw;
+                } else {
+                    heading = -90 + aprilTag.ftcPose.yaw;
+                }
+                x = aprilTag.metadata.fieldPosition.get(0) - aprilTag.ftcPose.y;
+                y = aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1);
+                x = x - Math.sin(Math.toRadians(heading)) * 12;
+                y = y - Math.cos(Math.toRadians(heading)) * 12;
+            }
+            sumX += x;
+            sumY += y;
+            sumHeading += heading;
+        });
+        drive.setPoseEstimate(new Pose2d(sumX / size, sumY / size, Math.toRadians(sumHeading / size)));
     }
 }

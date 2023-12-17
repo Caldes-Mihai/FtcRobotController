@@ -58,13 +58,13 @@ public class PropProcessor implements VisionProcessor {
      * min and max values here for now, meaning
      * that all pixels will be shown.
      */
-    public Scalar lower2 = new Scalar(90, 102, 166);
-    public Scalar upper2 = new Scalar(100, 255, 255);
-    public Scalar lower = new Scalar(0, 0, 135);
-    public Scalar upper = new Scalar(162, 39, 255);
-    public Point A = new Point(100, 100);
-    public Point B = new Point(500, 300);
-    public int range = 1000;
+    public Scalar lowerBlue = new Scalar(90, 102, 166);
+    public Scalar upperBlue = new Scalar(100, 255, 255);
+    public Scalar lowerRed = new Scalar(0, 0, 135);
+    public Scalar upperRed = new Scalar(162, 39, 255);
+    public Point areaStart = new Point(100, 100);
+    public Point areaEnd = new Point(500, 300);
+    public int maxHWDiff = 100;
     public boolean isRed;
     public enum Positions {
         LEFT,
@@ -113,7 +113,7 @@ public class PropProcessor implements VisionProcessor {
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
         Imgproc.cvtColor(frame, propMat, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(propMat, isRed ? lower : lower2, isRed ? upper : upper2, propMat);
+        Core.inRange(propMat, isRed ? lowerRed : lowerBlue, isRed ? upperRed : upperBlue, propMat);
         List<MatOfPoint> propContours = new ArrayList<>();
         Mat hierarchy = new Mat();
         try {
@@ -143,15 +143,15 @@ public class PropProcessor implements VisionProcessor {
             double value = Imgproc.contourArea(c);
             if(value > 100) {
                 Rect rect = Imgproc.boundingRect(c);
-                if(rect.x < A.x || rect.y < A.y || rect.x + rect.width > B.x || rect.y + rect.height > B.y) continue;
-                if ((rect.width > maxWProp || rect.height > maxHProp) && withinRange(rect.width * scaleBmpPxToCanvasPx, rect.height * scaleBmpPxToCanvasPx, range)) {
+                if(rect.x < areaStart.x || rect.y < areaStart.y || rect.x + rect.width > areaEnd.x || rect.y + rect.height > areaEnd.y) continue;
+                if ((rect.width > maxWProp || rect.height > maxHProp) && withinRange(rect.width * scaleBmpPxToCanvasPx, rect.height * scaleBmpPxToCanvasPx, maxHWDiff)) {
                     maxWProp = rect.width;
                     maxHProp = rect.height;
                     foundProp = rect;
                 }
             }
         }
-        Rect area = new Rect(A, B);
+        Rect area = new Rect(areaStart, areaEnd);
         if(foundProp != null) {
             if (foundProp.x - area.x + foundProp.width / 2 <= area.width / 3)
                 position = Positions.LEFT;

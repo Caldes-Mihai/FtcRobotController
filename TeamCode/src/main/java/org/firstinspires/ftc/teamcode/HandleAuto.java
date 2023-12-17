@@ -65,7 +65,7 @@ public class HandleAuto {
                 .build();
         drive = new SampleMecanumDrive(hardwareMap);
         mecanumDriveSubsystem = new MecanumDriveSubsystem(drive, false);
-        adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor);
+        adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor, isRed);
         intakeSubsystem = new IntakeSubsystem(intake);
         opMode.register(mecanumDriveSubsystem, adjustPositionSubsystem, intakeSubsystem);
         adjustPositionSubsystem.setDefaultCommand(new AdjustPositionCommand(adjustPositionSubsystem));
