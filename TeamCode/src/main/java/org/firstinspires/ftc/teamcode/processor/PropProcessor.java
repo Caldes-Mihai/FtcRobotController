@@ -62,9 +62,9 @@ public class PropProcessor implements VisionProcessor {
     public Scalar upperBlue = new Scalar(100, 255, 255);
     public Scalar lowerRed = new Scalar(0, 0, 135);
     public Scalar upperRed = new Scalar(162, 39, 255);
-    public Point areaStart = new Point(100, 100);
-    public Point areaEnd = new Point(500, 300);
-    public int maxHWDiff = 100;
+    public Point areaStart = new Point(100, 270);
+    public Point areaEnd = new Point(500, 400);
+    public int maxHWDiff = 30;
     public boolean isRed;
     public enum Positions {
         LEFT,
