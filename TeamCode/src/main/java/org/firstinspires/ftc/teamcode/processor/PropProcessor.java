@@ -94,6 +94,7 @@ public class PropProcessor implements VisionProcessor {
      */
     private Mat propMat = new Mat();
     private Telemetry t;
+    private Paint rectPaint = new Paint();
     /**
      * Enum to choose which color space to choose
      * with the live variable tuner isntead of
@@ -122,7 +123,7 @@ public class PropProcessor implements VisionProcessor {
                 int baseline[] = {0};
                 Size textSize = Imgproc.getTextSize(position.toString(), Imgproc.FONT_HERSHEY_PLAIN, 1, 2, baseline);
                 Point pos = new Point(foundProp.x + (foundProp.width - textSize.width) / 2, foundProp.y + foundProp.height + textSize.height + 4);
-                Imgproc.putText(frame, position.toString(), pos, Imgproc.FONT_HERSHEY_PLAIN, 1, new Scalar(0, 0,0), 2);
+                Imgproc.putText(frame, position.toString(), pos, Imgproc.FONT_HERSHEY_PLAIN, 1, isRed ? new Scalar(255, 0,0) : new Scalar(0, 0, 255), 2);
             }
         } catch (Exception e) {}
         propMat.release();
@@ -131,7 +132,6 @@ public class PropProcessor implements VisionProcessor {
 
     @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
-        Paint rectPaint = new Paint();
         rectPaint.setColor(isRed ? Color.RED : Color.BLUE);
         rectPaint.setStyle(Paint.Style.STROKE);
         rectPaint.setStrokeWidth(scaleCanvasDensity * 4);
