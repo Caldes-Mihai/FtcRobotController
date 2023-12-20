@@ -38,10 +38,17 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleIntakeCommand;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.concurrent.TimeUnit;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -82,6 +89,8 @@ public class MainDriveOpMode extends CommandOpMode {
     private Motor rightFrontDrive;
     private Motor rightBackDrive;
     private Motor intake;
+    private AprilTagProcessor processor;
+    private VisionPortal visionPortal;
     private GamepadEx driver;
     private GamepadEx tool;
     private IMU.Parameters parameters;
@@ -96,6 +105,13 @@ public class MainDriveOpMode extends CommandOpMode {
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         imu.initialize(parameters);
+        processor = new AprilTagProcessor.Builder().build();
+        processor.setDecimation(2);
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .addProcessor(processor)
+                .build();
+        setManualExposure(6, 250);
         leftFrontDrive = new Motor(hardwareMap, "front_left_motor");
         leftBackDrive = new Motor(hardwareMap, "back_left_motor");
         rightFrontDrive = new Motor(hardwareMap, "front_right_motor");
@@ -103,15 +119,46 @@ public class MainDriveOpMode extends CommandOpMode {
         intake = new Motor(hardwareMap, "intake");
 
         driveSubsystem = new DriveSubsystem(
-                leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu,
-                driver
+                leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu, processor, visionPortal,
+                driver, this
         );
         intakeSubsystem = new IntakeSubsystem(intake, tool);
-        // sets the default command to the drive command so that it is always looking
-        // at the value on the joysticks
         register(driveSubsystem, intakeSubsystem);
         driveSubsystem.setDefaultCommand(new DriveCommand(driveSubsystem));
         intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));
         schedule(new RunCommand(telemetry::update));
+    }
+    private void setManualExposure(int exposureMS, int gain) {
+        // Wait for the camera to be open, then use the controls
+
+        if (visionPortal == null) {
+            return;
+        }
+
+        // Make sure camera is streaming before we try to set the exposure controls
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            telemetry.addData("Camera", "Waiting");
+            telemetry.update();
+            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+                sleep(20);
+            }
+            telemetry.addData("Camera", "Ready");
+            telemetry.update();
+        }
+
+        // Set camera controls unless we are stopping.
+        if (!isStopRequested())
+        {
+            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+                exposureControl.setMode(ExposureControl.Mode.Manual);
+                sleep(50);
+            }
+            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            sleep(20);
+            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+            gainControl.setGain(gain);
+            sleep(20);
+        }
     }
 }
