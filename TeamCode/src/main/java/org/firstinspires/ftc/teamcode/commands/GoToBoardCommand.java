@@ -14,26 +14,39 @@ public class GoToBoardCommand extends CommandBase {
     private final MecanumDriveSubsystem drive;
     private final PropProcessor processor;
     private final boolean isRed;
+    private final boolean shouldTurn;
+    private double strafe;
+    private double degrees;
     private PropProcessor.Positions propPosition;
-    public GoToBoardCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed) {
+    public GoToBoardCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed, boolean shouldTurn) {
         this.drive = drive;
         this.processor = processor;
         this.isRed = isRed;
+        this.shouldTurn = shouldTurn;
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
         propPosition = processor.getPropPosition();
-        TrajectorySequenceBuilder destinationPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineTo(new Vector2d(drive.getPoseEstimate().getX(), isRed ? -12 : 12))
-                .lineTo(new Vector2d(45, isRed ? -12 : 12))
-                .lineTo(new Vector2d(45, isRed ? -36 : 36));
         if (propPosition.equals(PropProcessor.Positions.LEFT)) {
-            destinationPath.strafeLeft(5);
+            strafe = 5;
+            degrees = isRed ? 0 : Math.toRadians(180);
         } else if (propPosition.equals(PropProcessor.Positions.CENTER)) {
-            destinationPath.strafeRight(5);
+            strafe = 0;
+            degrees = isRed ? Math.toRadians(90) : Math.toRadians(-90);
+        } else {
+            strafe = -5;
+            degrees = isRed ? Math.toRadians(180) : 0;
         }
+        TrajectorySequenceBuilder destinationPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate());
+        if(degrees != 0 && shouldTurn)
+            destinationPath.turn(degrees);
+        destinationPath
+                .lineTo(new Vector2d(drive.getPoseEstimate().getX(), isRed ? -36 : 36))
+                .lineTo(new Vector2d(45, isRed ? -36 : 36));
+        if(strafe != 0)
+            destinationPath.lineTo(new Vector2d(45, isRed ? -36 + strafe : 36 + strafe));
         drive.followTrajectory(destinationPath.build());
     }
 

@@ -26,15 +26,17 @@ public class GoToPropCommand extends CommandBase {
     public void initialize() {
         propPosition = processor.getPropPosition();
         TrajectorySequenceBuilder propPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .forward(27);
+                .back(27);
         if (propPosition.equals(PropProcessor.Positions.LEFT))
-            degrees = Math.toRadians(90);
-        else if (propPosition.equals(PropProcessor.Positions.CENTER))
             degrees = Math.toRadians(-90);
+        else if (propPosition.equals(PropProcessor.Positions.RIGHT))
+            degrees = Math.toRadians(90);
         else
-            if (isRed) propPath.strafeLeft(5);
-            else propPath.strafeRight(5);
+            degrees = Math.toRadians(180);
         propPath.turn(degrees);
+        if(propPosition.equals(PropProcessor.Positions.CENTER))
+            if (isRed) propPath.strafeLeft(3);
+            else propPath.strafeRight(3);
         drive.followTrajectory(propPath.build());
     }
 

@@ -12,33 +12,24 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuild
 public class GoToPixelStackCommand extends CommandBase {
 
     private final MecanumDriveSubsystem drive;
-    private final PropProcessor processor;
     private final boolean isRed;
-    private PropProcessor.Positions propPosition;
-    private double turn;
     private double stackY;
-    public GoToPixelStackCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed) {
+    public GoToPixelStackCommand(MecanumDriveSubsystem drive, boolean isRed) {
         this.drive = drive;
-        this.processor = processor;
         this.isRed = isRed;
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
-        propPosition = processor.getPropPosition();
         if (isRed)
             stackY = -36;
         else
             stackY = 36;
-        if (propPosition.equals(PropProcessor.Positions.LEFT))
-            turn = isRed ? 0 : Math.toRadians(180);
-        else if (propPosition.equals(PropProcessor.Positions.CENTER))
-            turn = isRed ? 90 : -90;
-        else
-            turn = isRed ? Math.toRadians(180) : 0;
-        TrajectorySequenceBuilder linePath = drive.trajectorySequenceBuilder(drive.getPoseEstimate()).turn(turn);
-        linePath.lineTo(new Vector2d(-54, stackY)).turn( Math.toRadians(180));
+        TrajectorySequenceBuilder linePath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineTo(new Vector2d(drive.getPoseEstimate().getX(), stackY))
+                .lineTo(new Vector2d(-57, stackY));
+
         drive.followTrajectory(linePath.build());
     }
 

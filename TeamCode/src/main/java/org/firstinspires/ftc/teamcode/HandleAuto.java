@@ -77,22 +77,24 @@ public class HandleAuto {
         adjustPositionSubsystem.setDefaultCommand(new AdjustPositionCommand(adjustPositionSubsystem));
         if (!isRed) {
             if (currentSpawnPosition.equals("down"))
-                startPose = new Pose2d(-36, 63, Math.toRadians(-90));
+                startPose = new Pose2d(-36, 63, Math.toRadians(90));
             else
-                startPose = new Pose2d(12, 63, Math.toRadians(-90));
+                startPose = new Pose2d(12, 63, Math.toRadians(90));
         } else {
             if (currentSpawnPosition.equals("down"))
-                startPose = new Pose2d(-36, -63, Math.toRadians(90));
+                startPose = new Pose2d(-36, -63, Math.toRadians(-90));
             else
-                startPose = new Pose2d(12, -63, Math.toRadians(90));
+                startPose = new Pose2d(12, -63, Math.toRadians(-90));
         }
         drive.setPoseEstimate(startPose);
         opMode.schedule(new SequentialCommandGroup(
                 new GoToPropCommand(mecanumDriveSubsystem, processor, isRed),
                 new PlaceCommand(),
-                new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed),
+                new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
+                new PlaceCommand(),
+                new GoToPixelStackCommand(mecanumDriveSubsystem, isRed),
                 new PickupCommand(intakeSubsystem),
-                new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed),
+                new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, false),
                 new PlaceCommand(),
                 new RunCommand(() -> visionPortal.close())
         ));
