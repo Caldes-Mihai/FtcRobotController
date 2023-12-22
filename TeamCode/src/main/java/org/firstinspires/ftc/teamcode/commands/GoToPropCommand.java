@@ -15,6 +15,7 @@ public class GoToPropCommand extends CommandBase {
     private final boolean isRed;
     private PropProcessor.Positions propPosition;
     private double degrees;
+    private double distance = 27;
     public GoToPropCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed) {
         this.drive = drive;
         this.processor = processor;
@@ -25,18 +26,17 @@ public class GoToPropCommand extends CommandBase {
     @Override
     public void initialize() {
         propPosition = processor.getPropPosition();
-        TrajectorySequenceBuilder propPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .back(27);
+        TrajectorySequenceBuilder propPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate());
         if (propPosition.equals(PropProcessor.Positions.LEFT))
             degrees = Math.toRadians(-90);
         else if (propPosition.equals(PropProcessor.Positions.RIGHT))
             degrees = Math.toRadians(90);
-        else
-            degrees = Math.toRadians(180);
-        propPath.turn(degrees);
         if(propPosition.equals(PropProcessor.Positions.CENTER))
-            if (isRed) propPath.strafeLeft(3);
-            else propPath.strafeRight(3);
+            distance += 25;
+        propPath.back(distance);
+        if(degrees != 0) propPath.turn(degrees);
+        else if (isRed) propPath.strafeLeft(3);
+        else propPath.strafeRight(3);
         drive.followTrajectory(propPath.build());
     }
 

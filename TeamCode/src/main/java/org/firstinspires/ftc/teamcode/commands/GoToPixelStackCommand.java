@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.commands;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 
@@ -12,24 +13,40 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuild
 public class GoToPixelStackCommand extends CommandBase {
 
     private final MecanumDriveSubsystem drive;
+    private final PropProcessor processor;
     private final boolean isRed;
+    private final boolean shouldTurn;
     private double stackY;
-    public GoToPixelStackCommand(MecanumDriveSubsystem drive, boolean isRed) {
+    private double degrees;
+    private PropProcessor.Positions propPosition;
+    public GoToPixelStackCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed, boolean shouldTurn) {
         this.drive = drive;
+        this.processor = processor;
         this.isRed = isRed;
+        this.shouldTurn = shouldTurn;
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
+        propPosition = processor.getPropPosition();
         if (isRed)
-            stackY = -36;
+            stackY = -12;
         else
-            stackY = 36;
-        TrajectorySequenceBuilder linePath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineTo(new Vector2d(drive.getPoseEstimate().getX(), stackY))
-                .lineTo(new Vector2d(-57, stackY));
-
+            stackY = 12;
+        if (propPosition.equals(PropProcessor.Positions.LEFT)) {
+            degrees = isRed ? 0 : Math.toRadians(180);
+        } else if (propPosition.equals(PropProcessor.Positions.CENTER)) {
+            degrees = isRed ? Math.toRadians(-90) : Math.toRadians(90);
+        } else {
+            degrees = isRed ? Math.toRadians(180) : 0;
+        }
+        TrajectorySequenceBuilder linePath = drive.trajectorySequenceBuilder(drive.getPoseEstimate());
+        if(!shouldTurn)
+            linePath.lineTo(new Vector2d(36, stackY))
+                    .lineTo(new Vector2d(-57, stackY));
+        else if(degrees != 0)
+            linePath.lineToLinearHeading(new Pose2d(-57, stackY, drive.getPoseEstimate().getHeading() + degrees));
         drive.followTrajectory(linePath.build());
     }
 

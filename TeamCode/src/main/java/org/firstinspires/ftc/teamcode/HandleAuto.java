@@ -87,17 +87,36 @@ public class HandleAuto {
                 startPose = new Pose2d(12, -63, Math.toRadians(-90));
         }
         drive.setPoseEstimate(startPose);
+        //if(currentSpawnPosition.equals("down"))
         opMode.schedule(new SequentialCommandGroup(
                 new GoToPropCommand(mecanumDriveSubsystem, processor, isRed),
                 new PlaceCommand(),
+                new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, true),
+                new PickupCommand(intakeSubsystem),
                 new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
                 new PlaceCommand(),
-                new GoToPixelStackCommand(mecanumDriveSubsystem, isRed),
+                new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, false),
                 new PickupCommand(intakeSubsystem),
-                new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, false),
+                new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
                 new PlaceCommand(),
                 new RunCommand(() -> visionPortal.close())
         ));
+         /*else
+            opMode.schedule(new SequentialCommandGroup(
+                    new GoToPropCommand(mecanumDriveSubsystem, processor, isRed),
+                    new PlaceCommand(),
+                    new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true, true),
+                    new PlaceCommand(),
+                    new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, false),
+                    new PickupCommand(intakeSubsystem),
+                    new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
+                    new PlaceCommand(),
+                    new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, false),
+                    new PickupCommand(intakeSubsystem),
+                    new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
+                    new PlaceCommand(),
+                    new RunCommand(() -> visionPortal.close())
+            ));*/
     }
     private static void setManualExposure(int exposureMS, int gain, CommandOpMode opMode) {
         // Wait for the camera to be open, then use the controls
