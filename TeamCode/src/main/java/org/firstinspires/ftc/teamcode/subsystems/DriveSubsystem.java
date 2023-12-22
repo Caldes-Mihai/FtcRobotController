@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
@@ -15,8 +14,6 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.List;
-
 public class DriveSubsystem extends SubsystemBase {
     private double accel, axial, lateral, yaw;
     private MecanumDrive drive;
@@ -27,8 +24,8 @@ public class DriveSubsystem extends SubsystemBase {
     private AprilTagDetection desiredTag;
     private CommandOpMode opMode;
     private double turn;
-    private double TURN_GAIN   =  0.01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-    private double MAX_AUTO_TURN  = 0.3;
+    private double TURN_GAIN = 0.01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    private double MAX_AUTO_TURN = 0.3;
 
     public DriveSubsystem(Motor leftFrontDrive, Motor leftBackDrive, Motor rightFrontDrive, Motor rightBackDrive, IMU imu, AprilTagProcessor processor, VisionPortal visionPortal,
                           GamepadEx gamepad, CommandOpMode opMode) {
@@ -47,9 +44,9 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void drive() {
-        if(gamepad.getButton(GamepadKeys.Button.START))
+        if (gamepad.getButton(GamepadKeys.Button.START))
             imu.resetYaw();
-        if(gamepad.getButton(GamepadKeys.Button.A)) {
+        if (gamepad.getButton(GamepadKeys.Button.A)) {
             desiredTag = processor.getDetections().get(0);
             if (desiredTag != null) {
                 turn = Range.clip(desiredTag.ftcPose.bearing * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);

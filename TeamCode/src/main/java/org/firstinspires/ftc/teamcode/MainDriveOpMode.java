@@ -36,7 +36,6 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -78,11 +77,10 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Main Drive OpMode", group="Drive OpMode")
+@TeleOp(name = "Main Drive OpMode", group = "Drive OpMode")
 public class MainDriveOpMode extends CommandOpMode {
 
     // Declare OpMode members for each of the 4 motors.
-    private ElapsedTime runtime = new ElapsedTime();
     private IMU imu;
     private Motor leftFrontDrive;
     private Motor leftBackDrive;
@@ -96,6 +94,7 @@ public class MainDriveOpMode extends CommandOpMode {
     private IMU.Parameters parameters;
     private DriveSubsystem driveSubsystem;
     private IntakeSubsystem intakeSubsystem;
+
     @Override
     public void initialize() {
         driver = new GamepadEx(gamepad1);
@@ -128,6 +127,7 @@ public class MainDriveOpMode extends CommandOpMode {
         intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));
         schedule(new RunCommand(telemetry::update));
     }
+
     private void setManualExposure(int exposureMS, int gain) {
         // Wait for the camera to be open, then use the controls
 
@@ -147,14 +147,13 @@ public class MainDriveOpMode extends CommandOpMode {
         }
 
         // Set camera controls unless we are stopping.
-        if (!isStopRequested())
-        {
+        if (!isStopRequested()) {
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
             if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
                 sleep(50);
             }
-            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            exposureControl.setExposure(exposureMS, TimeUnit.MILLISECONDS);
             sleep(20);
             GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
             gainControl.setGain(gain);
