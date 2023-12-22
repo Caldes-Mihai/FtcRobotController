@@ -47,6 +47,8 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void drive() {
+        if(gamepad.getButton(GamepadKeys.Button.START))
+            imu.resetYaw();
         if(gamepad.getButton(GamepadKeys.Button.A)) {
             desiredTag = processor.getDetections().get(0);
             if (desiredTag != null) {
@@ -59,7 +61,7 @@ public class DriveSubsystem extends SubsystemBase {
             axial = gamepad.getButton(GamepadKeys.Button.DPAD_DOWN) ? accel : gamepad.getButton(GamepadKeys.Button.DPAD_UP) ? -accel : 0;
             lateral = gamepad.getButton(GamepadKeys.Button.DPAD_LEFT) ? accel : gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT) ? -accel : 0;
             yaw = gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) ? accel : gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) ? -accel : 0;
-            drive.driveFieldCentric(lateral, axial, yaw, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            drive.driveFieldCentric(lateral, axial, yaw, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
         }
     }
 }
