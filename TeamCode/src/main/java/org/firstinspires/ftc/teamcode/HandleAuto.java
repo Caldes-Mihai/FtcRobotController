@@ -1,40 +1,30 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.FollowTrajectorySequenceCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToBoardCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToPixelStackCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToPropCommand;
 import org.firstinspires.ftc.teamcode.commands.PickupCommand;
 import org.firstinspires.ftc.teamcode.commands.PlaceCommand;
+import org.firstinspires.ftc.teamcode.commands.PlacePixelCommand;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AdjustPositionSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class HandleAuto {
@@ -55,6 +45,7 @@ public class HandleAuto {
     private static IntakeSubsystem intakeSubsystem;
     private static Pose2d startPose;
     private static Motor intake;
+
     public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode opMode) {
         HardwareMap hardwareMap = opMode.hardwareMap;
         intake = new Motor(hardwareMap, "intake");
@@ -90,7 +81,7 @@ public class HandleAuto {
         //if(currentSpawnPosition.equals("down"))
         opMode.schedule(new SequentialCommandGroup(
                 new GoToPropCommand(mecanumDriveSubsystem, processor, isRed),
-                new PlaceCommand(),
+                new PlacePixelCommand(intakeSubsystem),
                 new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, true),
                 new PickupCommand(intakeSubsystem),
                 new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
@@ -104,7 +95,7 @@ public class HandleAuto {
          /*else
             opMode.schedule(new SequentialCommandGroup(
                     new GoToPropCommand(mecanumDriveSubsystem, processor, isRed),
-                    new PlaceCommand(),
+                    new PlacePixelCommand(intakeSubsystem),
                     new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true, true),
                     new PlaceCommand(),
                     new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, false),
@@ -118,6 +109,7 @@ public class HandleAuto {
                     new RunCommand(() -> visionPortal.close())
             ));*/
     }
+
     private static void setManualExposure(int exposureMS, int gain, CommandOpMode opMode) {
         // Wait for the camera to be open, then use the controls
 
@@ -137,14 +129,13 @@ public class HandleAuto {
         }
 
         // Set camera controls unless we are stopping.
-        if (!opMode.isStopRequested())
-        {
+        if (!opMode.isStopRequested()) {
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
             if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
                 opMode.sleep(50);
             }
-            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            exposureControl.setExposure(exposureMS, TimeUnit.MILLISECONDS);
             opMode.sleep(20);
             GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
             gainControl.setGain(gain);
