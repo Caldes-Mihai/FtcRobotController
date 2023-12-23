@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
@@ -17,11 +18,14 @@ import org.firstinspires.ftc.teamcode.commands.GoToPropCommand;
 import org.firstinspires.ftc.teamcode.commands.PickupCommand;
 import org.firstinspires.ftc.teamcode.commands.PlaceCommand;
 import org.firstinspires.ftc.teamcode.commands.PlacePixelCommand;
+import org.firstinspires.ftc.teamcode.commands.PrepareOuttake;
+import org.firstinspires.ftc.teamcode.commands.RetractSlidersCommand;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AdjustPositionSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
@@ -43,12 +47,15 @@ public class HandleAuto {
     private static MecanumDriveSubsystem mecanumDriveSubsystem;
     private static AdjustPositionSubsystem adjustPositionSubsystem;
     private static IntakeSubsystem intakeSubsystem;
+    private static OuttakeSubsystem outtakeSubsystem;
     private static Pose2d startPose;
     private static Motor intake;
+    private static Motor sliders;
 
     public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode opMode) {
         HardwareMap hardwareMap = opMode.hardwareMap;
         intake = new Motor(hardwareMap, "intake");
+        sliders = new Motor(hardwareMap, "sliders");
         processor = new PropProcessor(opMode.telemetry);
         processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -64,8 +71,9 @@ public class HandleAuto {
         mecanumDriveSubsystem = new MecanumDriveSubsystem(drive, false);
         adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor, isRed);
         intakeSubsystem = new IntakeSubsystem(intake);
-        opMode.register(mecanumDriveSubsystem, adjustPositionSubsystem, intakeSubsystem);
-        adjustPositionSubsystem.setDefaultCommand(new AdjustPositionCommand(adjustPositionSubsystem));
+        outtakeSubsystem = new OuttakeSubsystem(sliders);
+        opMode.register(mecanumDriveSubsystem, adjustPositionSubsystem, intakeSubsystem, outtakeSubsystem);
+        adjustPositionSubsystem.setDefaultCommand(new AdjustPositionCommand(adjustPositionSubsystem, mecanumDriveSubsystem));
         if (!isRed) {
             if (currentSpawnPosition.equals("down"))
                 startPose = new Pose2d(-36, 63, Math.toRadians(90));
@@ -84,12 +92,19 @@ public class HandleAuto {
                 new PlacePixelCommand(intakeSubsystem),
                 new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, true),
                 new PickupCommand(intakeSubsystem),
-                new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
+                new ParallelCommandGroup(
+                        new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
+                        new PrepareOuttake(outtakeSubsystem, mecanumDriveSubsystem)),
                 new PlaceCommand(),
-                new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, false),
+                new ParallelCommandGroup(
+                        new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, false),
+                        new RetractSlidersCommand(outtakeSubsystem)),
                 new PickupCommand(intakeSubsystem),
-                new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
+                new ParallelCommandGroup(
+                        new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
+                        new PrepareOuttake(outtakeSubsystem, mecanumDriveSubsystem)),
                 new PlaceCommand(),
+                new RetractSlidersCommand(outtakeSubsystem),
                 new RunCommand(() -> visionPortal.close())
         ));
          /*else

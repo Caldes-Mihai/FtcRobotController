@@ -42,8 +42,10 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleIntakeCommand;
+import org.firstinspires.ftc.teamcode.commands.HandleOuttakeCommand;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
@@ -87,6 +89,7 @@ public class MainDriveOpMode extends CommandOpMode {
     private Motor rightFrontDrive;
     private Motor rightBackDrive;
     private Motor intake;
+    private Motor sliders;
     private AprilTagProcessor processor;
     private VisionPortal visionPortal;
     private GamepadEx driver;
@@ -94,6 +97,7 @@ public class MainDriveOpMode extends CommandOpMode {
     private IMU.Parameters parameters;
     private DriveSubsystem driveSubsystem;
     private IntakeSubsystem intakeSubsystem;
+    private OuttakeSubsystem outtakeSubsystem;
 
     @Override
     public void initialize() {
@@ -116,15 +120,16 @@ public class MainDriveOpMode extends CommandOpMode {
         rightFrontDrive = new Motor(hardwareMap, "front_right_motor");
         rightBackDrive = new Motor(hardwareMap, "back_right_motor");
         intake = new Motor(hardwareMap, "intake");
-
         driveSubsystem = new DriveSubsystem(
                 leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu, processor, visionPortal,
                 driver, this
         );
         intakeSubsystem = new IntakeSubsystem(intake, tool);
-        register(driveSubsystem, intakeSubsystem);
+        outtakeSubsystem = new OuttakeSubsystem(sliders, tool);
+        register(driveSubsystem, intakeSubsystem, outtakeSubsystem);
         driveSubsystem.setDefaultCommand(new DriveCommand(driveSubsystem));
         intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));
+        outtakeSubsystem.setDefaultCommand(new HandleOuttakeCommand(outtakeSubsystem));
         schedule(new RunCommand(telemetry::update));
     }
 

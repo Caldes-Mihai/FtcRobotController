@@ -33,7 +33,9 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void handle() {
-        gamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(this::activate);
-        gamepad.getGamepadButton(GamepadKeys.Button.X).whenReleased(this::deactivate);
+        if (gamepad.getButton(GamepadKeys.Button.X))
+            this.activate();
+        else
+            this.deactivate();
     }
 }
