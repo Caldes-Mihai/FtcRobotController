@@ -120,6 +120,7 @@ public class MainDriveOpMode extends CommandOpMode {
         rightFrontDrive = new Motor(hardwareMap, "front_right_motor");
         rightBackDrive = new Motor(hardwareMap, "back_right_motor");
         intake = new Motor(hardwareMap, "intake");
+        sliders = new Motor(hardwareMap, "sliders");
         driveSubsystem = new DriveSubsystem(
                 leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu, processor, visionPortal,
                 driver, this
