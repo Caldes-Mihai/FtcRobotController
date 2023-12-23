@@ -19,6 +19,6 @@ public class RetractSlidersCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return subsystem.isRetracted();
     }
 }

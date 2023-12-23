@@ -32,7 +32,9 @@ package org.firstinspires.ftc.teamcode;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -84,12 +86,13 @@ public class MainDriveOpMode extends CommandOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private IMU imu;
-    private Motor leftFrontDrive;
-    private Motor leftBackDrive;
-    private Motor rightFrontDrive;
-    private Motor rightBackDrive;
-    private Motor intake;
-    private Motor sliders;
+    private MotorEx leftFrontDrive;
+    private MotorEx leftBackDrive;
+    private MotorEx rightFrontDrive;
+    private MotorEx rightBackDrive;
+    private MotorEx intake;
+    private ServoEx sliders;
+    private ServoEx holder;
     private AprilTagProcessor processor;
     private VisionPortal visionPortal;
     private GamepadEx driver;
@@ -115,18 +118,19 @@ public class MainDriveOpMode extends CommandOpMode {
                 .addProcessor(processor)
                 .build();
         setManualExposure(6, 250);
-        leftFrontDrive = new Motor(hardwareMap, "front_left_motor");
-        leftBackDrive = new Motor(hardwareMap, "back_left_motor");
-        rightFrontDrive = new Motor(hardwareMap, "front_right_motor");
-        rightBackDrive = new Motor(hardwareMap, "back_right_motor");
-        intake = new Motor(hardwareMap, "intake");
-        sliders = new Motor(hardwareMap, "sliders");
+        leftFrontDrive = new MotorEx(hardwareMap, "front_left_motor");
+        leftBackDrive = new MotorEx(hardwareMap, "back_left_motor");
+        rightFrontDrive = new MotorEx(hardwareMap, "front_right_motor");
+        rightBackDrive = new MotorEx(hardwareMap, "back_right_motor");
+        intake = new MotorEx(hardwareMap, "intake");
+        sliders = new SimpleServo(hardwareMap, "sliders", 0, 360);
+        holder = new SimpleServo(hardwareMap, "holder", 0, 360);
         driveSubsystem = new DriveSubsystem(
                 leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu, processor, visionPortal,
                 driver, this
         );
         intakeSubsystem = new IntakeSubsystem(intake, tool);
-        outtakeSubsystem = new OuttakeSubsystem(sliders, tool);
+        outtakeSubsystem = new OuttakeSubsystem(sliders, holder, tool);
         register(driveSubsystem, intakeSubsystem, outtakeSubsystem);
         driveSubsystem.setDefaultCommand(new DriveCommand(driveSubsystem));
         intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));

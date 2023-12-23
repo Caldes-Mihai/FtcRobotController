@@ -4,17 +4,18 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final Motor intake;
+    private final MotorEx intake;
     private final GamepadEx gamepad;
     private double factor = 1;
 
-    public IntakeSubsystem(Motor intake) {
+    public IntakeSubsystem(MotorEx intake) {
         this(intake, null);
     }
 
-    public IntakeSubsystem(Motor intake, GamepadEx gamepad) {
+    public IntakeSubsystem(MotorEx intake, GamepadEx gamepad) {
         this.intake = intake;
         this.gamepad = gamepad;
         intake.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);

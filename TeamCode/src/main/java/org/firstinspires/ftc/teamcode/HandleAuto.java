@@ -5,7 +5,9 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -19,6 +21,7 @@ import org.firstinspires.ftc.teamcode.commands.PickupCommand;
 import org.firstinspires.ftc.teamcode.commands.PlaceCommand;
 import org.firstinspires.ftc.teamcode.commands.PlacePixelCommand;
 import org.firstinspires.ftc.teamcode.commands.PrepareOuttake;
+import org.firstinspires.ftc.teamcode.commands.ResetHolderCommand;
 import org.firstinspires.ftc.teamcode.commands.RetractSlidersCommand;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
@@ -49,13 +52,15 @@ public class HandleAuto {
     private static IntakeSubsystem intakeSubsystem;
     private static OuttakeSubsystem outtakeSubsystem;
     private static Pose2d startPose;
-    private static Motor intake;
-    private static Motor sliders;
+    private static MotorEx intake;
+    private static ServoEx sliders;
+    private static ServoEx holder;
 
     public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode opMode) {
         HardwareMap hardwareMap = opMode.hardwareMap;
-        intake = new Motor(hardwareMap, "intake");
-        sliders = new Motor(hardwareMap, "sliders");
+        intake = new MotorEx(hardwareMap, "intake");
+        sliders = new SimpleServo(hardwareMap, "sliders", 0, 360);
+        sliders = new SimpleServo(hardwareMap, "holder", 0, 360);
         processor = new PropProcessor(opMode.telemetry);
         processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -71,7 +76,7 @@ public class HandleAuto {
         mecanumDriveSubsystem = new MecanumDriveSubsystem(drive, false);
         adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor, isRed);
         intakeSubsystem = new IntakeSubsystem(intake);
-        outtakeSubsystem = new OuttakeSubsystem(sliders);
+        outtakeSubsystem = new OuttakeSubsystem(sliders, holder);
         opMode.register(mecanumDriveSubsystem, adjustPositionSubsystem, intakeSubsystem, outtakeSubsystem);
         adjustPositionSubsystem.setDefaultCommand(new AdjustPositionCommand(adjustPositionSubsystem, mecanumDriveSubsystem));
         if (!isRed) {
@@ -95,15 +100,16 @@ public class HandleAuto {
                 new ParallelCommandGroup(
                         new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
                         new PrepareOuttake(outtakeSubsystem, mecanumDriveSubsystem)),
-                new PlaceCommand(),
+                new PlaceCommand(outtakeSubsystem),
                 new ParallelCommandGroup(
                         new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, false),
+                        new ResetHolderCommand(outtakeSubsystem),
                         new RetractSlidersCommand(outtakeSubsystem)),
                 new PickupCommand(intakeSubsystem),
                 new ParallelCommandGroup(
                         new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
                         new PrepareOuttake(outtakeSubsystem, mecanumDriveSubsystem)),
-                new PlaceCommand(),
+                new PlaceCommand(outtakeSubsystem),
                 new RetractSlidersCommand(outtakeSubsystem),
                 new RunCommand(() -> visionPortal.close())
         ));

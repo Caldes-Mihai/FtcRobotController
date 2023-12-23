@@ -1,17 +1,24 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.command.RunCommand;
 
-import org.firstinspires.ftc.teamcode.subsystems.AdjustPositionSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 
 public class PlaceCommand extends CommandBase {
-    //implement arm/slider subsystem
-    public PlaceCommand() {
+    private final OuttakeSubsystem subsystem;
 
+    public PlaceCommand(OuttakeSubsystem outtakeSubsystem) {
+        subsystem = outtakeSubsystem;
+        addRequirements(outtakeSubsystem);
     }
+
+    @Override
+    public void execute() {
+        subsystem.release();
+    }
+
     @Override
     public boolean isFinished() {
-        return true;
+        return subsystem.isReleased();
     }
 }

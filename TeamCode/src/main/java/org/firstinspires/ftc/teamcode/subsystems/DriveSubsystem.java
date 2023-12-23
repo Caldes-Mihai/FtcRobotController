@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.Range;
 
@@ -16,18 +17,18 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 public class DriveSubsystem extends SubsystemBase {
     private double accel, axial, lateral, yaw;
-    private MecanumDrive drive;
-    private AprilTagProcessor processor;
-    private VisionPortal visionPortal;
-    private IMU imu;
-    private GamepadEx gamepad;
+    private final MecanumDrive drive;
+    private final AprilTagProcessor processor;
+    private final VisionPortal visionPortal;
+    private final IMU imu;
+    private final GamepadEx gamepad;
     private AprilTagDetection desiredTag;
-    private CommandOpMode opMode;
+    private final CommandOpMode opMode;
     private double turn;
-    private double TURN_GAIN = 0.01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-    private double MAX_AUTO_TURN = 0.3;
+    private final double TURN_GAIN = 0.01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    private final double MAX_AUTO_TURN = 0.3;
 
-    public DriveSubsystem(Motor leftFrontDrive, Motor leftBackDrive, Motor rightFrontDrive, Motor rightBackDrive, IMU imu, AprilTagProcessor processor, VisionPortal visionPortal,
+    public DriveSubsystem(MotorEx leftFrontDrive, MotorEx leftBackDrive, MotorEx rightFrontDrive, MotorEx rightBackDrive, IMU imu, AprilTagProcessor processor, VisionPortal visionPortal,
                           GamepadEx gamepad, CommandOpMode opMode) {
         leftFrontDrive.setInverted(true);
         rightBackDrive.setInverted(true);
