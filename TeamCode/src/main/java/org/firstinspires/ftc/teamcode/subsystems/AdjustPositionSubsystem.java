@@ -10,9 +10,12 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.ArrayList;
 
 public class AdjustPositionSubsystem extends SubsystemBase {
-    private SampleMecanumDrive drive;
-    private AprilTagProcessor processor;
-    private boolean isRed;
+    private final SampleMecanumDrive drive;
+    private final AprilTagProcessor processor;
+    private final boolean isRed;
+    //camera offset from center (in inches)
+    private final double offsetY = 12;
+    private final double offsetX = 6;
     private double heading;
     private double x;
     private double y;
@@ -20,45 +23,42 @@ public class AdjustPositionSubsystem extends SubsystemBase {
     private double sumX;
     private double sumY;
     private double sumHeading;
-    //camera offset from center (in inches)
-    private double offsetY = 12;
-    private double offsetX = 6;
+
     public AdjustPositionSubsystem(SampleMecanumDrive drive, AprilTagProcessor processor, boolean isRed) {
         this.drive = drive;
         this.processor = processor;
         this.isRed = isRed;
     }
+
     public void adjustPosition() {
         ArrayList<AprilTagDetection> aprilTags = processor.getDetections();
         size = aprilTags.size();
-        if(size == 0)
+        if (size == 0)
             return;
-        //TO DO: not sure if heading readjusting works properly (might need to swap + with -)
+        //TODO: not sure if heading readjusting works properly (might need to swap + with -)
         sumX = 0;
         sumY = 0;
         sumHeading = 0;
         aprilTags.forEach(aprilTag -> {
-            if(aprilTag.id == 7 || aprilTag.id == 8 || aprilTag.id == 9 || aprilTag.id == 10) {
-                if(isRed) {
+            if (aprilTag.id == 7 || aprilTag.id == 8 || aprilTag.id == 9 || aprilTag.id == 10) {
+                if (isRed) {
                     heading = -90 + aprilTag.ftcPose.yaw;
                 } else {
                     heading = 90 + aprilTag.ftcPose.yaw;
                 }
-                x =  aprilTag.metadata.fieldPosition.get(0) + aprilTag.ftcPose.y;
-                y = -aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1);
-                x = x - Math.sin(Math.toRadians(heading)) * offsetY - Math.cos(Math.toRadians(heading)) * offsetX;
-                y = y - Math.cos(Math.toRadians(heading)) * offsetY - Math.sin(Math.toRadians(heading)) * offsetX;
             } else {
-                if(isRed) {
+                if (isRed) {
                     heading = 90 + aprilTag.ftcPose.yaw;
                 } else {
                     heading = -90 + aprilTag.ftcPose.yaw;
                 }
-                x = aprilTag.metadata.fieldPosition.get(0) - aprilTag.ftcPose.y;
-                y = aprilTag.ftcPose.x + aprilTag.metadata.fieldPosition.get(1);
-                x = x - Math.sin(Math.toRadians(heading)) * offsetY - Math.cos(Math.toRadians(heading)) * offsetX;
-                y = y - Math.cos(Math.toRadians(heading)) * offsetY - Math.sin(Math.toRadians(heading)) * offsetX;
             }
+            x = aprilTag.metadata.fieldPosition.get(0);
+            y = aprilTag.metadata.fieldPosition.get(1);
+            x = x - Math.signum(x) * aprilTag.ftcPose.y;
+            y = y - Math.signum(y) * aprilTag.ftcPose.x;
+            x = x - Math.sin(Math.toRadians(heading)) * offsetY - Math.cos(Math.toRadians(heading)) * offsetX;
+            y = y - Math.cos(Math.toRadians(heading)) * offsetY - Math.sin(Math.toRadians(heading)) * offsetX;
             sumX += x;
             sumY += y;
             sumHeading += heading;
