@@ -29,12 +29,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -64,89 +63,30 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Drive Ticks OpMode", group = "Drive OpMode")
-@Disabled
-public class DriveTicksOpMode extends LinearOpMode {
-
-    double ticks = 537.7;
-    double wheelDiameter = 100;
-    double xRot;
-    double xPos;
-    double yRot;
-    double yPos;
-    double rlTicks;
-    double rrTicks;
-    double flTicks;
-    double frTicks;
-    // Declare OpMode members for each of the 4 motors.
-    private final ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
-    private Servo cleste1 = null;
-    private Servo cleste2 = null;
+@TeleOp(name = "Tune Outtake OpMode", group = "Tuning")
+@Config
+public class TuneOuttake extends LinearOpMode {
+    public static double HOLDER_END_ANGLE = 360;
+    public static double SLIDERS_END_ANGLE = 360;
+    public static double HOLDER_START_ANGLE = 0;
+    public static double SLIDERS_START_ANGLE = 0;
+    public static boolean shouldExtend = true;
+    private ServoEx holder;
+    private ServoEx sliders;
 
     @Override
     public void runOpMode() {
-
-        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        cleste1 = hardwareMap.get(Servo.class, "cleste1");
-        cleste2 = hardwareMap.get(Servo.class, "cleste2");
-
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Wait for the game to start (driver presses PLAY)
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
+        holder = new SimpleServo(hardwareMap, "holder", 0, 360);
+        sliders = new SimpleServo(hardwareMap, "holder", 0, 360);
         waitForStart();
-        runtime.reset();
-
-        // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            double max;
-            rlTicks = leftBackDrive.getCurrentPosition();
-            rrTicks = rightBackDrive.getCurrentPosition();
-            flTicks = leftFrontDrive.getCurrentPosition();
-            frTicks = rightFrontDrive.getCurrentPosition();
-            ///calculeaza nr de "rotatii" pe cele 2 axe
-            yRot = tickToRot((rlTicks + rrTicks + flTicks + frTicks) / 4);
-            xRot = tickToRot((-rlTicks + rrTicks + flTicks - frTicks) / 4);
-
-            ///calculeaza distanta parcursa pe axa y
-            yPos = yRot * wheelDiameter * Math.PI;
-            // Show the elapsed game time and wheel power.
-            telemetry.addLine()
-                    .addData("rl: ", rlTicks)
-                    .addData(" rr: ", rrTicks)
-                    .addData(" fl: ", flTicks)
-                    .addData(" fr: ", frTicks);
-            telemetry.addLine()
-                    .addData("yPos= ", yPos);
-            telemetry.update();
+            if (shouldExtend) {
+                sliders.turnToAngle(SLIDERS_END_ANGLE);
+                holder.turnToAngle(HOLDER_END_ANGLE);
+            } else {
+                sliders.turnToAngle(SLIDERS_START_ANGLE);
+                holder.turnToAngle(HOLDER_START_ANGLE);
+            }
         }
-    }
-
-    public double tickToRot(double tickVal) {
-        return tickVal / ticks;
     }
 }

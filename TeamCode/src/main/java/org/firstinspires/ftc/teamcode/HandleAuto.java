@@ -55,12 +55,13 @@ public class HandleAuto {
     private static MotorEx intake;
     private static ServoEx sliders;
     private static ServoEx holder;
+    private static PropProcessor.Positions propPosition;
 
     public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode opMode) {
         HardwareMap hardwareMap = opMode.hardwareMap;
         intake = new MotorEx(hardwareMap, "intake");
         sliders = new SimpleServo(hardwareMap, "sliders", 0, 360);
-        sliders = new SimpleServo(hardwareMap, "holder", 0, 360);
+        holder = new SimpleServo(hardwareMap, "holder", 0, 360);
         processor = new PropProcessor(opMode.telemetry);
         processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -95,19 +96,19 @@ public class HandleAuto {
         opMode.schedule(new SequentialCommandGroup(
                 new GoToPropCommand(mecanumDriveSubsystem, processor, isRed),
                 new PlacePixelCommand(intakeSubsystem),
-                new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, true),
+                new GoToPixelStackCommand(mecanumDriveSubsystem, isRed, true),
                 new PickupCommand(intakeSubsystem),
                 new ParallelCommandGroup(
-                        new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
+                        new GoToBoardCommand(mecanumDriveSubsystem, isRed, true),
                         new PrepareOuttake(outtakeSubsystem, mecanumDriveSubsystem)),
                 new PlaceCommand(outtakeSubsystem),
                 new ParallelCommandGroup(
-                        new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, false),
+                        new GoToPixelStackCommand(mecanumDriveSubsystem, isRed, false),
                         new ResetHolderCommand(outtakeSubsystem),
                         new RetractSlidersCommand(outtakeSubsystem)),
                 new PickupCommand(intakeSubsystem),
                 new ParallelCommandGroup(
-                        new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
+                        new GoToBoardCommand(mecanumDriveSubsystem, isRed, true),
                         new PrepareOuttake(outtakeSubsystem, mecanumDriveSubsystem)),
                 new PlaceCommand(outtakeSubsystem),
                 new RetractSlidersCommand(outtakeSubsystem),
@@ -162,5 +163,13 @@ public class HandleAuto {
             gainControl.setGain(gain);
             opMode.sleep(20);
         }
+    }
+
+    public static PropProcessor.Positions getPropPosition() {
+        return propPosition;
+    }
+
+    public static void setPropPosition(PropProcessor.Positions position) {
+        propPosition = position;
     }
 }

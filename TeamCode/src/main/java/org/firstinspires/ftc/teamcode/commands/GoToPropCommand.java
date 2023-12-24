@@ -1,8 +1,8 @@
-
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
+import org.firstinspires.ftc.teamcode.HandleAuto;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
@@ -16,6 +16,7 @@ public class GoToPropCommand extends CommandBase {
     private PropProcessor.Positions propPosition;
     private double degrees;
     private double distance = 27;
+
     public GoToPropCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed) {
         this.drive = drive;
         this.processor = processor;
@@ -26,15 +27,16 @@ public class GoToPropCommand extends CommandBase {
     @Override
     public void initialize() {
         propPosition = processor.getPropPosition();
+        HandleAuto.setPropPosition(propPosition);
         TrajectorySequenceBuilder propPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate());
         if (propPosition.equals(PropProcessor.Positions.LEFT))
             degrees = Math.toRadians(-90);
         else if (propPosition.equals(PropProcessor.Positions.RIGHT))
             degrees = Math.toRadians(90);
-        if(propPosition.equals(PropProcessor.Positions.CENTER))
+        if (propPosition.equals(PropProcessor.Positions.CENTER))
             distance += 25;
         propPath.back(distance);
-        if(degrees != 0) propPath.turn(degrees);
+        if (degrees != 0) propPath.turn(degrees);
         else if (isRed) propPath.strafeLeft(3);
         else propPath.strafeRight(3);
         drive.followTrajectory(propPath.build());
