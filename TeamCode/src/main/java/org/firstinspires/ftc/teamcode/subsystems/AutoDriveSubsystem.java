@@ -37,11 +37,20 @@ public class AutoDriveSubsystem extends SubsystemBase {
     private double sumX;
     private double sumY;
     private double sumHeading;
+    private ArrayList<TrajectorySequence> lastTrajectory;
 
     public AutoDriveSubsystem(SampleMecanumDrive drive, AprilTagProcessor processor, boolean isFieldCentric) {
         this.drive = drive;
         this.processor = processor;
         fieldCentric = isFieldCentric;
+    }
+
+    public ArrayList<TrajectorySequence> getLastTrajectory() {
+        return lastTrajectory;
+    }
+
+    public void setLastTrajectory(ArrayList<TrajectorySequence> trajectory) {
+        lastTrajectory = trajectory;
     }
 
     public void setMode(DcMotor.RunMode mode) {
