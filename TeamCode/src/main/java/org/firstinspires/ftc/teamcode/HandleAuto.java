@@ -4,15 +4,15 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.hardware.ServoEx;
-import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.teamcode.cache.CacheManager;
+import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
+import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToBoardCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToPixelStackCommand;
@@ -50,21 +50,23 @@ public class HandleAuto {
     private static IntakeSubsystem intakeSubsystem;
     private static OuttakeSubsystem outtakeSubsystem;
     private static Pose2d startPose;
-    private static Motor intake;
-    private static ServoEx sliders;
-    private static ServoEx holder;
+    private static CacheableMotor intake;
+    private static CacheableServo sliders;
+    private static CacheableServo holder;
     private static PropProcessor.Positions propPosition;
     private static CommandOpMode opMode;
     private static HardwareMap hardwareMap;
     private static Telemetry telemetry;
+    private static CacheManager cacheManager;
 
     public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode op) {
         opMode = op;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
-        intake = new Motor(hardwareMap, "intake");
-        sliders = new SimpleServo(hardwareMap, "sliders", 0, 360);
-        holder = new SimpleServo(hardwareMap, "holder", 0, 360);
+        cacheManager = new CacheManager(hardwareMap);
+        intake = new CacheableMotor(hardwareMap, "intake");
+        sliders = new CacheableServo(hardwareMap, "sliders", 0, 360);
+        holder = new CacheableServo(hardwareMap, "holder", 0, 360);
         processor = new PropProcessor(telemetry);
         processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -171,5 +173,9 @@ public class HandleAuto {
 
     public static void setPropPosition(PropProcessor.Positions position) {
         propPosition = position;
+    }
+
+    public static void run() {
+        cacheManager.clear();
     }
 }

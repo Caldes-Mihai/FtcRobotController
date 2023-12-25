@@ -3,20 +3,21 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.hardware.ServoEx;
+
+import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 
 public class OuttakeSubsystem extends SubsystemBase {
     private final double HOLDER_ANGLE = 180;
     private final double SLIDERS_ANGLE = 180;
-    private final ServoEx sliders;
-    private final ServoEx holder;
+    private final CacheableServo sliders;
+    private final CacheableServo holder;
     private final GamepadEx gamepad;
 
-    public OuttakeSubsystem(ServoEx sliders, ServoEx holder) {
+    public OuttakeSubsystem(CacheableServo sliders, CacheableServo holder) {
         this(sliders, holder, null);
     }
 
-    public OuttakeSubsystem(ServoEx sliders, ServoEx holder, GamepadEx gamepad) {
+    public OuttakeSubsystem(CacheableServo sliders, CacheableServo holder, GamepadEx gamepad) {
         //TODO: Change motors depending on which one we will use
         this.sliders = sliders;
         this.holder = holder;

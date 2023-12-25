@@ -42,4 +42,10 @@ public class RedTeleOpMode extends CommandOpMode {
                 isRed, this
         );
     }
+
+    @Override
+    public void run() {
+        HandleTeleOp.run();
+        super.run();
+    }
 }

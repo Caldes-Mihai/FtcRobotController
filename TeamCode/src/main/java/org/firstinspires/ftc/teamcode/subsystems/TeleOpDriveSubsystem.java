@@ -10,14 +10,13 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 public class TeleOpDriveSubsystem extends SubsystemBase {
     private final MecanumDrive drive;
     private final AprilTagProcessor processor;
-    private final VisionPortal visionPortal;
     private final IMU imu;
     private final GamepadEx gamepad;
     private final boolean isRed;
@@ -28,7 +27,7 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
     private AprilTagDetection desiredTag;
     private double turn;
 
-    public TeleOpDriveSubsystem(Motor leftFrontDrive, Motor leftBackDrive, Motor rightFrontDrive, Motor rightBackDrive, IMU imu, AprilTagProcessor processor, VisionPortal visionPortal,
+    public TeleOpDriveSubsystem(CacheableMotor leftFrontDrive, CacheableMotor leftBackDrive, CacheableMotor rightFrontDrive, CacheableMotor rightBackDrive, IMU imu, AprilTagProcessor processor,
                                 GamepadEx gamepad, boolean isRed, CommandOpMode opMode) {
         leftFrontDrive.setInverted(true);
         rightBackDrive.setInverted(true);
@@ -40,7 +39,6 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
         this.imu = imu;
         this.gamepad = gamepad;
         this.processor = processor;
-        this.visionPortal = visionPortal;
         this.isRed = isRed;
         this.opMode = opMode;
     }

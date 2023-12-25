@@ -13,4 +13,10 @@ public class BlueUpAutoOpMode extends CommandOpMode {
     public void initialize() {
         HandleAuto.init(isRed, currentSpawnPosition, this);
     }
+
+    @Override
+    public void run() {
+        HandleAuto.run();
+        super.run();
+    }
 }

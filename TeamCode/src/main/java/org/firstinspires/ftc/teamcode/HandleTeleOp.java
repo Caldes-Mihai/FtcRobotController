@@ -32,9 +32,6 @@ package org.firstinspires.ftc.teamcode;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.hardware.ServoEx;
-import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -43,6 +40,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.teamcode.cache.CacheManager;
+import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
+import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleOuttakeCommand;
@@ -56,13 +56,13 @@ import java.util.concurrent.TimeUnit;
 
 public class HandleTeleOp {
     private static IMU imu;
-    private static Motor leftFrontDrive;
-    private static Motor leftBackDrive;
-    private static Motor rightFrontDrive;
-    private static Motor rightBackDrive;
-    private static Motor intake;
-    private static ServoEx sliders;
-    private static ServoEx holder;
+    private static CacheableMotor leftFrontDrive;
+    private static CacheableMotor leftBackDrive;
+    private static CacheableMotor rightFrontDrive;
+    private static CacheableMotor rightBackDrive;
+    private static CacheableMotor intake;
+    private static CacheableServo sliders;
+    private static CacheableServo holder;
     private static AprilTagProcessor processor;
     private static VisionPortal visionPortal;
     private static GamepadEx driver;
@@ -74,11 +74,13 @@ public class HandleTeleOp {
     private static CommandOpMode opMode;
     private static HardwareMap hardwareMap;
     private static Telemetry telemetry;
+    private static CacheManager cacheManager;
 
     public static void init(boolean isRed, CommandOpMode op) {
         opMode = op;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
+        cacheManager = new CacheManager(hardwareMap);
         driver = new GamepadEx(opMode.gamepad1);
         tool = new GamepadEx(opMode.gamepad2);
         imu = hardwareMap.get(IMU.class, "imu");
@@ -93,15 +95,15 @@ public class HandleTeleOp {
                 .addProcessor(processor)
                 .build();
         setManualExposure(6, 250);
-        leftFrontDrive = new Motor(hardwareMap, "front_left_motor");
-        leftBackDrive = new Motor(hardwareMap, "back_left_motor");
-        rightFrontDrive = new Motor(hardwareMap, "front_right_motor");
-        rightBackDrive = new Motor(hardwareMap, "back_right_motor");
-        intake = new Motor(hardwareMap, "intake");
-        sliders = new SimpleServo(hardwareMap, "sliders", 0, 360);
-        holder = new SimpleServo(hardwareMap, "holder", 0, 360);
+        leftFrontDrive = new CacheableMotor(hardwareMap, "front_left_motor");
+        leftBackDrive = new CacheableMotor(hardwareMap, "back_left_motor");
+        rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
+        rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
+        intake = new CacheableMotor(hardwareMap, "intake");
+        sliders = new CacheableServo(hardwareMap, "sliders", 0, 360);
+        holder = new CacheableServo(hardwareMap, "holder", 0, 360);
         teleOpDriveSubsystem = new TeleOpDriveSubsystem(
-                leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu, processor, visionPortal,
+                leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu, processor,
                 driver, isRed, opMode
         );
         intakeSubsystem = new IntakeSubsystem(intake, tool);
@@ -144,5 +146,9 @@ public class HandleTeleOp {
             gainControl.setGain(gain);
             opMode.sleep(20);
         }
+    }
+
+    public static void run() {
+        cacheManager.clear();
     }
 }
