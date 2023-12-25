@@ -11,7 +11,10 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,13 +22,25 @@ import java.util.List;
  * This periodically calls {@link SampleMecanumDrive#update()} which runs the internal
  * state machine for the mecanum drive. All movement/following is async to fit the paradigm.
  */
-public class MecanumDriveSubsystem extends SubsystemBase {
+public class AutoDriveSubsystem extends SubsystemBase {
 
     private final SampleMecanumDrive drive;
     private final boolean fieldCentric;
+    private final AprilTagProcessor processor;
+    //camera offset from center (in inches)
+    private final double offsetY = 12;
+    private final double offsetX = 6;
+    private double heading;
+    private double x;
+    private double y;
+    private double size;
+    private double sumX;
+    private double sumY;
+    private double sumHeading;
 
-    public MecanumDriveSubsystem(SampleMecanumDrive drive, boolean isFieldCentric) {
+    public AutoDriveSubsystem(SampleMecanumDrive drive, AprilTagProcessor processor, boolean isFieldCentric) {
         this.drive = drive;
+        this.processor = processor;
         fieldCentric = isFieldCentric;
     }
 
@@ -35,10 +50,6 @@ public class MecanumDriveSubsystem extends SubsystemBase {
 
     public void setPIDFCoefficients(DcMotor.RunMode mode, PIDFCoefficients coefficients) {
         drive.setPIDFCoefficients(mode, coefficients);
-    }
-
-    public void setPoseEstimate(Pose2d pose) {
-        drive.setPoseEstimate(pose);
     }
 
     public void update() {
@@ -65,12 +76,39 @@ public class MecanumDriveSubsystem extends SubsystemBase {
         );
     }
 
+    public void adjustPosition() {
+        ArrayList<AprilTagDetection> aprilTags = processor.getDetections();
+        size = aprilTags.size();
+        if (size == 0)
+            return;
+        sumX = 0;
+        sumY = 0;
+        sumHeading = 0;
+        aprilTags.forEach(aprilTag -> {
+            heading = aprilTag.ftcPose.yaw;
+            x = aprilTag.metadata.fieldPosition.get(0);
+            y = aprilTag.metadata.fieldPosition.get(1);
+            x = x - Math.signum(x) * aprilTag.ftcPose.y;
+            y = y - Math.signum(y) * aprilTag.ftcPose.x;
+            x = x - Math.cos(Math.toRadians(heading)) * offsetY - Math.sin(Math.toRadians(heading)) * offsetX;
+            y = y - Math.sin(Math.toRadians(heading)) * offsetY - Math.cos(Math.toRadians(heading)) * offsetX;
+            sumX += x;
+            sumY += y;
+            sumHeading += heading;
+        });
+        drive.setPoseEstimate(new Pose2d(sumX / size, sumY / size, Math.toRadians(sumHeading / size)));
+    }
+
     public void setDrivePower(Pose2d drivePower) {
         drive.setDrivePower(drivePower);
     }
 
     public Pose2d getPoseEstimate() {
         return drive.getPoseEstimate();
+    }
+
+    public void setPoseEstimate(Pose2d pose) {
+        drive.setPoseEstimate(pose);
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {

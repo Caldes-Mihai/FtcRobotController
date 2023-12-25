@@ -6,20 +6,20 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.HandleAuto;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
-import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 
 public class GoToPixelStackCommand extends CommandBase {
 
-    private final MecanumDriveSubsystem drive;
+    private final AutoDriveSubsystem drive;
     private final boolean isRed;
     private final boolean shouldTurn;
     private double stackY;
     private double degrees;
     private PropProcessor.Positions propPosition;
 
-    public GoToPixelStackCommand(MecanumDriveSubsystem drive, boolean isRed, boolean shouldTurn) {
+    public GoToPixelStackCommand(AutoDriveSubsystem drive, boolean isRed, boolean shouldTurn) {
         this.drive = drive;
         this.isRed = isRed;
         this.shouldTurn = shouldTurn;

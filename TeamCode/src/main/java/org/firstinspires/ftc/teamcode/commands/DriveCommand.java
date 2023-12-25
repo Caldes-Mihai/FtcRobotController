@@ -2,13 +2,14 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.TeleOpDriveSubsystem;
 
 public class DriveCommand extends CommandBase {
-    private DriveSubsystem subsystem;
-    public DriveCommand(DriveSubsystem driveSubsystem) {
-        subsystem = driveSubsystem;
-        addRequirements(driveSubsystem);
+    private final TeleOpDriveSubsystem subsystem;
+
+    public DriveCommand(TeleOpDriveSubsystem teleOpDriveSubsystem) {
+        subsystem = teleOpDriveSubsystem;
+        addRequirements(teleOpDriveSubsystem);
     }
 
     @Override

@@ -2,22 +2,19 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.AdjustPositionSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 
 public class AdjustPositionCommand extends CommandBase {
-    private final AdjustPositionSubsystem subsystem;
-    private final MecanumDriveSubsystem driveSubsystem;
+    private final AutoDriveSubsystem subsystem;
 
-    public AdjustPositionCommand(AdjustPositionSubsystem adjustPositionSubsystem, MecanumDriveSubsystem
-            driveSubsystem) {
-        subsystem = adjustPositionSubsystem;
-        this.driveSubsystem = driveSubsystem;
-        addRequirements(adjustPositionSubsystem);
+    public AdjustPositionCommand(AutoDriveSubsystem
+                                         subsystem) {
+        this.subsystem = subsystem;
+        addRequirements(subsystem);
     }
 
     @Override
     public void execute() {
-        if (!driveSubsystem.isBusy()) subsystem.adjustPosition();
+        if (!subsystem.isBusy()) subsystem.adjustPosition();
     }
 }

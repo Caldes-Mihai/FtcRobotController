@@ -6,11 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name = "Blue Down Auto Op Mode")
 public class BlueDownAutoOpMode extends CommandOpMode {
 
-    /**
-     * The variable to store our instance of the AprilTag processor.
-     */
-    private String currentSpawnPosition = "down";
-    private boolean isRed = false;
+    private final String currentSpawnPosition = "down";
+    private final boolean isRed = false;
+
     @Override
     public void initialize() {
         HandleAuto.init(isRed, currentSpawnPosition, this);

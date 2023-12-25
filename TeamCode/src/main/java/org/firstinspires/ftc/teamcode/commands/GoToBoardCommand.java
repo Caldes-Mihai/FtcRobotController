@@ -6,13 +6,13 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.HandleAuto;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
-import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 
 public class GoToBoardCommand extends CommandBase {
 
-    private final MecanumDriveSubsystem drive;
+    private final AutoDriveSubsystem drive;
     private final boolean isRed;
     private final boolean isFirstTime;
     private final boolean shouldTurn;
@@ -20,7 +20,7 @@ public class GoToBoardCommand extends CommandBase {
     private double degrees;
     private PropProcessor.Positions propPosition;
 
-    public GoToBoardCommand(MecanumDriveSubsystem drive, boolean isRed, boolean isFirstTime, boolean shouldTurn) {
+    public GoToBoardCommand(AutoDriveSubsystem drive, boolean isRed, boolean isFirstTime, boolean shouldTurn) {
         this.drive = drive;
         this.isRed = isRed;
         this.isFirstTime = isFirstTime;
@@ -28,7 +28,7 @@ public class GoToBoardCommand extends CommandBase {
         addRequirements(drive);
     }
 
-    public GoToBoardCommand(MecanumDriveSubsystem drive, boolean isRed, boolean isFirstTime) {
+    public GoToBoardCommand(AutoDriveSubsystem drive, boolean isRed, boolean isFirstTime) {
         this(drive, isRed, isFirstTime, false);
     }
 

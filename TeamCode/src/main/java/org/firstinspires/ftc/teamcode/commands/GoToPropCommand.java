@@ -4,20 +4,20 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.HandleAuto;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
-import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 
 public class GoToPropCommand extends CommandBase {
 
-    private final MecanumDriveSubsystem drive;
+    private final AutoDriveSubsystem drive;
     private final PropProcessor processor;
     private final boolean isRed;
     private PropProcessor.Positions propPosition;
     private double degrees;
     private double distance = 27;
 
-    public GoToPropCommand(MecanumDriveSubsystem drive, PropProcessor processor, boolean isRed) {
+    public GoToPropCommand(AutoDriveSubsystem drive, PropProcessor processor, boolean isRed) {
         this.drive = drive;
         this.processor = processor;
         this.isRed = isRed;

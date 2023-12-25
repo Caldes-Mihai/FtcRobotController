@@ -3,13 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
@@ -25,9 +25,8 @@ import org.firstinspires.ftc.teamcode.commands.ResetHolderCommand;
 import org.firstinspires.ftc.teamcode.commands.RetractSlidersCommand;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
-import org.firstinspires.ftc.teamcode.subsystems.AdjustPositionSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -47,22 +46,26 @@ public class HandleAuto {
      */
     private static VisionPortal visionPortal;
     private static SampleMecanumDrive drive;
-    private static MecanumDriveSubsystem mecanumDriveSubsystem;
-    private static AdjustPositionSubsystem adjustPositionSubsystem;
+    private static AutoDriveSubsystem autoDriveSubsystem;
     private static IntakeSubsystem intakeSubsystem;
     private static OuttakeSubsystem outtakeSubsystem;
     private static Pose2d startPose;
-    private static MotorEx intake;
+    private static Motor intake;
     private static ServoEx sliders;
     private static ServoEx holder;
     private static PropProcessor.Positions propPosition;
+    private static CommandOpMode opMode;
+    private static HardwareMap hardwareMap;
+    private static Telemetry telemetry;
 
-    public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode opMode) {
-        HardwareMap hardwareMap = opMode.hardwareMap;
-        intake = new MotorEx(hardwareMap, "intake");
+    public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode op) {
+        opMode = op;
+        hardwareMap = opMode.hardwareMap;
+        telemetry = opMode.telemetry;
+        intake = new Motor(hardwareMap, "intake");
         sliders = new SimpleServo(hardwareMap, "sliders", 0, 360);
         holder = new SimpleServo(hardwareMap, "holder", 0, 360);
-        processor = new PropProcessor(opMode.telemetry);
+        processor = new PropProcessor(telemetry);
         processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -72,14 +75,13 @@ public class HandleAuto {
                 .setCamera(hardwareMap.get(WebcamName.class, "0"))
                 .addProcessors(processor, aprilTagProcessor)
                 .build();
-        setManualExposure(6, 250, opMode);
+        setManualExposure(6, 250);
         drive = new SampleMecanumDrive(hardwareMap);
-        mecanumDriveSubsystem = new MecanumDriveSubsystem(drive, false);
-        adjustPositionSubsystem = new AdjustPositionSubsystem(drive, aprilTagProcessor, isRed);
+        autoDriveSubsystem = new AutoDriveSubsystem(drive, aprilTagProcessor, false);
         intakeSubsystem = new IntakeSubsystem(intake);
         outtakeSubsystem = new OuttakeSubsystem(sliders, holder);
-        opMode.register(mecanumDriveSubsystem, adjustPositionSubsystem, intakeSubsystem, outtakeSubsystem);
-        adjustPositionSubsystem.setDefaultCommand(new AdjustPositionCommand(adjustPositionSubsystem, mecanumDriveSubsystem));
+        opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
+        autoDriveSubsystem.setDefaultCommand(new AdjustPositionCommand(autoDriveSubsystem));
         if (!isRed) {
             if (currentSpawnPosition.equals("down"))
                 startPose = new Pose2d(-36, 63, Math.toRadians(90));
@@ -94,25 +96,24 @@ public class HandleAuto {
         drive.setPoseEstimate(startPose);
         //if(currentSpawnPosition.equals("down"))
         opMode.schedule(new SequentialCommandGroup(
-                new GoToPropCommand(mecanumDriveSubsystem, processor, isRed),
+                new GoToPropCommand(autoDriveSubsystem, processor, isRed),
                 new PlacePixelCommand(intakeSubsystem),
-                new GoToPixelStackCommand(mecanumDriveSubsystem, isRed, true),
+                new GoToPixelStackCommand(autoDriveSubsystem, isRed, true),
                 new PickupCommand(intakeSubsystem),
                 new ParallelCommandGroup(
-                        new GoToBoardCommand(mecanumDriveSubsystem, isRed, true),
-                        new PrepareOuttake(outtakeSubsystem, mecanumDriveSubsystem)),
+                        new GoToBoardCommand(autoDriveSubsystem, isRed, true),
+                        new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
                 new PlaceCommand(outtakeSubsystem),
                 new ParallelCommandGroup(
-                        new GoToPixelStackCommand(mecanumDriveSubsystem, isRed, false),
+                        new GoToPixelStackCommand(autoDriveSubsystem, isRed, false),
                         new ResetHolderCommand(outtakeSubsystem),
                         new RetractSlidersCommand(outtakeSubsystem)),
                 new PickupCommand(intakeSubsystem),
                 new ParallelCommandGroup(
-                        new GoToBoardCommand(mecanumDriveSubsystem, isRed, true),
-                        new PrepareOuttake(outtakeSubsystem, mecanumDriveSubsystem)),
+                        new GoToBoardCommand(autoDriveSubsystem, isRed, true),
+                        new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
                 new PlaceCommand(outtakeSubsystem),
-                new RetractSlidersCommand(outtakeSubsystem),
-                new RunCommand(() -> visionPortal.close())
+                new RetractSlidersCommand(outtakeSubsystem)
         ));
          /*else
             opMode.schedule(new SequentialCommandGroup(
@@ -127,12 +128,11 @@ public class HandleAuto {
                     new GoToPixelStackCommand(mecanumDriveSubsystem, processor, isRed, false),
                     new PickupCommand(intakeSubsystem),
                     new GoToBoardCommand(mecanumDriveSubsystem, processor, isRed, true),
-                    new PlaceCommand(),
-                    new RunCommand(() -> visionPortal.close())
+                    new PlaceCommand()
             ));*/
     }
 
-    private static void setManualExposure(int exposureMS, int gain, CommandOpMode opMode) {
+    private static void setManualExposure(int exposureMS, int gain) {
         // Wait for the camera to be open, then use the controls
 
         if (visionPortal == null) {
@@ -141,13 +141,13 @@ public class HandleAuto {
 
         // Make sure camera is streaming before we try to set the exposure controls
         if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            opMode.telemetry.addData("Camera", "Waiting");
-            opMode.telemetry.update();
+            telemetry.addData("Camera", "Waiting");
+            telemetry.update();
             while (!opMode.isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
                 opMode.sleep(20);
             }
-            opMode.telemetry.addData("Camera", "Ready");
-            opMode.telemetry.update();
+            telemetry.addData("Camera", "Ready");
+            telemetry.update();
         }
 
         // Set camera controls unless we are stopping.
