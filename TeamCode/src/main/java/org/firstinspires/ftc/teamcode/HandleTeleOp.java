@@ -75,6 +75,9 @@ public class HandleTeleOp {
     private static HardwareMap hardwareMap;
     private static Telemetry telemetry;
     private static CacheManager cacheManager;
+    private static long currentTime;
+    private static long lastTime;
+    private static long delta;
 
     public static void init(boolean isRed, CommandOpMode op) {
         opMode = op;
@@ -150,5 +153,10 @@ public class HandleTeleOp {
 
     public static void run() {
         cacheManager.clear();
+        currentTime = System.currentTimeMillis();
+        delta = currentTime - lastTime;
+        lastTime = currentTime;
+        telemetry.addData("time", 1000 / delta + "hz");
+        telemetry.update();
     }
 }
