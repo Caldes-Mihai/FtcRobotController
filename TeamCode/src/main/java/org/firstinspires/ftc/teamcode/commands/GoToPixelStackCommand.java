@@ -9,9 +9,6 @@ import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 
 public class GoToPixelStackCommand extends CommandBase {
 
@@ -29,29 +26,29 @@ public class GoToPixelStackCommand extends CommandBase {
             stackY = -12;
         else
             stackY = 12;
-        leftLinePath = drive.trajectorySequenceBuilder(drive.getLastTrajectory().get(0).end());
-        if (!shouldTurn)
+        leftLinePath = drive.trajectorySequenceBuilder(drive.getLeftTrajectory().end());
+        centerLinePath = drive.trajectorySequenceBuilder(drive.getCenterTrajectory().end());
+        rightLinePath = drive.trajectorySequenceBuilder(drive.getRightTrajectory().end());
+        if (!shouldTurn) {
             leftLinePath.lineTo(new Vector2d(36, stackY))
                     .lineTo(new Vector2d(-57, stackY));
-        else if (!isRed)
-            leftLinePath.lineToLinearHeading(new Pose2d(-57, stackY, drive.getLastTrajectory().get(0).end().getHeading() + Math.toRadians(180)));
-        else
-            leftLinePath.lineTo(new Vector2d(-57, stackY));
-        centerLinePath = drive.trajectorySequenceBuilder(drive.getLastTrajectory().get(1).end());
-        if (!shouldTurn)
             centerLinePath.lineTo(new Vector2d(36, stackY))
                     .lineTo(new Vector2d(-57, stackY));
-        else
-            centerLinePath.lineToLinearHeading(new Pose2d(-57, stackY, drive.getLastTrajectory().get(1).end().getHeading() + (isRed ? Math.toRadians(-90) : Math.toRadians(90))));
-        rightLinePath = drive.trajectorySequenceBuilder(drive.getLastTrajectory().get(2).end());
-        if (!shouldTurn)
             rightLinePath.lineTo(new Vector2d(36, stackY))
                     .lineTo(new Vector2d(-57, stackY));
-        else if (isRed)
-            rightLinePath.lineToLinearHeading(new Pose2d(-57, stackY, drive.getLastTrajectory().get(2).end().getHeading() + Math.toRadians(180)));
-        else
-            leftLinePath.lineTo(new Vector2d(-57, stackY));
-        drive.setLastTrajectory(new ArrayList(Arrays.asList(leftLinePath.build(), centerLinePath.build(), rightLinePath.build())));
+        } else {
+            centerLinePath.lineToLinearHeading(new Pose2d(-57, stackY, drive.getCenterTrajectory().end().getHeading() + (isRed ? Math.toRadians(-90) : Math.toRadians(90))));
+            if (!isRed) {
+                leftLinePath.lineToLinearHeading(new Pose2d(-57, stackY, drive.getLeftTrajectory().end().getHeading() + Math.toRadians(180)));
+                rightLinePath.lineTo(new Vector2d(-57, stackY));
+            } else {
+                leftLinePath.lineTo(new Vector2d(-57, stackY));
+                rightLinePath.lineToLinearHeading(new Pose2d(-57, stackY, drive.getRightTrajectory().end().getHeading() + Math.toRadians(180)));
+            }
+        }
+        drive.setLeftTrajectory(leftLinePath.build());
+        drive.setCenterTrajectory(centerLinePath.build());
+        drive.setRightTrajectory(rightLinePath.build());
     }
 
     @Override

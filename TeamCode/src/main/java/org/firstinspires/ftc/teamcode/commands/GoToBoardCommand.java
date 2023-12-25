@@ -9,9 +9,6 @@ import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 
 public class GoToBoardCommand extends CommandBase {
 
@@ -24,40 +21,37 @@ public class GoToBoardCommand extends CommandBase {
     public GoToBoardCommand(AutoDriveSubsystem drive, boolean isRed, boolean isFirstTime, boolean shouldTurn) {
         this.drive = drive;
         addRequirements(drive);
-        leftDestinationPath = drive.trajectorySequenceBuilder(drive.getLastTrajectory().get(0).end());
-        if (isFirstTime && !shouldTurn)
+        leftDestinationPath = drive.trajectorySequenceBuilder(drive.getLeftTrajectory().end());
+        centerDestinationPath = drive.trajectorySequenceBuilder(drive.getCenterTrajectory().end());
+        rightDestinationPath = drive.trajectorySequenceBuilder(drive.getRightTrajectory().end());
+        if (isFirstTime && !shouldTurn) {
             leftDestinationPath.lineTo(new Vector2d(36, isRed ? -12 : 12))
                     .lineTo(new Vector2d(36, isRed ? -31 : 41));
-        else if (shouldTurn)
-            leftDestinationPath
-                    .lineTo(new Vector2d(36, isRed ? -12 : 12))
-                    .lineToLinearHeading(new Pose2d(36, isRed ? -31 : 41, drive.getLastTrajectory().get(0).end().getHeading() + (isRed ? 0 : Math.toRadians(180))));
-        else
-            leftDestinationPath
-                    .lineTo(new Vector2d(36, isRed ? -12 : 12));
-        centerDestinationPath = drive.trajectorySequenceBuilder(drive.getLastTrajectory().get(1).end());
-        if (isFirstTime && !shouldTurn)
             centerDestinationPath.lineTo(new Vector2d(36, isRed ? -12 : 12))
                     .lineTo(new Vector2d(36, isRed ? -36 : 46));
-        else if (shouldTurn)
-            centerDestinationPath
-                    .lineTo(new Vector2d(36, isRed ? -12 : 12))
-                    .lineToLinearHeading(new Pose2d(36, isRed ? -36 : 36, drive.getLastTrajectory().get(1).end().getHeading() + (isRed ? Math.toRadians(-90) : Math.toRadians(90))));
-        else
-            centerDestinationPath
-                    .lineTo(new Vector2d(36, isRed ? -12 : 12));
-        rightDestinationPath = drive.trajectorySequenceBuilder(drive.getLastTrajectory().get(2).end());
-        if (isFirstTime && !shouldTurn)
             rightDestinationPath.lineTo(new Vector2d(36, isRed ? -12 : 12))
                     .lineTo(new Vector2d(36, isRed ? -41 : 31));
-        else if (shouldTurn)
+        } else if (shouldTurn) {
+            leftDestinationPath
+                    .lineTo(new Vector2d(36, isRed ? -12 : 12))
+                    .lineToLinearHeading(new Pose2d(36, isRed ? -31 : 41, drive.getLeftTrajectory().end().getHeading() + (isRed ? 0 : Math.toRadians(180))));
+            centerDestinationPath
+                    .lineTo(new Vector2d(36, isRed ? -12 : 12))
+                    .lineToLinearHeading(new Pose2d(36, isRed ? -36 : 36, drive.getCenterTrajectory().end().getHeading() + (isRed ? Math.toRadians(-90) : Math.toRadians(90))));
             rightDestinationPath
                     .lineTo(new Vector2d(36, isRed ? -12 : 12))
-                    .lineToLinearHeading(new Pose2d(36, isRed ? -41 : 31, drive.getLastTrajectory().get(2).end().getHeading() + (isRed ? Math.toRadians(180) : 0)));
-        else
+                    .lineToLinearHeading(new Pose2d(36, isRed ? -41 : 31, drive.getRightTrajectory().end().getHeading() + (isRed ? Math.toRadians(180) : 0)));
+        } else {
+            leftDestinationPath
+                    .lineTo(new Vector2d(36, isRed ? -12 : 12));
+            centerDestinationPath
+                    .lineTo(new Vector2d(36, isRed ? -12 : 12));
             rightDestinationPath
                     .lineTo(new Vector2d(36, isRed ? -12 : 12));
-        drive.setLastTrajectory(new ArrayList(Arrays.asList(leftDestinationPath.build(), centerDestinationPath.build(), rightDestinationPath.build())));
+        }
+        drive.setLeftTrajectory(leftDestinationPath.build());
+        drive.setCenterTrajectory(centerDestinationPath.build());
+        drive.setRightTrajectory(rightDestinationPath.build());
     }
 
     public GoToBoardCommand(AutoDriveSubsystem drive, boolean isRed, boolean isFirstTime) {

@@ -37,7 +37,9 @@ public class AutoDriveSubsystem extends SubsystemBase {
     private double sumX;
     private double sumY;
     private double sumHeading;
-    private ArrayList<TrajectorySequence> lastTrajectory;
+    private TrajectorySequence leftTrajectory;
+    private TrajectorySequence centerTrajectory;
+    private TrajectorySequence rightTrajectory;
 
     public AutoDriveSubsystem(SampleMecanumDrive drive, AprilTagProcessor processor, boolean isFieldCentric) {
         this.drive = drive;
@@ -45,12 +47,28 @@ public class AutoDriveSubsystem extends SubsystemBase {
         fieldCentric = isFieldCentric;
     }
 
-    public ArrayList<TrajectorySequence> getLastTrajectory() {
-        return lastTrajectory;
+    public TrajectorySequence getLeftTrajectory() {
+        return leftTrajectory;
     }
 
-    public void setLastTrajectory(ArrayList<TrajectorySequence> trajectory) {
-        lastTrajectory = trajectory;
+    public void setLeftTrajectory(TrajectorySequence trajectory) {
+        leftTrajectory = trajectory;
+    }
+
+    public TrajectorySequence getCenterTrajectory() {
+        return centerTrajectory;
+    }
+
+    public void setCenterTrajectory(TrajectorySequence trajectory) {
+        centerTrajectory = trajectory;
+    }
+
+    public TrajectorySequence getRightTrajectory() {
+        return rightTrajectory;
+    }
+
+    public void setRightTrajectory(TrajectorySequence trajectory) {
+        rightTrajectory = trajectory;
     }
 
     public void setMode(DcMotor.RunMode mode) {

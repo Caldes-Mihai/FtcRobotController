@@ -7,9 +7,6 @@ import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 
 public class GoToPropCommand extends CommandBase {
 
@@ -34,7 +31,9 @@ public class GoToPropCommand extends CommandBase {
         rightPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .back(27)
                 .turn(Math.toRadians(90));
-        drive.setLastTrajectory(new ArrayList(Arrays.asList(leftPropPath.build(), centerPropPath.build(), rightPropPath.build())));
+        drive.setLeftTrajectory(leftPropPath.build());
+        drive.setCenterTrajectory(centerPropPath.build());
+        drive.setRightTrajectory(rightPropPath.build());
     }
 
     @Override
