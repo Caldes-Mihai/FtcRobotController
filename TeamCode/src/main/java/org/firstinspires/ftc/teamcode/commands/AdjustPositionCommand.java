@@ -14,7 +14,12 @@ public class AdjustPositionCommand extends CommandBase {
     }
 
     @Override
-    public void execute() {
-        if (!subsystem.isBusy()) subsystem.adjustPosition();
+    public void initialize() {
+        subsystem.adjustPosition();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return true;
     }
 }

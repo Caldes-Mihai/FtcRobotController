@@ -65,6 +65,7 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
             distance = joystick.distTo(new Vector2d(0, 0));
             if (yaw != oldYaw && distance > 0.7)
                 oldYaw = yaw;
+            //TODO: check if 30 is enough
             drive.driveFieldCentric(lateral, axial, angleDifference(-imuDegrees, oldYaw) / 30, imuDegrees + (isRed ? -90 : 90));
         }
     }

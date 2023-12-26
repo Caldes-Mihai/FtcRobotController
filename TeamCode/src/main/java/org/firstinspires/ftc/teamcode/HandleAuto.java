@@ -86,7 +86,6 @@ public class HandleAuto {
         intakeSubsystem = new IntakeSubsystem(intake);
         outtakeSubsystem = new OuttakeSubsystem(sliders, holder);
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
-        autoDriveSubsystem.setDefaultCommand(new AdjustPositionCommand(autoDriveSubsystem));
         if (!isRed) {
             if (currentSpawnPosition.equals("down"))
                 startPose = new Pose2d(-36, 63, Math.toRadians(90));
@@ -103,22 +102,27 @@ public class HandleAuto {
         opMode.schedule(new SequentialCommandGroup(
                 new GoToPropCommand(autoDriveSubsystem, processor, isRed),
                 new PlacePixelCommand(intakeSubsystem),
+                new AdjustPositionCommand(autoDriveSubsystem),
                 new GoToPixelStackCommand(autoDriveSubsystem, isRed, true),
                 new PickupCommand(intakeSubsystem),
+                new AdjustPositionCommand(autoDriveSubsystem),
                 new ParallelCommandGroup(
                         new GoToBoardCommand(autoDriveSubsystem, isRed, true),
                         new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
                 new PlaceCommand(outtakeSubsystem),
+                new AdjustPositionCommand(autoDriveSubsystem),
                 new ParallelCommandGroup(
                         new GoToPixelStackCommand(autoDriveSubsystem, isRed, false),
                         new ResetHolderCommand(outtakeSubsystem),
                         new RetractSlidersCommand(outtakeSubsystem)),
                 new PickupCommand(intakeSubsystem),
+                new AdjustPositionCommand(autoDriveSubsystem),
                 new ParallelCommandGroup(
                         new GoToBoardCommand(autoDriveSubsystem, isRed, true),
                         new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
                 new PlaceCommand(outtakeSubsystem),
-                new RetractSlidersCommand(outtakeSubsystem)
+                new RetractSlidersCommand(outtakeSubsystem),
+                new AdjustPositionCommand(autoDriveSubsystem)
         ));
          /*else
             opMode.schedule(new SequentialCommandGroup(
