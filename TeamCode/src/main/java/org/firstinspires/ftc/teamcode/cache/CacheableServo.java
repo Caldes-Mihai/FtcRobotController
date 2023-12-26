@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.cache;
 
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 public class CacheableServo extends SimpleServo {
     private double cachedPos = 0;
@@ -12,6 +13,7 @@ public class CacheableServo extends SimpleServo {
 
     @Override
     public void setPosition(double position) {
+        position = Range.clip(position, 0, 1);
         if (position != cachedPos) {
             cachedPos = position;
             super.setPosition(position);

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
@@ -23,9 +24,9 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
     private final CommandOpMode opMode;
     private final double TURN_GAIN = 0.01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
     private final double MAX_AUTO_TURN = 0.3;
-    private double accel, axial, lateral, yaw;
+    private double accel, axial, lateral, yaw, oldYaw, distance, imuDegrees;
+    private Vector2d joystick;
     private AprilTagDetection desiredTag;
-    private double turn;
 
     public TeleOpDriveSubsystem(CacheableMotor leftFrontDrive, CacheableMotor leftBackDrive, CacheableMotor rightFrontDrive, CacheableMotor rightBackDrive, IMU imu, AprilTagProcessor processor,
                                 GamepadEx gamepad, boolean isRed, CommandOpMode opMode) {
@@ -49,16 +50,27 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
         if (gamepad.getButton(GamepadKeys.Button.A)) {
             desiredTag = processor.getDetections().get(0);
             if (desiredTag != null) {
-                turn = Range.clip(desiredTag.ftcPose.bearing * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                drive.driveRobotCentric(0, 0, turn);
+                yaw = Range.clip(desiredTag.ftcPose.bearing * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                drive.driveRobotCentric(0, 0, yaw);
                 opMode.sleep(10);
             }
         } else {
             accel = 1 - gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
             axial = gamepad.getButton(GamepadKeys.Button.DPAD_DOWN) ? accel : gamepad.getButton(GamepadKeys.Button.DPAD_UP) ? -accel : 0;
             lateral = gamepad.getButton(GamepadKeys.Button.DPAD_LEFT) ? accel : gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT) ? -accel : 0;
-            yaw = gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) ? accel : gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) ? -accel : 0;
-            drive.driveFieldCentric(lateral, axial, yaw, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) + (isRed ? -90 : 90));
+            joystick = new Vector2d(gamepad.getRightX(), gamepad.getRightY());
+            joystick = joystick.rotated(Math.toRadians(90 + (isRed ? -90 : 90)));
+            yaw = Math.toDegrees(Math.atan2(joystick.getY(), joystick.getX()));
+            imuDegrees = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            distance = joystick.distTo(new Vector2d(0, 0));
+            if (yaw != oldYaw && distance > 0.7)
+                oldYaw = yaw;
+            drive.driveFieldCentric(lateral, axial, angleDifference(-imuDegrees, oldYaw) / 30, imuDegrees + (isRed ? -90 : 90));
         }
+    }
+
+    private double angleDifference(double angle1, double angle2) {
+        double diff = (angle1 - angle2 + 180) % 360 - 180;
+        return diff < -180 ? diff + 360 : diff;
     }
 }
