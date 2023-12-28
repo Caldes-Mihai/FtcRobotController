@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.commands;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.HandleAuto;
@@ -17,20 +19,25 @@ public class GoToPropCommand extends CommandBase {
     private final TrajectorySequenceBuilder rightPropPath;
     private PropProcessor.Positions propPosition;
 
-    public GoToPropCommand(AutoDriveSubsystem drive, PropProcessor processor, boolean isRed) {
+    public GoToPropCommand(AutoDriveSubsystem drive, PropProcessor processor, boolean isRed, boolean isUp) {
         this.drive = drive;
         this.processor = processor;
         addRequirements(drive);
-        leftPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .back(27)
-                .turn(Math.toRadians(-90));
-        centerPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .back(52);
-        if (isRed) centerPropPath.strafeLeft(3);
-        else centerPropPath.strafeRight(3);
-        rightPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .back(27)
-                .turn(Math.toRadians(90));
+        if (isUp) {
+            leftPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                    .splineToLinearHeading(new Pose2d(isRed ? 14.00 : 11, isRed ? -34.00 : 34, Math.toRadians(isRed ? 180 : 0)), Math.toRadians(isRed ? 126 : -63));
+            centerPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                    .splineTo(new Vector2d(16, isRed ? -14 : 14), Math.toRadians(isRed ? 90 : -90));
+            rightPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                    .splineToLinearHeading(new Pose2d(isRed ? 11 : 14, isRed ? -34.00 : 34, Math.toRadians(isRed ? 0 : 180)), Math.toRadians(isRed ? 126 : 63));
+        } else {
+            leftPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                    .splineToLinearHeading(new Pose2d(isRed ? -37.00 : -34, isRed ? -34.00 : 34, Math.toRadians(isRed ? 0 : 180)), Math.toRadians(isRed ? 63 : -63));
+            centerPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                    .splineTo(new Vector2d(-32, isRed ? -14 : 14), Math.toRadians(isRed ? 90 : -90));
+            rightPropPath = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                    .splineToLinearHeading(new Pose2d(isRed ? -34.00 : -37, isRed ? -34.00 : 34, Math.toRadians(isRed ? 180 : 0)), Math.toRadians(isRed ? 63 : -63));
+        }
         drive.setLeftTrajectory(leftPropPath.build());
         drive.setCenterTrajectory(centerPropPath.build());
         drive.setRightTrajectory(rightPropPath.build());
