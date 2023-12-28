@@ -44,6 +44,25 @@ import java.util.List;
 
 public class PropProcessor implements VisionProcessor {
 
+    /**
+     * This will allow us to choose the color
+     * space we want to use on the live field
+     * tuner instead of hardcoding it
+     */
+
+    /*
+     * A good practice when typing EOCV pipelines is
+     * declaring the Mats you will use here at the top
+     * of your pipeline, to reuse the same buffers every
+     * time. This removes the need to call mat.release()
+     * with every Mat you create on the processFrame method,
+     * and therefore, reducing the possibility of getting a
+     * memory leak and causing the app to crash due to an
+     * "Out of Memory" error.
+     */
+    private final Mat propMat = new Mat();
+    private final Telemetry t;
+    private final Paint rectPaint = new Paint();
     /*
      * These are our variables that will be
      * modifiable from the variable tuner.
@@ -65,36 +84,15 @@ public class PropProcessor implements VisionProcessor {
     public Point areaStart = new Point(100, 270);
     public Point areaEnd = new Point(500, 400);
     public int maxHWDiff = 30;
+    public int erodeSize = 30;
+    public int dilateSize = 70;
+    public int blur = 3;
     public boolean isRed;
-    public enum Positions {
-        LEFT,
-        CENTER,
-        RIGHT
-    }
-
     Positions position = Positions.LEFT;
     int maxWProp = 0;
     int maxHProp = 0;
     Rect foundProp;
-    /**
-     * This will allow us to choose the color
-     * space we want to use on the live field
-     * tuner instead of hardcoding it
-     */
 
-    /*
-     * A good practice when typing EOCV pipelines is
-     * declaring the Mats you will use here at the top
-     * of your pipeline, to reuse the same buffers every
-     * time. This removes the need to call mat.release()
-     * with every Mat you create on the processFrame method,
-     * and therefore, reducing the possibility of getting a
-     * memory leak and causing the app to crash due to an
-     * "Out of Memory" error.
-     */
-    private Mat propMat = new Mat();
-    private Telemetry t;
-    private Paint rectPaint = new Paint();
     /**
      * Enum to choose which color space to choose
      * with the live variable tuner isntead of
@@ -104,9 +102,11 @@ public class PropProcessor implements VisionProcessor {
     public PropProcessor(Telemetry t) {
         this.t = t;
     }
+
     public void setRed(boolean isRed) {
         this.isRed = isRed;
     }
+
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
     }
@@ -114,18 +114,23 @@ public class PropProcessor implements VisionProcessor {
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
         Imgproc.cvtColor(frame, propMat, Imgproc.COLOR_RGB2HSV);
+        Imgproc.blur(propMat, propMat, new Size(blur, blur));
+        Imgproc.erode(propMat, propMat, Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(erodeSize, erodeSize)));
+        Imgproc.dilate(propMat, propMat, Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(dilateSize, dilateSize)));
+        propMat.copyTo(frame);
         Core.inRange(propMat, isRed ? lowerRed : lowerBlue, isRed ? upperRed : upperBlue, propMat);
         List<MatOfPoint> propContours = new ArrayList<>();
         Mat hierarchy = new Mat();
         try {
             Imgproc.findContours(propMat, propContours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-            if(foundProp != null) {
-                int baseline[] = {0};
+            if (foundProp != null) {
+                int[] baseline = {0};
                 Size textSize = Imgproc.getTextSize(position.toString(), Imgproc.FONT_HERSHEY_PLAIN, 1, 2, baseline);
                 Point pos = new Point(foundProp.x + (foundProp.width - textSize.width) / 2, foundProp.y + foundProp.height + textSize.height + 4);
-                Imgproc.putText(frame, position.toString(), pos, Imgproc.FONT_HERSHEY_PLAIN, 1, isRed ? new Scalar(255, 0,0) : new Scalar(0, 0, 255), 2);
+                Imgproc.putText(frame, position.toString(), pos, Imgproc.FONT_HERSHEY_PLAIN, 1, isRed ? new Scalar(255, 0, 0) : new Scalar(0, 0, 255), 2);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         propMat.release();
         return propContours;
     }
@@ -139,11 +144,12 @@ public class PropProcessor implements VisionProcessor {
         maxWProp = 0;
         maxHProp = 0;
         foundProp = null;
-        for(MatOfPoint c : propContours) {
+        for (MatOfPoint c : propContours) {
             double value = Imgproc.contourArea(c);
-            if(value > 100) {
+            if (value > 100) {
                 Rect rect = Imgproc.boundingRect(c);
-                if(rect.x < areaStart.x || rect.y < areaStart.y || rect.x + rect.width > areaEnd.x || rect.y + rect.height > areaEnd.y) continue;
+                if (rect.x < areaStart.x || rect.y < areaStart.y || rect.x + rect.width > areaEnd.x || rect.y + rect.height > areaEnd.y)
+                    continue;
                 if ((rect.width > maxWProp || rect.height > maxHProp) && withinRange(rect.width * scaleBmpPxToCanvasPx, rect.height * scaleBmpPxToCanvasPx, maxHWDiff)) {
                     maxWProp = rect.width;
                     maxHProp = rect.height;
@@ -152,13 +158,13 @@ public class PropProcessor implements VisionProcessor {
             }
         }
         Rect area = new Rect(areaStart, areaEnd);
-        if(foundProp != null) {
+        if (foundProp != null) {
             if (foundProp.x - area.x + foundProp.width / 2 <= area.width / 3)
                 position = Positions.LEFT;
             else if (foundProp.x - area.x + foundProp.width / 2 >= area.width * 2 / 3)
-                position = position.RIGHT;
+                position = Positions.RIGHT;
             else
-                position = position.CENTER;
+                position = Positions.CENTER;
             canvas.drawRect(makeGraphicsRect(foundProp, scaleBmpPxToCanvasPx), rectPaint);
         }
         rectPaint.setColor(Color.GREEN);
@@ -177,9 +183,14 @@ public class PropProcessor implements VisionProcessor {
         return position;
     }
 
-    boolean withinRange(double input1, double input2, double deviation)
-    {
+    boolean withinRange(double input1, double input2, double deviation) {
         return Math.abs(input1 - input2) <= deviation;
+    }
+
+    public enum Positions {
+        LEFT,
+        CENTER,
+        RIGHT
     }
 }
 
