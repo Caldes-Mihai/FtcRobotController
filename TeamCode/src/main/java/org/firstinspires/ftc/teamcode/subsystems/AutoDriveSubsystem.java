@@ -36,7 +36,6 @@ public class AutoDriveSubsystem extends SubsystemBase {
     private double size;
     private double sumX;
     private double sumY;
-    private double sumHeading;
     private TrajectorySequence leftTrajectory;
     private TrajectorySequence centerTrajectory;
     private TrajectorySequence rightTrajectory;
@@ -110,9 +109,8 @@ public class AutoDriveSubsystem extends SubsystemBase {
             return;
         sumX = 0;
         sumY = 0;
-        sumHeading = 0;
+        heading = drive.getRawExternalHeading();
         aprilTags.forEach(aprilTag -> {
-            heading = aprilTag.ftcPose.yaw;
             x = aprilTag.metadata.fieldPosition.get(0);
             y = aprilTag.metadata.fieldPosition.get(1);
             x = x - Math.signum(x) * aprilTag.ftcPose.y;
@@ -121,9 +119,8 @@ public class AutoDriveSubsystem extends SubsystemBase {
             y = y - Math.sin(Math.toRadians(heading)) * offsetY - Math.cos(Math.toRadians(heading)) * offsetX;
             sumX += x;
             sumY += y;
-            sumHeading += heading;
         });
-        drive.setPoseEstimate(new Pose2d(sumX / size, sumY / size, Math.toRadians(sumHeading / size)));
+        drive.setPoseEstimate(new Pose2d(sumX / size, sumY / size, heading));
     }
 
     public void setDrivePower(Pose2d drivePower) {
