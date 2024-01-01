@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 public class CacheableServo extends SimpleServo {
-    private double cachedPos = 0;
+    private double cachedPos = Double.NaN;
 
     public CacheableServo(HardwareMap hw, String servoName, double minDegree, double maxDegree) {
         super(hw, servoName, minDegree, maxDegree);
