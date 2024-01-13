@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.HandleTeleOp;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -65,7 +66,7 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
             if (yaw != oldYaw && distance > 0.7)
                 oldYaw = yaw;
             //TODO: check if 30 is enough
-            drive.driveFieldCentric(lateral, axial, angleDifference(-imuDegrees, oldYaw) / 30, imuDegrees + (isRed ? -90 : 90));
+            drive.driveFieldCentric(lateral, axial, angleDifference(-imuDegrees, oldYaw) / (HandleTeleOp.delta + 1)/*30*/, imuDegrees + (isRed ? -90 : 90));
         }
     }
 

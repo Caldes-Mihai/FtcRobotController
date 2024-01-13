@@ -36,12 +36,12 @@ import java.util.concurrent.TimeUnit;
 
 public class HandleAuto {
 
+    public static long delta;
     /**
      * The variable to store our instance of the AprilTag processor.
      */
     private static PropProcessor processor;
     private static AprilTagProcessor aprilTagProcessor;
-
     /**
      * The variable to store our instance of the vision portal.
      */
@@ -52,7 +52,7 @@ public class HandleAuto {
     private static OuttakeSubsystem outtakeSubsystem;
     private static Pose2d startPose;
     private static CacheableMotor intake;
-    private static CacheableServo sliders;
+    private static CacheableMotor sliders;
     private static CacheableServo holder;
     private static PropProcessor.Positions propPosition;
     private static CommandOpMode opMode;
@@ -61,7 +61,6 @@ public class HandleAuto {
     private static CacheManager cacheManager;
     private static long currentTime;
     private static long lastTime;
-    private static long delta;
 
     public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode op) {
         opMode = op;
@@ -69,7 +68,7 @@ public class HandleAuto {
         telemetry = opMode.telemetry;
         cacheManager = new CacheManager(hardwareMap);
         intake = new CacheableMotor(hardwareMap, "intake");
-        sliders = new CacheableServo(hardwareMap, "sliders", 0, 360);
+        sliders = new CacheableMotor(hardwareMap, "sliders");
         holder = new CacheableServo(hardwareMap, "holder", 0, 360);
         processor = new PropProcessor(telemetry);
         processor.setRed(isRed);
@@ -111,6 +110,7 @@ public class HandleAuto {
                             new GoToBoardCommand(autoDriveSubsystem, isRed, false),
                             new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
                     new PlaceCommand(outtakeSubsystem),
+                    new PlaceCommand(outtakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, false),
@@ -121,6 +121,7 @@ public class HandleAuto {
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, false),
                             new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
+                    new PlaceCommand(outtakeSubsystem),
                     new PlaceCommand(outtakeSubsystem),
                     new RetractSlidersCommand(outtakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem)
@@ -145,6 +146,7 @@ public class HandleAuto {
                             new GoToBoardCommand(autoDriveSubsystem, isRed, true),
                             new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
                     new PlaceCommand(outtakeSubsystem),
+                    new PlaceCommand(outtakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
@@ -155,6 +157,7 @@ public class HandleAuto {
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, true),
                             new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
+                    new PlaceCommand(outtakeSubsystem),
                     new PlaceCommand(outtakeSubsystem),
                     new RetractSlidersCommand(outtakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem)

@@ -30,10 +30,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.hardware.ServoEx;
-import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
+import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -66,27 +68,34 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name = "Tune Outtake OpMode", group = "Tuning")
 @Config
 public class TuneOuttake extends LinearOpMode {
+    public static double Kp = 0;
+    public static double Ki = 0;
+    public static double Kd = 0;
+    public static double Kg = 0;
     public static double HOLDER_END_ANGLE = 360;
-    public static double SLIDERS_END_ANGLE = 360;
+    public static double SLIDERS_END_POS = 360;
     public static double HOLDER_START_ANGLE = 0;
-    public static double SLIDERS_START_ANGLE = 0;
+    public static double SLIDERS_START_POS = 0;
     public static boolean shouldExtend = true;
-    private ServoEx holder;
-    private ServoEx sliders;
+    private CacheableServo holder;
+    private CacheableMotor sliders;
+    private PIDController pidController;
 
     @Override
     public void runOpMode() {
-        holder = new SimpleServo(hardwareMap, "holder", 0, 360);
-        sliders = new SimpleServo(hardwareMap, "holder", 0, 360);
+        holder = new CacheableServo(hardwareMap, "holder", 0, 360);
+        sliders = new CacheableMotor(hardwareMap, "sliders");
+        pidController = new PIDController(Kp, Ki, Kd);
         waitForStart();
         while (opModeIsActive()) {
             if (shouldExtend) {
-                sliders.turnToAngle(SLIDERS_END_ANGLE);
+                pidController.setSetPoint(SLIDERS_END_POS);
                 holder.turnToAngle(HOLDER_END_ANGLE);
             } else {
-                sliders.turnToAngle(SLIDERS_START_ANGLE);
+                pidController.setSetPoint(SLIDERS_START_POS);
                 holder.turnToAngle(HOLDER_START_ANGLE);
             }
+            sliders.set(pidController.calculate(sliders.getCurrentPosition()) + Kg);
         }
     }
 }
