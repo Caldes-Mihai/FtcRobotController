@@ -55,9 +55,8 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
                 opMode.sleep(10);
             }
         } else {
-            accel = 1 - gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-            axial = gamepad.getButton(GamepadKeys.Button.DPAD_DOWN) ? accel : gamepad.getButton(GamepadKeys.Button.DPAD_UP) ? -accel : 0;
-            lateral = gamepad.getButton(GamepadKeys.Button.DPAD_LEFT) ? accel : gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT) ? -accel : 0;
+            axial = -gamepad.getLeftY();
+            lateral = gamepad.getLeftX();
             joystick = new Vector2d(gamepad.getRightX(), gamepad.getRightY());
             joystick = joystick.rotated(Math.toRadians(90 + (isRed ? -90 : 90)));
             yaw = Math.toDegrees(Math.atan2(joystick.getY(), joystick.getX()));
