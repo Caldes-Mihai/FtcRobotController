@@ -41,8 +41,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
+import org.firstinspires.ftc.teamcode.cache.CacheableCRServo;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
-import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleOuttakeCommand;
@@ -62,8 +62,9 @@ public class HandleTeleOp {
     private static CacheableMotor rightFrontDrive;
     private static CacheableMotor rightBackDrive;
     private static CacheableMotor intake;
-    private static CacheableMotor sliders;
-    private static CacheableServo holder;
+    private static CacheableMotor slider1;
+    private static CacheableMotor slider2;
+    private static CacheableCRServo holder;
     private static AprilTagProcessor processor;
     private static VisionPortal visionPortal;
     private static GamepadEx driver;
@@ -103,14 +104,15 @@ public class HandleTeleOp {
         rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
         rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
         intake = new CacheableMotor(hardwareMap, "intake");
-        sliders = new CacheableMotor(hardwareMap, "sliders");
-        holder = new CacheableServo(hardwareMap, "holder", 0, 360);
+        slider1 = new CacheableMotor(hardwareMap, "slider1");
+        slider2 = new CacheableMotor(hardwareMap, "slider2");
+        holder = new CacheableCRServo(hardwareMap, "holder");
         teleOpDriveSubsystem = new TeleOpDriveSubsystem(
                 leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu, processor,
                 driver, isRed, opMode
         );
         intakeSubsystem = new IntakeSubsystem(intake, tool);
-        outtakeSubsystem = new OuttakeSubsystem(sliders, holder, tool);
+        outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, holder, tool);
         opMode.register(teleOpDriveSubsystem, intakeSubsystem, outtakeSubsystem);
         teleOpDriveSubsystem.setDefaultCommand(new DriveCommand(teleOpDriveSubsystem));
         intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));

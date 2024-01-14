@@ -1,24 +1,17 @@
 package org.firstinspires.ftc.teamcode.commands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 
-public class PlaceCommand extends CommandBase {
-    private final OuttakeSubsystem subsystem;
-
-    public PlaceCommand(OuttakeSubsystem outtakeSubsystem) {
-        subsystem = outtakeSubsystem;
-        addRequirements(outtakeSubsystem);
-    }
-
-    @Override
-    public void execute() {
-        subsystem.release();
-    }
-
-    @Override
-    public boolean isFinished() {
-        return subsystem.isReleased();
+public class PlaceCommand extends SequentialCommandGroup {
+    public PlaceCommand(OuttakeSubsystem subsystem) {
+        addCommands(
+                new ActivateHolderCommand(subsystem, true),
+                new WaitCommand(500),
+                new DeactivateHolderCommand(subsystem)
+        );
+        addRequirements(subsystem);
     }
 }

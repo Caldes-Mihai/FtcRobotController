@@ -11,8 +11,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
+import org.firstinspires.ftc.teamcode.cache.CacheableCRServo;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
-import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.GoFromBoardToPixelStackCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToBoardCommand;
@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.commands.PickupCommand;
 import org.firstinspires.ftc.teamcode.commands.PlaceCommand;
 import org.firstinspires.ftc.teamcode.commands.PlacePixelCommand;
 import org.firstinspires.ftc.teamcode.commands.PrepareOuttake;
-import org.firstinspires.ftc.teamcode.commands.ResetHolderCommand;
 import org.firstinspires.ftc.teamcode.commands.RetractSlidersCommand;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
@@ -52,8 +51,9 @@ public class HandleAuto {
     private static OuttakeSubsystem outtakeSubsystem;
     private static Pose2d startPose;
     private static CacheableMotor intake;
-    private static CacheableMotor sliders;
-    private static CacheableServo holder;
+    private static CacheableMotor slider1;
+    private static CacheableMotor slider2;
+    private static CacheableCRServo holder;
     private static PropProcessor.Positions propPosition;
     private static CommandOpMode opMode;
     private static HardwareMap hardwareMap;
@@ -68,8 +68,9 @@ public class HandleAuto {
         telemetry = opMode.telemetry;
         cacheManager = new CacheManager(hardwareMap);
         intake = new CacheableMotor(hardwareMap, "intake");
-        sliders = new CacheableMotor(hardwareMap, "sliders");
-        holder = new CacheableServo(hardwareMap, "holder", 0, 360);
+        slider1 = new CacheableMotor(hardwareMap, "slider1");
+        slider2 = new CacheableMotor(hardwareMap, "slider2");
+        holder = new CacheableCRServo(hardwareMap, "holder");
         processor = new PropProcessor(telemetry);
         processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -84,7 +85,7 @@ public class HandleAuto {
         drive = new SampleMecanumDrive(hardwareMap);
         autoDriveSubsystem = new AutoDriveSubsystem(drive, aprilTagProcessor, false);
         intakeSubsystem = new IntakeSubsystem(intake);
-        outtakeSubsystem = new OuttakeSubsystem(sliders, holder);
+        outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, holder);
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
         if (!isRed) {
             if (currentSpawnPosition.equals("down"))
@@ -104,7 +105,7 @@ public class HandleAuto {
                     new PlacePixelCommand(intakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new GoToPixelStackCommand(autoDriveSubsystem, isRed, false),
-                    new PickupCommand(intakeSubsystem),
+                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, false),
@@ -114,9 +115,8 @@ public class HandleAuto {
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, false),
-                            new ResetHolderCommand(outtakeSubsystem),
                             new RetractSlidersCommand(outtakeSubsystem)),
-                    new PickupCommand(intakeSubsystem),
+                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, false),
@@ -138,9 +138,8 @@ public class HandleAuto {
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
-                            new ResetHolderCommand(outtakeSubsystem),
                             new RetractSlidersCommand(outtakeSubsystem)),
-                    new PickupCommand(intakeSubsystem),
+                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, true),
@@ -150,9 +149,8 @@ public class HandleAuto {
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
-                            new ResetHolderCommand(outtakeSubsystem),
                             new RetractSlidersCommand(outtakeSubsystem)),
-                    new PickupCommand(intakeSubsystem),
+                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, true),

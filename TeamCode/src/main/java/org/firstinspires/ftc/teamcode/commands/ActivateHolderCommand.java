@@ -4,21 +4,22 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 
-public class ResetHolderCommand extends CommandBase {
+public class ActivateHolderCommand extends CommandBase {
     private final OuttakeSubsystem subsystem;
 
-    public ResetHolderCommand(OuttakeSubsystem outtakeSubsystem) {
+    public ActivateHolderCommand(OuttakeSubsystem outtakeSubsystem, boolean reversed) {
         subsystem = outtakeSubsystem;
+        subsystem.setReversed(reversed);
         addRequirements(outtakeSubsystem);
     }
 
     @Override
     public void execute() {
-        subsystem.resetHolder();
+        subsystem.activateHolder();
     }
 
     @Override
     public boolean isFinished() {
-        return subsystem.isReset();
+        return true;
     }
 }
