@@ -7,9 +7,9 @@ import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 public class HandleOuttakeCommand extends CommandBase {
     private final OuttakeSubsystem subsystem;
 
-    public HandleOuttakeCommand(OuttakeSubsystem intakeSubsystem) {
-        subsystem = intakeSubsystem;
-        addRequirements(intakeSubsystem);
+    public HandleOuttakeCommand(OuttakeSubsystem outtakeSubsystem) {
+        subsystem = outtakeSubsystem;
+        addRequirements(outtakeSubsystem);
     }
 
     @Override

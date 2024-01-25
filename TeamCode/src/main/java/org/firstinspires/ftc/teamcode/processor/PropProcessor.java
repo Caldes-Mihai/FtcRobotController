@@ -77,16 +77,16 @@ public class PropProcessor implements VisionProcessor {
      * min and max values here for now, meaning
      * that all pixels will be shown.
      */
-    public Scalar lowerBlue = new Scalar(90, 102, 166);
-    public Scalar upperBlue = new Scalar(100, 255, 255);
-    public Scalar lowerRed = new Scalar(0, 0, 135);
-    public Scalar upperRed = new Scalar(162, 39, 255);
-    public Point areaStart = new Point(100, 270);
-    public Point areaEnd = new Point(500, 400);
+    public Scalar lowerBlue = new Scalar(75, 165, 84);
+    public Scalar upperBlue = new Scalar(111, 255, 174);
+    public Scalar lowerRed = new Scalar(156, 120, 48);
+    public Scalar upperRed = new Scalar(180, 255, 153);
+    public Point areaStart = new Point(120, 350);
+    public Point areaEnd = new Point(550, 480);
     public int maxHWDiff = 30;
-    public int erodeSize = 30;
-    public int dilateSize = 70;
-    public int blur = 3;
+    public int erodeSize = 12;
+    public int dilateSize = 12;
+    public int blur = 9;
     public boolean isRed;
     Positions position = Positions.LEFT;
     int maxWProp = 0;
@@ -114,7 +114,7 @@ public class PropProcessor implements VisionProcessor {
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
         Imgproc.cvtColor(frame, propMat, Imgproc.COLOR_RGB2HSV);
-        Imgproc.blur(propMat, propMat, new Size(blur, blur));
+        Imgproc.medianBlur(propMat, propMat, blur);
         Imgproc.erode(propMat, propMat, Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(erodeSize, erodeSize)));
         Imgproc.dilate(propMat, propMat, Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(dilateSize, dilateSize)));
         propMat.copyTo(frame);

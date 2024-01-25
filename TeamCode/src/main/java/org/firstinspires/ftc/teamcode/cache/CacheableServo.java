@@ -14,7 +14,7 @@ public class CacheableServo extends SimpleServo {
 
     @Override
     public void setPosition(double position) {
-        position = Range.clip(position, 0, 1);
+        position = Range.clip(position, -1, 1);
         if (position != cachedPos) {
             cachedPos = position;
             super.setPosition(position);

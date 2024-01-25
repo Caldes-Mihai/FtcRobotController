@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 public class IntakeSubsystem extends SubsystemBase {
     private final CacheableMotor intake;
     private final GamepadEx gamepad;
-    private double factor = 1;
+    private double factor = -1;
 
     public IntakeSubsystem(CacheableMotor intake) {
         this(intake, null);
@@ -23,7 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void setReversed(boolean isReversed) {
-        factor = isReversed ? -1 : 1;
+        factor = isReversed ? 1 : -1;
     }
 
     public void activate() {
@@ -35,9 +35,16 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void handle() {
-        if (gamepad.getButton(GamepadKeys.Button.X))
+        if (gamepad.getButton(GamepadKeys.Button.X)) {
+            setReversed(false);
             this.activate();
-        else
+        } else
             this.deactivate();
+        if (gamepad.getButton(GamepadKeys.Button.B)) {
+            setReversed(true);
+            this.activate();
+        } else
+            this.deactivate();
+
     }
 }

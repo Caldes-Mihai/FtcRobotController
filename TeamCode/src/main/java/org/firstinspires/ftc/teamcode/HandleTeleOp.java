@@ -43,9 +43,13 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
 import org.firstinspires.ftc.teamcode.cache.CacheableCRServo;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
+import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
+import org.firstinspires.ftc.teamcode.commands.HandleDroneCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleOuttakeCommand;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.subsystems.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TeleOpDriveSubsystem;
@@ -64,6 +68,7 @@ public class HandleTeleOp {
     private static CacheableMotor intake;
     private static CacheableMotor slider1;
     private static CacheableMotor slider2;
+    private static CacheableServo drone;
     private static CacheableCRServo holder;
     private static AprilTagProcessor processor;
     private static VisionPortal visionPortal;
@@ -73,6 +78,7 @@ public class HandleTeleOp {
     private static TeleOpDriveSubsystem teleOpDriveSubsystem;
     private static IntakeSubsystem intakeSubsystem;
     private static OuttakeSubsystem outtakeSubsystem;
+    private static DroneSubsystem droneSubsystem;
     private static CommandOpMode opMode;
     private static HardwareMap hardwareMap;
     private static Telemetry telemetry;
@@ -88,9 +94,10 @@ public class HandleTeleOp {
         driver = new GamepadEx(opMode.gamepad1);
         tool = new GamepadEx(opMode.gamepad2);
         imu = hardwareMap.get(IMU.class, "imu");
+        imu.resetYaw();
         parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP));
+                DriveConstants.LOGO_FACING_DIR,
+                DriveConstants.USB_FACING_DIR));
         imu.initialize(parameters);
         processor = new AprilTagProcessor.Builder().build();
         processor.setDecimation(2);
@@ -107,16 +114,19 @@ public class HandleTeleOp {
         slider1 = new CacheableMotor(hardwareMap, "slider1");
         slider2 = new CacheableMotor(hardwareMap, "slider2");
         holder = new CacheableCRServo(hardwareMap, "holder");
+        drone = new CacheableServo(hardwareMap, "drone", 0, 270);
         teleOpDriveSubsystem = new TeleOpDriveSubsystem(
-                leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu, processor,
+                leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu,
                 driver, isRed, opMode
         );
         intakeSubsystem = new IntakeSubsystem(intake, tool);
         outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, holder, tool);
-        opMode.register(teleOpDriveSubsystem, intakeSubsystem, outtakeSubsystem);
+        droneSubsystem = new DroneSubsystem(drone, driver);
+        opMode.register(teleOpDriveSubsystem, intakeSubsystem, outtakeSubsystem, droneSubsystem);
         teleOpDriveSubsystem.setDefaultCommand(new DriveCommand(teleOpDriveSubsystem));
         intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));
         outtakeSubsystem.setDefaultCommand(new HandleOuttakeCommand(outtakeSubsystem));
+        droneSubsystem.setDefaultCommand(new HandleDroneCommand(droneSubsystem));
         opMode.schedule(new RunCommand(telemetry::update));
     }
 
@@ -158,7 +168,5 @@ public class HandleTeleOp {
         currentTime = System.currentTimeMillis();
         delta = currentTime - lastTime;
         lastTime = currentTime;
-        telemetry.addData("time", 1000 / delta + "hz");
-        telemetry.update();
     }
 }

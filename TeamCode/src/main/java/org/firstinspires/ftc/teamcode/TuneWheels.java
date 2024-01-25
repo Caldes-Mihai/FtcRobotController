@@ -73,6 +73,7 @@ public class TuneWheels extends LinearOpMode {
         CacheableMotor leftBackDrive = new CacheableMotor(hardwareMap, "back_left_motor");
         CacheableMotor rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
         CacheableMotor rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
+        leftBackDrive.setInverted(true);
         waitForStart();
         while (opModeIsActive()) {
             if (gamepad1.x)

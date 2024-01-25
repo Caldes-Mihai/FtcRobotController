@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -8,12 +9,13 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.cache.CacheableCRServo;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 
+@Config
 public class OuttakeSubsystem extends SubsystemBase {
-    private final double SLIDERS_POS = 180;
-    private final double Kg = 1;
-    private final double Kp = 0;
-    private final double Ki = 0;
-    private final double Kd = 0;
+    public static double Kp = 0;
+    public static double Ki = 0;
+    public static double Kd = 0;
+    public static double SLIDERS_POS = 0;
+    public static double Kg = 0;
     private final CacheableMotor slider1;
     private final CacheableMotor slider2;
     private final CacheableCRServo holder;
@@ -31,7 +33,9 @@ public class OuttakeSubsystem extends SubsystemBase {
         this.slider2 = slider2;
         this.holder = holder;
         this.gamepad = gamepad;
+        slider1.setInverted(true);
     }
+
 
     @Override
     public void periodic() {
@@ -46,6 +50,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void retract() {
         pidController.setSetPoint(0);
     }
+
 
     public void setReversed(boolean isReversed) {
         factor = isReversed ? -1 : 1;
@@ -70,11 +75,7 @@ public class OuttakeSubsystem extends SubsystemBase {
             this.activateHolder();
         } else if (!gamepad.getButton(GamepadKeys.Button.X))
             this.deactivateHolder();
-
-        if (gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3)
-            this.extend();
-        else
-            this.retract();
+        //PIDF LOOPS KROOKYBOTS TUTORIAL PEBTRU PID, NU CRED CA TREBUIE SA FOLOSESTI F
     }
 
     public boolean isExtended() {
