@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -15,12 +17,15 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 
 @Config
 public class TeleOpDriveSubsystem extends SubsystemBase {
+    private static double Kp, Ki, Kd;
     private final MecanumDrive drive;
     private final IMU imu;
     private final GamepadEx gamepad;
     private final boolean isRed;
-    private double axial, lateral, yaw, imuDegrees;
     private final CommandOpMode opMode;
+    private final PIDController pidController = new PIDController(Kp, Ki, Kd);
+    private double axial, lateral, yaw, oldYaw, distance, imuDegrees, imuRadians, dif;
+    private Vector2d joystick;
 
     public TeleOpDriveSubsystem(CacheableMotor leftFrontDrive, CacheableMotor leftBackDrive, CacheableMotor rightFrontDrive, CacheableMotor rightBackDrive, IMU imu,
                                 GamepadEx gamepad, boolean isRed, CommandOpMode opMode) {
@@ -44,8 +49,32 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
             imu.resetYaw();
         axial = -gamepad.getLeftY();
         lateral = gamepad.getLeftX();
+        joystick = new Vector2d(gamepad.getRightX(), gamepad.getRightY());
+        joystick = joystick.rotated(Math.toRadians(90));
         yaw = gamepad.getRightX();
         imuDegrees = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        drive.driveFieldCentric(lateral, axial, yaw, imuDegrees + (isRed ? -90 : 90));
+        imuRadians = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        distance = joystick.distTo(new Vector2d(0, 0));
+        if (yaw != oldYaw && distance > 0.7)
+            oldYaw = yaw;
+        pidController.setPID(Kp, Ki, Kd);
+        pidController.setSetPoint(oldYaw);
+        dif = angleWrap(pidController.calculate(imuRadians));
+        opMode.telemetry.addData("IMU", imuDegrees);
+        opMode.telemetry.addData("TARGET", Math.toDegrees(oldYaw));
+        opMode.telemetry.addData("DIF", Math.toDegrees(dif));
+        drive.driveFieldCentric(lateral, axial, dif, imuDegrees + (isRed ? -90 : 90));
+    }
+
+    public double angleWrap(double radians) {
+
+        while (radians > Math.PI) {
+            radians -= 2 * Math.PI;
+        }
+        while (radians < -Math.PI) {
+            radians += 2 * Math.PI;
+        }
+
+        return radians;
     }
 }
