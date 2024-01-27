@@ -15,7 +15,7 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 20)
                 .followTrajectorySequence(drive -> {
                             Pose2d startPose;
                             Pose2d lastLeft;
@@ -60,7 +60,7 @@ public class MeepMeepTesting {
                                         .build();
                                 TrajectorySequence redPropRightToBoard = drive.trajectorySequenceBuilder(redPropRightToStack.end())
                                         .splineTo(new Vector2d(25, isRed ? -18 : 18), Math.toRadians(isRed ? -21 : 21))
-                                        .splineTo(new Vector2d(52.00, isRed ? -41 : 29), Math.toRadians(0.00))
+                                        .splineTo(new Vector2d(48.00, isRed ? -41 : 29), Math.toRadians(0.00))
                                         .build();
                                 if (!isRed)
                                     redPropRightToStack = drive.trajectorySequenceBuilder(redPropRight.end())
@@ -91,7 +91,7 @@ public class MeepMeepTesting {
                                         .splineTo(new Vector2d(25, isRed ? -18 : 18), Math.toRadians(isRed ? 159 : -159))
                                         .splineTo(new Vector2d(-61, isRed ? -12 : 12), Math.toRadians(180))
                                         .build();
-                                return redPropRightToStack;
+                                return redPropRightToBoard;
                             } else {
                                 TrajectorySequence redPropRight = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                         .splineToLinearHeading(new Pose2d(isRed ? 14.00 : 11, isRed ? -34.00 : 34, Math.toRadians(isRed ? 180 : 0)), Math.toRadians(isRed ? 126 : -63))
@@ -120,7 +120,7 @@ public class MeepMeepTesting {
                                         .build();
                                 TrajectorySequence redPropRightToBoard = drive.trajectorySequenceBuilder(redPropRight.end())
                                         .splineTo(new Vector2d(12, isRed ? -41 : 41), Math.toRadians(isRed ? -21 : 21))
-                                        .splineTo(new Vector2d(52.00, isRed ? -41 : 29), Math.toRadians(0.00))
+                                        .splineTo(new Vector2d(48, isRed ? -41 : 29), Math.toRadians(0.00))
                                         .build();
                                 TrajectorySequence redPropRightFromBoardToStack = drive.trajectorySequenceBuilder(redPropRightToBoard.end())
                                         .setReversed(true)
@@ -142,7 +142,7 @@ public class MeepMeepTesting {
                                 if (!isRed)
                                     redPropLeftToBoard = drive.trajectorySequenceBuilder(redPropLeft.end())
                                             .splineTo(new Vector2d(12, isRed ? -41 : 41), Math.toRadians(isRed ? -21 : 21))
-                                            .splineTo(new Vector2d(52.00, isRed ? -41 : 29), Math.toRadians(0.00))
+                                            .splineTo(new Vector2d(48, isRed ? -41 : 29), Math.toRadians(0.00))
                                             .build();
                                 TrajectorySequence redPropLeftFromBoardToStack = drive.trajectorySequenceBuilder(redPropLeftToBoard.end())
                                         .setReversed(true)
@@ -159,7 +159,7 @@ public class MeepMeepTesting {
                                         .build();
                                 TrajectorySequence redPropRightFromStackToBoard = drive.trajectorySequenceBuilder(redPropRightToStack.end())
                                         .splineTo(new Vector2d(25, isRed ? -18 : 18), Math.toRadians(isRed ? -21 : 21))
-                                        .splineTo(new Vector2d(52.00, isRed ? -41 : 29), Math.toRadians(0.00))
+                                        .splineTo(new Vector2d(48, isRed ? -41 : 29), Math.toRadians(0.00))
                                         .build();
                                 return redPropCenterFromStackToBoard;
                             }

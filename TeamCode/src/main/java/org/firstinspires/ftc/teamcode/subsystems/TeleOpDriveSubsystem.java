@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
@@ -50,7 +51,7 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
         axial = -gamepad.getLeftY();
         lateral = gamepad.getLeftX();
         joystick = new Vector2d(gamepad.getRightX(), gamepad.getRightY());
-        joystick = joystick.rotated(Math.toRadians(90));
+        joystick = joystick.rotated(Math.toRadians(isRed ? 0 : 180));
         yaw = gamepad.getRightX();
         imuDegrees = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         imuRadians = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -63,7 +64,7 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
         opMode.telemetry.addData("IMU", imuDegrees);
         opMode.telemetry.addData("TARGET", Math.toDegrees(oldYaw));
         opMode.telemetry.addData("DIF", Math.toDegrees(dif));
-        drive.driveFieldCentric(lateral, axial, dif, imuDegrees + (isRed ? -90 : 90));
+        drive.driveFieldCentric(lateral, axial, Math.abs(Math.toDegrees(dif)) > 1 ? Range.clip(dif, -0.3, 0.3) : 0, imuDegrees + (isRed ? -90 : 90));
     }
 
     public double angleWrap(double radians) {

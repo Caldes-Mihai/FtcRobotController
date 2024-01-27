@@ -24,29 +24,29 @@ public class GoToBoardCommand extends CommandBase {
             if (!isRed) {
                 leftDestinationPath = drive.trajectorySequenceBuilder(drive.getLeftTrajectory().end())
                         .splineTo(new Vector2d(12, isRed ? -41 : 41), Math.toRadians(isRed ? -21 : 21))
-                        .splineTo(new Vector2d(52.00, isRed ? -41 : 29), Math.toRadians(0.00));
+                        .splineTo(new Vector2d(48.00, isRed ? -41 : 29), Math.toRadians(0.00));
                 rightDestinationPath = drive.trajectorySequenceBuilder(drive.getRightTrajectory().end())
-                        .splineTo(new Vector2d(52, isRed ? -29 : 41), Math.toRadians(0.00));
+                        .splineTo(new Vector2d(48, isRed ? -29 : 41), Math.toRadians(0.00));
             } else {
                 leftDestinationPath = drive.trajectorySequenceBuilder(drive.getLeftTrajectory().end())
-                        .splineTo(new Vector2d(52, isRed ? -29 : 41), Math.toRadians(0.00));
+                        .splineTo(new Vector2d(48, isRed ? -29 : 41), Math.toRadians(0.00));
                 rightDestinationPath = drive.trajectorySequenceBuilder(drive.getRightTrajectory().end())
                         .splineTo(new Vector2d(12, isRed ? -41 : 41), Math.toRadians(isRed ? -21 : 21))
-                        .splineTo(new Vector2d(52.00, isRed ? -41 : 29), Math.toRadians(0.00));
+                        .splineTo(new Vector2d(48.00, isRed ? -41 : 29), Math.toRadians(0.00));
             }
             centerDestinationPath = drive.trajectorySequenceBuilder(drive.getCenterTrajectory().end())
                     .splineTo(new Vector2d(30, isRed ? -16 : 16), Math.toRadians(isRed ? -45.00 : 45))
-                    .splineTo(new Vector2d(52, isRed ? -35 : 35), Math.toRadians(0.00));
+                    .splineTo(new Vector2d(48, isRed ? -35 : 35), Math.toRadians(0.00));
         } else {
             leftDestinationPath = drive.trajectorySequenceBuilder(drive.getLeftTrajectory().end())
                     .splineTo(new Vector2d(25, isRed ? -18 : 18), Math.toRadians(isRed ? -21 : 21))
-                    .splineTo(new Vector2d(52, isRed ? -29 : 41), Math.toRadians(0.00));
+                    .splineTo(new Vector2d(48, isRed ? -29 : 41), Math.toRadians(0.00));
             rightDestinationPath = drive.trajectorySequenceBuilder(drive.getRightTrajectory().end())
                     .splineTo(new Vector2d(25, isRed ? -18 : 18), Math.toRadians(isRed ? -21 : 21))
-                    .splineTo(new Vector2d(52.00, isRed ? -41 : 29), Math.toRadians(0.00));
+                    .splineTo(new Vector2d(48.00, isRed ? -41 : 29), Math.toRadians(0.00));
             centerDestinationPath = drive.trajectorySequenceBuilder(drive.getCenterTrajectory().end())
                     .splineTo(new Vector2d(25, isRed ? -18 : 18), Math.toRadians(isRed ? -21 : 21))
-                    .splineTo(new Vector2d(52, isRed ? -35 : 35), Math.toRadians(0.00));
+                    .splineTo(new Vector2d(48, isRed ? -35 : 35), Math.toRadians(0.00));
         }
         drive.setLeftTrajectory(leftDestinationPath.build());
         drive.setCenterTrajectory(centerDestinationPath.build());
