@@ -2,11 +2,12 @@
 <Robot type="FirstInspires-FTC">
     <Webcam
         name="Webcam 1"
-        serialNumber="D8790580" />
+        serialNumber="VendorProduct:vendor=0x046d|product=0x08e5|connection=" />
+
     <LynxUsbDevice
-        name="Expansion Hub Portal 1"
-        parentModuleAddress="2"
-        serialNumber="DQ3DI86U">
+        name="Control Hub Portal"
+        parentModuleAddress="173"
+        serialNumber="(embedded)">
         <LynxModule
             name="Expansion Hub 2"
             port="2">
@@ -22,21 +23,13 @@
             <goBILDA5202SeriesMotor
                 name="intake"
                 port="3" />
-
-
-            <!--            <LynxEmbeddedIMU name="imu 1" port="0" bus="0" />-->
-            <!--            <goBILDA5202SeriesMotor name="brat" port="0" />-->
-
-            <!--            <ContinuousRotationServo-->
-            <!--                name="slider1_servo"-->
-            <!--                port="0" />-->
+            <ContinuousRotationServo
+                name="holder"
+                port="2" />
+            <Servo
+                name="slider1_servo"
+                port="0" />
         </LynxModule>
-    </LynxUsbDevice>
-
-    <LynxUsbDevice
-        name="Control Hub Portal"
-        parentModuleAddress="173"
-        serialNumber="(embedded)">
         <LynxModule
             name="Control Hub"
             port="173">
@@ -49,19 +42,17 @@
             <goBILDA5202SeriesMotor
                 name="slider2"
                 port="2" />
-            <!--            <ContinuousRotationServo-->
-            <!--                name="slider2_servo"-->
-            <!--                port="0" />-->
-            <ContinuousRotationServo
-                name="holder"
-                port="1" />
+            <Servo
+                name="slider2_servo"
+                port="0" />
+
             <LynxEmbeddedIMU
                 name="imu"
                 bus="0"
                 port="0" />
             <Servo
                 name="drone"
-                port="3"></Servo>
+                port="4"></Servo>
             <!--            <ContinuousRotationServo name="activeOuttake" port="1" />-->
         </LynxModule>
     </LynxUsbDevice>

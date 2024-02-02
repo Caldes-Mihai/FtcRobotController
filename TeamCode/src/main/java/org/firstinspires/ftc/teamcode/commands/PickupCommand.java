@@ -12,8 +12,10 @@ public class PickupCommand extends SequentialCommandGroup {
                 new ActivateIntakeCommand(subsystem, false),
                 new ActivateHolderCommand(outtakeSubsystem, false),
                 new WaitCommand(500),
-                new DeactivateIntakeCommand(subsystem),
-                new DeactivateHolderCommand(outtakeSubsystem)
+                new ActivateIntakeCommand(subsystem, true),
+                new DeactivateHolderCommand(outtakeSubsystem),
+                new WaitCommand(500),
+                new DeactivateIntakeCommand(subsystem)
         );
         addRequirements(subsystem, outtakeSubsystem);
     }

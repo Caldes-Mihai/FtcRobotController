@@ -13,7 +13,6 @@ public class CacheableMotor extends Motor {
         super(hMap, id);
     }
 
-    @Override
     public void set(double output) {
         output = Range.clip(output, -1, 1);
         if (output != cachedPower) {

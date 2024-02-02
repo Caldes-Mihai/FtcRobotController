@@ -15,11 +15,12 @@ public class DroneSubsystem extends SubsystemBase {
     public DroneSubsystem(CacheableServo drone, GamepadEx gamepad) {
         this.gamepad = gamepad;
         this.drone = drone;
-        drone.setInverted(true);
     }
 
     public void handle() {
         if (gamepad.getButton(GamepadKeys.Button.Y))
-            drone.turnToAngle(90);
+            drone.setPosition(0);
+        else
+            drone.setPosition(0.5);
     }
 }

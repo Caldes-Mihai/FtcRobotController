@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -68,6 +70,8 @@ public class HandleTeleOp {
     private static CacheableMotor intake;
     private static CacheableMotor slider1;
     private static CacheableMotor slider2;
+    private static CacheableServo slider1_servo;
+    private static CacheableServo slider2_servo;
     private static CacheableServo drone;
     private static CacheableCRServo holder;
     private static AprilTagProcessor processor;
@@ -89,7 +93,8 @@ public class HandleTeleOp {
     public static void init(boolean isRed, CommandOpMode op) {
         opMode = op;
         hardwareMap = opMode.hardwareMap;
-        telemetry = opMode.telemetry;
+        telemetry = new MultipleTelemetry(opMode.telemetry, FtcDashboard.getInstance().getTelemetry());
+        opMode.telemetry = telemetry;
         cacheManager = new CacheManager(hardwareMap);
         driver = new GamepadEx(opMode.gamepad1);
         tool = new GamepadEx(opMode.gamepad2);
@@ -113,6 +118,8 @@ public class HandleTeleOp {
         intake = new CacheableMotor(hardwareMap, "intake");
         slider1 = new CacheableMotor(hardwareMap, "slider1");
         slider2 = new CacheableMotor(hardwareMap, "slider2");
+        slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
+        slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
         holder = new CacheableCRServo(hardwareMap, "holder");
         drone = new CacheableServo(hardwareMap, "drone", 0, 270);
         teleOpDriveSubsystem = new TeleOpDriveSubsystem(
@@ -120,7 +127,7 @@ public class HandleTeleOp {
                 driver, isRed, opMode
         );
         intakeSubsystem = new IntakeSubsystem(intake, tool);
-        outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, holder, tool);
+        outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, slider1_servo, slider2_servo, holder, tool);
         droneSubsystem = new DroneSubsystem(drone, driver);
         opMode.register(teleOpDriveSubsystem, intakeSubsystem, outtakeSubsystem, droneSubsystem);
         teleOpDriveSubsystem.setDefaultCommand(new DriveCommand(teleOpDriveSubsystem));

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
@@ -13,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
 import org.firstinspires.ftc.teamcode.cache.CacheableCRServo;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
+import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.GoFromBoardToPixelStackCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToBoardCommand;
@@ -53,6 +56,8 @@ public class HandleAuto {
     private static CacheableMotor intake;
     private static CacheableMotor slider1;
     private static CacheableMotor slider2;
+    private static CacheableServo slider1_servo;
+    private static CacheableServo slider2_servo;
     private static CacheableCRServo holder;
     private static PropProcessor.Positions propPosition;
     private static CommandOpMode opMode;
@@ -65,11 +70,14 @@ public class HandleAuto {
     public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode op) {
         opMode = op;
         hardwareMap = opMode.hardwareMap;
-        telemetry = opMode.telemetry;
+        telemetry = new MultipleTelemetry(opMode.telemetry, FtcDashboard.getInstance().getTelemetry());
+        opMode.telemetry = telemetry;
         cacheManager = new CacheManager(hardwareMap);
         intake = new CacheableMotor(hardwareMap, "intake");
         slider1 = new CacheableMotor(hardwareMap, "slider1");
         slider2 = new CacheableMotor(hardwareMap, "slider2");
+        slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
+        slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
         holder = new CacheableCRServo(hardwareMap, "holder");
         processor = new PropProcessor(telemetry);
         processor.setRed(isRed);
@@ -85,7 +93,7 @@ public class HandleAuto {
         drive = new SampleMecanumDrive(hardwareMap);
         autoDriveSubsystem = new AutoDriveSubsystem(drive, aprilTagProcessor, false);
         intakeSubsystem = new IntakeSubsystem(intake);
-        outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, holder);
+        outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, slider1_servo, slider2_servo, holder);
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
         if (!isRed) {
             if (currentSpawnPosition.equals("down"))
