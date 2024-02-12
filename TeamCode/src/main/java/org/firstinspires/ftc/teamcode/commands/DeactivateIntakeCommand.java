@@ -5,7 +5,8 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
 public class DeactivateIntakeCommand extends CommandBase {
-    private IntakeSubsystem subsystem;
+    private final IntakeSubsystem subsystem;
+
     public DeactivateIntakeCommand(IntakeSubsystem intakeSubsystem) {
         subsystem = intakeSubsystem;
         addRequirements(intakeSubsystem);
@@ -13,6 +14,7 @@ public class DeactivateIntakeCommand extends CommandBase {
 
     @Override
     public void execute() {
+        subsystem.retract();
         subsystem.deactivate();
     }
 

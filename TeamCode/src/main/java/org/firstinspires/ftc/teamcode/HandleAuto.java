@@ -54,6 +54,7 @@ public class HandleAuto {
     private static OuttakeSubsystem outtakeSubsystem;
     private static Pose2d startPose;
     private static CacheableMotor intake;
+    private static CacheableServo intake_servo;
     private static CacheableMotor slider1;
     private static CacheableMotor slider2;
     private static CacheableServo slider1_servo;
@@ -74,6 +75,7 @@ public class HandleAuto {
         opMode.telemetry = telemetry;
         cacheManager = new CacheManager(hardwareMap);
         intake = new CacheableMotor(hardwareMap, "intake");
+        intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 180);
         slider1 = new CacheableMotor(hardwareMap, "slider1");
         slider2 = new CacheableMotor(hardwareMap, "slider2");
         slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
@@ -92,7 +94,7 @@ public class HandleAuto {
         setManualExposure(6, 250);
         drive = new SampleMecanumDrive(hardwareMap);
         autoDriveSubsystem = new AutoDriveSubsystem(drive, aprilTagProcessor, false);
-        intakeSubsystem = new IntakeSubsystem(intake);
+        intakeSubsystem = new IntakeSubsystem(intake, intake_servo);
         outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, slider1_servo, slider2_servo, holder);
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
         if (!isRed) {

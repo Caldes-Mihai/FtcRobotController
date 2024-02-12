@@ -39,8 +39,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
 import org.firstinspires.ftc.teamcode.cache.CacheableCRServo;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
@@ -54,10 +52,6 @@ import org.firstinspires.ftc.teamcode.subsystems.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TeleOpDriveSubsystem;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-
-import java.util.concurrent.TimeUnit;
 
 public class HandleTeleOp {
     public static long delta;
@@ -67,14 +61,13 @@ public class HandleTeleOp {
     private static CacheableMotor rightFrontDrive;
     private static CacheableMotor rightBackDrive;
     private static CacheableMotor intake;
+    private static CacheableServo intake_servo;
     private static CacheableMotor slider1;
     private static CacheableMotor slider2;
     private static CacheableServo slider1_servo;
     private static CacheableServo slider2_servo;
     private static CacheableServo drone;
     private static CacheableCRServo holder;
-    private static AprilTagProcessor processor;
-    private static VisionPortal visionPortal;
     private static GamepadEx driver;
     private static GamepadEx tool;
     private static IMU.Parameters parameters;
@@ -103,18 +96,12 @@ public class HandleTeleOp {
                 DriveConstants.LOGO_FACING_DIR,
                 DriveConstants.USB_FACING_DIR));
         imu.initialize(parameters);
-//        processor = new AprilTagProcessor.Builder().build();
-//        processor.setDecimation(2);
-//        visionPortal = new VisionPortal.Builder()
-//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-//                .addProcessor(processor)
-//                .build();
-//        setManualExposure(6, 250);
         leftFrontDrive = new CacheableMotor(hardwareMap, "front_left_motor");
         leftBackDrive = new CacheableMotor(hardwareMap, "back_left_motor");
         rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
         rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
         intake = new CacheableMotor(hardwareMap, "intake");
+        intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 180);
         slider1 = new CacheableMotor(hardwareMap, "slider1");
         slider2 = new CacheableMotor(hardwareMap, "slider2");
         slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
@@ -125,7 +112,7 @@ public class HandleTeleOp {
                 leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu,
                 driver, isRed, opMode
         );
-        intakeSubsystem = new IntakeSubsystem(intake, tool);
+        intakeSubsystem = new IntakeSubsystem(intake, intake_servo, tool);
         outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, slider1_servo, slider2_servo, holder, tool);
         droneSubsystem = new DroneSubsystem(drone, driver);
         opMode.register(teleOpDriveSubsystem, intakeSubsystem, outtakeSubsystem, droneSubsystem);
@@ -134,39 +121,6 @@ public class HandleTeleOp {
         outtakeSubsystem.setDefaultCommand(new HandleOuttakeCommand(outtakeSubsystem));
         droneSubsystem.setDefaultCommand(new HandleDroneCommand(droneSubsystem));
         opMode.schedule(new RunCommand(telemetry::update));
-    }
-
-    private static void setManualExposure(int exposureMS, int gain) {
-        // Wait for the camera to be open, then use the controls
-
-        if (visionPortal == null) {
-            return;
-        }
-
-        // Make sure camera is streaming before we try to set the exposure controls
-        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("Camera", "Waiting");
-            telemetry.update();
-            while (!opMode.isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
-                opMode.sleep(20);
-            }
-            telemetry.addData("Camera", "Ready");
-            telemetry.update();
-        }
-
-        // Set camera controls unless we are stopping.
-        if (!opMode.isStopRequested()) {
-            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-                exposureControl.setMode(ExposureControl.Mode.Manual);
-                opMode.sleep(50);
-            }
-            exposureControl.setExposure(exposureMS, TimeUnit.MILLISECONDS);
-            opMode.sleep(20);
-            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-            gainControl.setGain(gain);
-            opMode.sleep(20);
-        }
     }
 
     public static void run() {

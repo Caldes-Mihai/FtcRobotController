@@ -15,6 +15,7 @@ public class ActivateIntakeCommand extends CommandBase {
 
     @Override
     public void execute() {
+        subsystem.extend();
         subsystem.activate();
     }
 

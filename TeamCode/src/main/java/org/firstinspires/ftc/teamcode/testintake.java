@@ -29,17 +29,24 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "test intake")
+@Config
 public class testintake extends LinearOpMode {
+
+    public static double retract = 0;
+    public static double extend = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
+        Servo intake_servo = hardwareMap.get(Servo.class, "intake_servo");
         CRServo holder = hardwareMap.get(CRServo.class, "holder");
         waitForStart();
         while (opModeIsActive()) {
@@ -53,6 +60,10 @@ public class testintake extends LinearOpMode {
                 intake.setPower(0);
                 holder.setPower(0);
             }
+            if (gamepad2.left_bumper) {
+                intake_servo.setPosition(extend);
+            } else
+                intake_servo.setPosition(retract);
         }
     }
 }
