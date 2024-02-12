@@ -39,7 +39,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
@@ -104,13 +103,13 @@ public class HandleTeleOp {
                 DriveConstants.LOGO_FACING_DIR,
                 DriveConstants.USB_FACING_DIR));
         imu.initialize(parameters);
-        processor = new AprilTagProcessor.Builder().build();
-        processor.setDecimation(2);
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .addProcessor(processor)
-                .build();
-        setManualExposure(6, 250);
+//        processor = new AprilTagProcessor.Builder().build();
+//        processor.setDecimation(2);
+//        visionPortal = new VisionPortal.Builder()
+//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+//                .addProcessor(processor)
+//                .build();
+//        setManualExposure(6, 250);
         leftFrontDrive = new CacheableMotor(hardwareMap, "front_left_motor");
         leftBackDrive = new CacheableMotor(hardwareMap, "back_left_motor");
         rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");

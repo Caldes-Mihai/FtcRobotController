@@ -9,6 +9,8 @@ import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 
 @Config
 public class DroneSubsystem extends SubsystemBase {
+    public static double start = 0.8;
+    public static double end = 0.5;
     private final CacheableServo drone;
     private final GamepadEx gamepad;
 
@@ -19,8 +21,8 @@ public class DroneSubsystem extends SubsystemBase {
 
     public void handle() {
         if (gamepad.getButton(GamepadKeys.Button.Y))
-            drone.setPosition(0);
+            drone.setPosition(end);
         else
-            drone.setPosition(0.5);
+            drone.setPosition(start);
     }
 }

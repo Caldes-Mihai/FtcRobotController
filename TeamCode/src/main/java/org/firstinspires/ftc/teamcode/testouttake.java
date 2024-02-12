@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class testouttake extends LinearOpMode {
 
     public static double extended = 0.1;
-    public static double retracted = 0.35;
+    public static double retracted = 0.25;
 
     public static boolean isExtended = false;
 
@@ -60,7 +60,7 @@ public class testouttake extends LinearOpMode {
         slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (opModeIsActive()) {
             if (isExtended) {
-                
+
                 slider1_servo.setPosition(extended);
                 slider2_servo.setPosition(extended);
             } else {

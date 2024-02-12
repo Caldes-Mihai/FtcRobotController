@@ -52,7 +52,7 @@
                 port="0" />
             <Servo
                 name="drone"
-                port="4"></Servo>
+                port="1"></Servo>
             <!--            <ContinuousRotationServo name="activeOuttake" port="1" />-->
         </LynxModule>
     </LynxUsbDevice>

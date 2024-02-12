@@ -44,11 +44,11 @@ public class testintake extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             if (gamepad2.x) {
-                intake.setPower(1);
-                holder.setPower(-1);
+                intake.setPower(0.7);
+                holder.setPower(-0.7);
             } else if (gamepad2.b) {
-                intake.setPower(-1);
-                holder.setPower(1);
+                intake.setPower(-0.7);
+                holder.setPower(0.7);
             } else {
                 intake.setPower(0);
                 holder.setPower(0);
