@@ -209,6 +209,7 @@ public class HandleAuto {
 
     public static void setPropPosition(PropProcessor.Positions position) {
         propPosition = position;
+        visionPortal.setProcessorEnabled(processor, false);
     }
 
     public static void run() {
