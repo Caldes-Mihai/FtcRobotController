@@ -17,6 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final CacheableMotor intake;
     private final CacheableServo intake_servo;
     private final GamepadEx gamepad;
+    private double stage = 5;
 
     public IntakeSubsystem(CacheableMotor intake, CacheableServo intake_servo) {
         this(intake, intake_servo, null);
@@ -42,11 +43,16 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void extend() {
-        intake_servo.setPosition(SERVO_EXTEND_POS);
+        intake_servo.setPosition(SERVO_EXTEND_POS - (SERVO_EXTEND_POS - SERVO_RETRACT_POS) / stage);
     }
 
     public void retract() {
         intake_servo.setPosition(SERVO_RETRACT_POS);
+    }
+
+    public void lower() {
+        if (stage > 1)
+            stage--;
     }
 
     public void handle() {

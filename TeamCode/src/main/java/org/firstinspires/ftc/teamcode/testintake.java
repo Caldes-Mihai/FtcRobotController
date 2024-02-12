@@ -42,6 +42,7 @@ public class testintake extends LinearOpMode {
 
     public static double retract = 0;
     public static double extend = 0;
+    public static double stage = 5;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -61,7 +62,7 @@ public class testintake extends LinearOpMode {
                 holder.setPower(0);
             }
             if (gamepad2.left_bumper) {
-                intake_servo.setPosition(extend);
+                intake_servo.setPosition(extend - (extend - retract) / stage);
             } else
                 intake_servo.setPosition(retract);
         }
