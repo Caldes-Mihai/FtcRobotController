@@ -14,8 +14,6 @@ public class DeactivateIntakeCommand extends CommandBase {
 
     @Override
     public void execute() {
-        subsystem.lower();
-        subsystem.retract();
         subsystem.deactivate();
     }
 
