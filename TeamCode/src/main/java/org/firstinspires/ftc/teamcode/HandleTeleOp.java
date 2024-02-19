@@ -128,5 +128,6 @@ public class HandleTeleOp {
         currentTime = System.currentTimeMillis();
         delta = currentTime - lastTime;
         lastTime = currentTime;
+        telemetry.addData("time diff", delta);
     }
 }

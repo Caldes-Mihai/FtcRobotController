@@ -32,7 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Blue Tele Op Mode")
+@TeleOp(name = "Blue Tele Op Mode", group = "Drive")
 public class BlueTeleOp extends CommandOpMode {
     private final boolean isRed = false;
 

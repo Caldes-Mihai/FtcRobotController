@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class testintake extends LinearOpMode {
 
     public static double retract = 0;
-    public static double extend = 0;
+    public static double extend = 0.3;
     public static double stage = 5;
 
     @Override

@@ -49,7 +49,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (Math.abs(slider1.getCurrentPosition()) >= EXTENDED_SLIDERS_POS / 2 && Math.abs(slider1.getCurrentPosition()) >= RETRACTED_SLIDERS_POS) {
+        if (Math.abs(slider1.getCurrentPosition()) >= EXTENDED_SLIDERS_POS / 2) {
             slider1_servo.setPosition(EXTENDED_SLIDER_SERVO_POS);
             slider2_servo.setPosition(EXTENDED_SLIDER_SERVO_POS);
         } else {
@@ -97,9 +97,9 @@ public class OuttakeSubsystem extends SubsystemBase {
             this.activateHolder();
         } else
             this.deactivateHolder();
-        if (gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3 && Math.abs(slider1.getCurrentPosition()) < EXTENDED_SLIDERS_POS) {
+        if (gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3 && !isExtended()) {
             extend();
-        } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.3 && Math.abs(slider1.getCurrentPosition()) > RETRACTED_SLIDERS_POS)
+        } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.3 && !isRetracted())
             retract();
         else {
             standBy();

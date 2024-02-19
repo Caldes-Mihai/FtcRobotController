@@ -45,6 +45,6 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
         axial = gamepad.getLeftY();
         lateral = gamepad.getLeftX();
         imuDegrees = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        drive.driveFieldCentric(lateral, axial, gamepad.getRightX(), imuDegrees + (isRed ? -90 : 90));
+        drive.driveFieldCentric(lateral, axial, gamepad.getRightX(), imuDegrees + (isRed ? -90 : 90), true);
     }
 }

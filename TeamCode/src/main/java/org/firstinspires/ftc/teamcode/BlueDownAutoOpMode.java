@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Blue Down Auto Op Mode")
+@Autonomous(name = "Blue Down Auto Op Mode", group = "Drive")
 public class BlueDownAutoOpMode extends CommandOpMode {
 
     private final String currentSpawnPosition = "down";
