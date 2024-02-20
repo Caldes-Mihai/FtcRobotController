@@ -10,7 +10,8 @@ public class PrepareOuttake extends SequentialCommandGroup {
     public PrepareOuttake(OuttakeSubsystem subsystem, AutoDriveSubsystem drive) {
         addCommands(
                 new WaitUntilCommand(() -> drive.getPoseEstimate().getX() > 12),
-                new ExtendSlidersCommand(subsystem)
+                new ExtendSlidersCommand(subsystem),
+                new StandBySlidersCommand(subsystem)
         );
         addRequirements(subsystem);
     }

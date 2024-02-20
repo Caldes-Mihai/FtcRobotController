@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.teamcode.commands.PlaceCommand;
 import org.firstinspires.ftc.teamcode.commands.PlacePixelCommand;
 import org.firstinspires.ftc.teamcode.commands.PrepareOuttake;
 import org.firstinspires.ftc.teamcode.commands.RetractSlidersCommand;
+import org.firstinspires.ftc.teamcode.commands.StandBySlidersCommand;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
@@ -36,9 +38,14 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.concurrent.TimeUnit;
 
+@Config
 public class HandleAuto {
 
     public static long delta;
+    public static boolean DEBUG = true;
+    public static boolean IS_RED = false;
+    public static Trajectories TEST_TRAJECTORY = Trajectories.GO_TO_PROP;
+    public static Positions SPAWN_POS = Positions.DOWN;
     /**
      * The variable to store our instance of the AprilTag processor.
      */
@@ -97,79 +104,109 @@ public class HandleAuto {
         intakeSubsystem = new IntakeSubsystem(intake, intake_servo);
         outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, slider1_servo, slider2_servo, holder);
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
-        if (!isRed) {
-            if (currentSpawnPosition.equals("down"))
-                startPose = new Pose2d(-36, 63, Math.toRadians(-90));
-            else
-                startPose = new Pose2d(12, 63, Math.toRadians(-90));
+        if (!DEBUG) {
+            if (!isRed) {
+                if (currentSpawnPosition.equals("down"))
+                    startPose = new Pose2d(-36, 63, Math.toRadians(-90));
+                else
+                    startPose = new Pose2d(12, 63, Math.toRadians(-90));
+            } else {
+                if (currentSpawnPosition.equals("down"))
+                    startPose = new Pose2d(-36, -63, Math.toRadians(90));
+                else
+                    startPose = new Pose2d(12, -63, Math.toRadians(90));
+            }
         } else {
-            if (currentSpawnPosition.equals("down"))
-                startPose = new Pose2d(-36, -63, Math.toRadians(90));
-            else
-                startPose = new Pose2d(12, -63, Math.toRadians(90));
+            if (!IS_RED) {
+                if (SPAWN_POS.equals(Positions.DOWN))
+                    startPose = new Pose2d(-36, 63, Math.toRadians(-90));
+                else
+                    startPose = new Pose2d(12, 63, Math.toRadians(-90));
+            } else {
+                if (SPAWN_POS.equals(Positions.DOWN))
+                    startPose = new Pose2d(-36, -63, Math.toRadians(90));
+                else
+                    startPose = new Pose2d(12, -63, Math.toRadians(90));
+            }
         }
         drive.setPoseEstimate(startPose);
-        if (currentSpawnPosition.equals("down"))
-            opMode.schedule(new SequentialCommandGroup(
-                    new GoToPropCommand(autoDriveSubsystem, processor, isRed, false),
-                    new PlacePixelCommand(intakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem),
-                    new GoToPixelStackCommand(autoDriveSubsystem, isRed, false),
-                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem),
-                    new ParallelCommandGroup(
-                            new GoToBoardCommand(autoDriveSubsystem, isRed, false),
-                            new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                    new PlaceCommand(outtakeSubsystem),
-                    new PlaceCommand(outtakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem),
-                    new ParallelCommandGroup(
-                            new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, false),
-                            new RetractSlidersCommand(outtakeSubsystem)),
-                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem),
-                    new ParallelCommandGroup(
-                            new GoToBoardCommand(autoDriveSubsystem, isRed, false),
-                            new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                    new PlaceCommand(outtakeSubsystem),
-                    new PlaceCommand(outtakeSubsystem),
-                    new RetractSlidersCommand(outtakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem)
-            ));
-        else
-            opMode.schedule(new SequentialCommandGroup(
-                    new GoToPropCommand(autoDriveSubsystem, processor, isRed, true),
-                    new PlacePixelCommand(intakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem),
-                    new ParallelCommandGroup(
-                            new GoToBoardCommand(autoDriveSubsystem, isRed, true),
-                            new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                    new PlaceCommand(outtakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem),
-                    new ParallelCommandGroup(
-                            new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
-                            new RetractSlidersCommand(outtakeSubsystem)),
-                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem),
-                    new ParallelCommandGroup(
-                            new GoToBoardCommand(autoDriveSubsystem, isRed, true),
-                            new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                    new PlaceCommand(outtakeSubsystem),
-                    new PlaceCommand(outtakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem),
-                    new ParallelCommandGroup(
-                            new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
-                            new RetractSlidersCommand(outtakeSubsystem)),
-                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem),
-                    new ParallelCommandGroup(
-                            new GoToBoardCommand(autoDriveSubsystem, isRed, true),
-                            new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                    new PlaceCommand(outtakeSubsystem),
-                    new PlaceCommand(outtakeSubsystem),
-                    new RetractSlidersCommand(outtakeSubsystem),
-                    new AdjustPositionCommand(autoDriveSubsystem)
-            ));
+        if (!DEBUG) {
+            if (currentSpawnPosition.equals("down"))
+                opMode.schedule(new SequentialCommandGroup(
+                        new GoToPropCommand(autoDriveSubsystem, processor, isRed, false),
+                        new PlacePixelCommand(intakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem),
+                        new GoToPixelStackCommand(autoDriveSubsystem, isRed, false),
+                        new PickupCommand(intakeSubsystem, outtakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem),
+                        new ParallelCommandGroup(
+                                new GoToBoardCommand(autoDriveSubsystem, isRed, false),
+                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
+                        new PlaceCommand(outtakeSubsystem),
+                        new PlaceCommand(outtakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem),
+                        new ParallelCommandGroup(
+                                new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, false),
+                                new RetractSlidersCommand(outtakeSubsystem),
+                                new StandBySlidersCommand(outtakeSubsystem)),
+                        new PickupCommand(intakeSubsystem, outtakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem),
+                        new ParallelCommandGroup(
+                                new GoToBoardCommand(autoDriveSubsystem, isRed, false),
+                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
+                        new PlaceCommand(outtakeSubsystem),
+                        new PlaceCommand(outtakeSubsystem),
+                        new RetractSlidersCommand(outtakeSubsystem),
+                        new StandBySlidersCommand(outtakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem)
+                ));
+            else
+                opMode.schedule(new SequentialCommandGroup(
+                        new GoToPropCommand(autoDriveSubsystem, processor, isRed, true),
+                        new PlacePixelCommand(intakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem),
+                        new ParallelCommandGroup(
+                                new GoToBoardCommand(autoDriveSubsystem, isRed, true),
+                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
+                        new PlaceCommand(outtakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem),
+                        new ParallelCommandGroup(
+                                new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
+                                new RetractSlidersCommand(outtakeSubsystem),
+                                new StandBySlidersCommand(outtakeSubsystem)),
+                        new PickupCommand(intakeSubsystem, outtakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem),
+                        new ParallelCommandGroup(
+                                new GoToBoardCommand(autoDriveSubsystem, isRed, true),
+                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
+                        new PlaceCommand(outtakeSubsystem),
+                        new PlaceCommand(outtakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem),
+                        new ParallelCommandGroup(
+                                new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
+                                new RetractSlidersCommand(outtakeSubsystem),
+                                new StandBySlidersCommand(outtakeSubsystem)),
+                        new PickupCommand(intakeSubsystem, outtakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem),
+                        new ParallelCommandGroup(
+                                new GoToBoardCommand(autoDriveSubsystem, isRed, true),
+                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
+                        new PlaceCommand(outtakeSubsystem),
+                        new PlaceCommand(outtakeSubsystem),
+                        new RetractSlidersCommand(outtakeSubsystem),
+                        new StandBySlidersCommand(outtakeSubsystem),
+                        new AdjustPositionCommand(autoDriveSubsystem)
+                ));
+        } else {
+            if (TEST_TRAJECTORY.equals(Trajectories.GO_TO_PROP))
+                opMode.schedule(new SequentialCommandGroup(new GoToPropCommand(autoDriveSubsystem, processor, IS_RED, SPAWN_POS.equals(Positions.UP))));
+            else if (TEST_TRAJECTORY.equals(Trajectories.GO_TO_BOARD))
+                opMode.schedule(new SequentialCommandGroup(new GoToBoardCommand(autoDriveSubsystem, IS_RED, SPAWN_POS.equals(Positions.UP))));
+            else if (TEST_TRAJECTORY.equals(Trajectories.GO_TO_PIXEL_STACK))
+                opMode.schedule(new SequentialCommandGroup(new GoToPixelStackCommand(autoDriveSubsystem, IS_RED, SPAWN_POS.equals(Positions.UP))));
+            else if (TEST_TRAJECTORY.equals(Trajectories.GO_FROM_BOARD_TO_PIXEL_STACK))
+                opMode.schedule(new SequentialCommandGroup(new GoFromBoardToPixelStackCommand(autoDriveSubsystem, IS_RED, SPAWN_POS.equals(Positions.UP))));
+        }
     }
 
     private static void setManualExposure(int exposureMS, int gain) {
@@ -221,5 +258,17 @@ public class HandleAuto {
         lastTime = currentTime;
         telemetry.addData("time", 1000 / delta + "hz");
         telemetry.update();
+    }
+
+    public enum Trajectories {
+        GO_TO_BOARD,
+        GO_TO_PIXEL_STACK,
+        GO_TO_PROP,
+        GO_FROM_BOARD_TO_PIXEL_STACK
+    }
+
+    public enum Positions {
+        DOWN,
+        UP
     }
 }
