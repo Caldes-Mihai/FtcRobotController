@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name = "Blue Down Auto Op Mode", group = "Drive")
 public class BlueDownAutoOpMode extends CommandOpMode {
 
-    private final String currentSpawnPosition = "down";
+    private final HandleAuto.Positions currentSpawnPosition = HandleAuto.Positions.DOWN;
     private final boolean isRed = false;
 
     @Override

@@ -75,7 +75,7 @@ public class HandleAuto {
     private static long currentTime;
     private static long lastTime;
 
-    public static void init(boolean isRed, String currentSpawnPosition, CommandOpMode op) {
+    public static void init(boolean isRed, Positions currentSpawnPosition, CommandOpMode op) {
         opMode = op;
         hardwareMap = opMode.hardwareMap;
         telemetry = new MultipleTelemetry(opMode.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -106,12 +106,12 @@ public class HandleAuto {
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
         if (!DEBUG) {
             if (!isRed) {
-                if (currentSpawnPosition.equals("down"))
+                if (currentSpawnPosition.equals(Positions.DOWN))
                     startPose = new Pose2d(-36, 63, Math.toRadians(-90));
                 else
                     startPose = new Pose2d(12, 63, Math.toRadians(-90));
             } else {
-                if (currentSpawnPosition.equals("down"))
+                if (currentSpawnPosition.equals(Positions.DOWN))
                     startPose = new Pose2d(-36, -63, Math.toRadians(90));
                 else
                     startPose = new Pose2d(12, -63, Math.toRadians(90));
@@ -131,7 +131,7 @@ public class HandleAuto {
         }
         drive.setPoseEstimate(startPose);
         if (!DEBUG) {
-            if (currentSpawnPosition.equals("down"))
+            if (currentSpawnPosition.equals(Positions.DOWN))
                 opMode.schedule(new SequentialCommandGroup(
                         new GoToPropCommand(autoDriveSubsystem, processor, isRed, false),
                         new PlacePixelCommand(intakeSubsystem),
@@ -199,13 +199,13 @@ public class HandleAuto {
                 ));
         } else {
             if (TEST_TRAJECTORY.equals(Trajectories.GO_TO_PROP))
-                opMode.schedule(new SequentialCommandGroup(new GoToPropCommand(autoDriveSubsystem, processor, IS_RED, SPAWN_POS.equals(Positions.UP))));
+                opMode.schedule(new GoToPropCommand(autoDriveSubsystem, processor, IS_RED, SPAWN_POS.equals(Positions.UP)));
             else if (TEST_TRAJECTORY.equals(Trajectories.GO_TO_BOARD))
-                opMode.schedule(new SequentialCommandGroup(new GoToBoardCommand(autoDriveSubsystem, IS_RED, SPAWN_POS.equals(Positions.UP))));
+                opMode.schedule(new GoToBoardCommand(autoDriveSubsystem, IS_RED, SPAWN_POS.equals(Positions.UP)));
             else if (TEST_TRAJECTORY.equals(Trajectories.GO_TO_PIXEL_STACK))
-                opMode.schedule(new SequentialCommandGroup(new GoToPixelStackCommand(autoDriveSubsystem, IS_RED, SPAWN_POS.equals(Positions.UP))));
+                opMode.schedule(new GoToPixelStackCommand(autoDriveSubsystem, IS_RED, SPAWN_POS.equals(Positions.UP)));
             else if (TEST_TRAJECTORY.equals(Trajectories.GO_FROM_BOARD_TO_PIXEL_STACK))
-                opMode.schedule(new SequentialCommandGroup(new GoFromBoardToPixelStackCommand(autoDriveSubsystem, IS_RED, SPAWN_POS.equals(Positions.UP))));
+                opMode.schedule(new GoFromBoardToPixelStackCommand(autoDriveSubsystem, IS_RED, SPAWN_POS.equals(Positions.UP)));
         }
     }
 

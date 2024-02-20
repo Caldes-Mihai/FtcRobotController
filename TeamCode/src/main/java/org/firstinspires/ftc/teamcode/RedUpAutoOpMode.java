@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name = "Red Up Auto Op Mode", group = "Drive")
 public class RedUpAutoOpMode extends CommandOpMode {
 
-    private final String currentSpawnPosition = "up";
+    private final HandleAuto.Positions currentSpawnPosition = HandleAuto.Positions.UP;
     private final boolean isRed = true;
 
     @Override
