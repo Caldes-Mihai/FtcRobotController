@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "test intake")
@@ -49,6 +50,10 @@ public class testintake extends LinearOpMode {
         DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
         Servo intake_servo = hardwareMap.get(Servo.class, "intake_servo");
         CRServo holder = hardwareMap.get(CRServo.class, "holder");
+        DigitalChannel beam = hardwareMap.get(DigitalChannel.class, "beam");
+        beam.setMode(DigitalChannel.Mode.INPUT);
+        int pixels = 0;
+        boolean state, oldState = false;
         waitForStart();
         while (opModeIsActive()) {
             if (gamepad2.x) {
@@ -65,6 +70,13 @@ public class testintake extends LinearOpMode {
                 intake_servo.setPosition(extend - (extend - retract) / stage);
             } else
                 intake_servo.setPosition(retract);
+            state = beam.getState();
+            if (state != oldState)
+                pixels++;
+            oldState = state;
+            telemetry.addData("beam", state);
+            telemetry.addData("pixels", pixels);
+            telemetry.update();
         }
     }
 }
