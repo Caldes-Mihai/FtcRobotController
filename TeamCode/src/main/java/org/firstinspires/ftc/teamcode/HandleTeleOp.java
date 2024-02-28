@@ -112,7 +112,7 @@ public class HandleTeleOp {
                 leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu,
                 driver, isRed, opMode
         );
-        intakeSubsystem = new IntakeSubsystem(intake, intake_servo, tool);
+        intakeSubsystem = new IntakeSubsystem(intake, intake_servo, null, tool);
         outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, slider1_servo, slider2_servo, holder, tool);
         droneSubsystem = new DroneSubsystem(drone, driver);
         opMode.register(teleOpDriveSubsystem, intakeSubsystem, outtakeSubsystem, droneSubsystem);

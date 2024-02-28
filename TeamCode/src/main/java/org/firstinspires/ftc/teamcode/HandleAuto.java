@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -67,6 +68,7 @@ public class HandleAuto {
     private static CacheableServo slider1_servo;
     private static CacheableServo slider2_servo;
     private static CacheableCRServo holder;
+    private static DigitalChannel beam;
     private static PropProcessor.Positions propPosition;
     private static CommandOpMode opMode;
     private static HardwareMap hardwareMap;
@@ -88,6 +90,7 @@ public class HandleAuto {
         slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
         slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
         holder = new CacheableCRServo(hardwareMap, "holder");
+        beam = hardwareMap.get(DigitalChannel.class, "beam");
         processor = new PropProcessor(telemetry);
         processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -101,7 +104,7 @@ public class HandleAuto {
         setManualExposure(6, 250);
         drive = new SampleMecanumDrive(hardwareMap);
         autoDriveSubsystem = new AutoDriveSubsystem(drive, aprilTagProcessor, false);
-        intakeSubsystem = new IntakeSubsystem(intake, intake_servo);
+        intakeSubsystem = new IntakeSubsystem(intake, intake_servo, beam);
         outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, slider1_servo, slider2_servo, holder);
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
         if (!DEBUG) {
