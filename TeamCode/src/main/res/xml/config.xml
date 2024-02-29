@@ -45,7 +45,9 @@
             <Servo
                 name="slider2_servo"
                 port="0" />
-
+            <AnalogInput
+                name="beam"
+                port="0" />
             <LynxEmbeddedIMU
                 name="imu"
                 bus="0"

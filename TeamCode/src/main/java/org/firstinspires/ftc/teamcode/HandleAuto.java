@@ -7,7 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -68,7 +68,7 @@ public class HandleAuto {
     private static CacheableServo slider1_servo;
     private static CacheableServo slider2_servo;
     private static CacheableCRServo holder;
-    private static DigitalChannel beam;
+    private static AnalogInput beam;
     private static PropProcessor.Positions propPosition;
     private static CommandOpMode opMode;
     private static HardwareMap hardwareMap;
@@ -84,13 +84,13 @@ public class HandleAuto {
         opMode.telemetry = telemetry;
         cacheManager = new CacheManager(hardwareMap);
         intake = new CacheableMotor(hardwareMap, "intake");
-        intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 180);
+        intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 270);
         slider1 = new CacheableMotor(hardwareMap, "slider1");
         slider2 = new CacheableMotor(hardwareMap, "slider2");
         slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
         slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
         holder = new CacheableCRServo(hardwareMap, "holder");
-        beam = hardwareMap.get(DigitalChannel.class, "beam");
+        beam = hardwareMap.analogInput.get("beam");
         processor = new PropProcessor(telemetry);
         processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()

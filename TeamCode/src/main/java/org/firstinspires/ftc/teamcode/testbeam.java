@@ -33,42 +33,20 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "test intake")
+@TeleOp(name = "test beam")
 @Config
-public class testintake extends LinearOpMode {
+public class testbeam extends LinearOpMode {
 
-    public static double retract = 0;
-    public static double extend = 0.3;
-    public static double stage = 5;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-        Servo intake_servo = hardwareMap.get(Servo.class, "intake_servo");
-        CRServo holder = hardwareMap.get(CRServo.class, "holder");
         AnalogInput beam = hardwareMap.analogInput.get("beam");
         int pixels = 0;
         boolean state, oldState = false;
         waitForStart();
+
         while (opModeIsActive()) {
-            if (gamepad2.x) {
-                intake.setPower(0.7);
-                holder.setPower(-0.7);
-            } else if (gamepad2.b) {
-                intake.setPower(-0.7);
-                holder.setPower(0.7);
-            } else {
-                intake.setPower(0);
-                holder.setPower(0);
-            }
-            if (gamepad2.left_bumper) {
-                intake_servo.setPosition(extend - (extend - retract) / stage);
-            } else
-                intake_servo.setPosition(retract);
             state = beam.getVoltage() < 1;
             if (state && !oldState)
                 pixels++;

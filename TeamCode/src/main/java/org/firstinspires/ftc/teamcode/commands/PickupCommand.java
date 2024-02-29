@@ -10,11 +10,11 @@ import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 public class PickupCommand extends SequentialCommandGroup {
     public PickupCommand(IntakeSubsystem subsystem, OuttakeSubsystem outtakeSubsystem) {
         addCommands(
-                new ActivateIntakeCommand(subsystem, false),
+                new ActivateIntakeCommand(subsystem, false, false),
                 new ActivateHolderCommand(outtakeSubsystem, false),
                 new WaitUntilCommand(() -> subsystem.pixels == 2),
                 new ResetPixelCount(subsystem),
-                new ActivateIntakeCommand(subsystem, true),
+                new ActivateIntakeCommand(subsystem, true, false),
                 new DeactivateHolderCommand(outtakeSubsystem),
                 new WaitCommand(500),
                 new DeactivateIntakeCommand(subsystem)

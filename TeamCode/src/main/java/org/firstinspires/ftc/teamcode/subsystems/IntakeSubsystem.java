@@ -5,7 +5,7 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 import org.firstinspires.ftc.teamcode.cache.CacheableServo;
@@ -13,28 +13,29 @@ import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 @Config
 public class IntakeSubsystem extends SubsystemBase {
     public static double MAX_SPEED = 0.7;
+    public static double MAX_SLOW_SPEED = 0.3;
     public static double SERVO_RETRACT_POS = 0;
     public static double SERVO_EXTEND_POS = 0;
     private final CacheableMotor intake;
     private final CacheableServo intake_servo;
-    private final DigitalChannel beam;
+    private final AnalogInput beam;
     private final GamepadEx gamepad;
     public int pixels = 0;
     private int stage = 5;
     private boolean oldState;
     private boolean state = false;
+    private boolean slow = false;
 
-    public IntakeSubsystem(CacheableMotor intake, CacheableServo intake_servo, DigitalChannel beam) {
+    public IntakeSubsystem(CacheableMotor intake, CacheableServo intake_servo, AnalogInput beam) {
         this(intake, intake_servo, beam, null);
     }
 
-    public IntakeSubsystem(CacheableMotor intake, CacheableServo intake_servo, DigitalChannel beam, GamepadEx gamepad) {
+    public IntakeSubsystem(CacheableMotor intake, CacheableServo intake_servo, AnalogInput beam, GamepadEx gamepad) {
         this.intake = intake;
         this.intake_servo = intake_servo;
         this.beam = beam;
         this.gamepad = gamepad;
         intake.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        beam.setMode(DigitalChannel.Mode.INPUT);
     }
 
     public void setReversed(boolean isReversed) {
@@ -42,11 +43,15 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void activate() {
-        intake.set(MAX_SPEED);
-        state = beam.getState();
-        if (state != oldState)
+        intake.set(slow ? MAX_SLOW_SPEED : MAX_SPEED);
+        state = beam.getVoltage() < 1;
+        if (state && !oldState)
             pixels++;
         oldState = state;
+    }
+
+    public void setSlow(boolean slow) {
+        this.slow = slow;
     }
 
     public void deactivate() {

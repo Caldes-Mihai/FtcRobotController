@@ -101,7 +101,7 @@ public class HandleTeleOp {
         rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
         rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
         intake = new CacheableMotor(hardwareMap, "intake");
-        intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 180);
+        intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 270);
         slider1 = new CacheableMotor(hardwareMap, "slider1");
         slider2 = new CacheableMotor(hardwareMap, "slider2");
         slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);

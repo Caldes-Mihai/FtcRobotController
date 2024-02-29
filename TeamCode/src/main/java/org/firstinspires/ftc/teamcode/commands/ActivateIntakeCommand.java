@@ -6,17 +6,22 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
 public class ActivateIntakeCommand extends CommandBase {
     private final IntakeSubsystem subsystem;
+    private final boolean reversed;
 
-    public ActivateIntakeCommand(IntakeSubsystem intakeSubsystem, boolean reversed) {
+    public ActivateIntakeCommand(IntakeSubsystem intakeSubsystem, boolean reversed, boolean slow) {
         subsystem = intakeSubsystem;
         subsystem.setReversed(reversed);
+        subsystem.setSlow(slow);
+        this.reversed = reversed;
         addRequirements(intakeSubsystem);
     }
 
     @Override
     public void execute() {
-        subsystem.extend();
-        subsystem.lower();
+        if (!reversed) {
+            subsystem.extend();
+            subsystem.lower();
+        }
         subsystem.activate();
     }
 
