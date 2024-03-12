@@ -72,7 +72,13 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
             oldYaw = yaw;
         if (debug)
             oldYaw = target;
-        dif = oldYaw - imuDegrees;
+        dif = angleWrap(oldYaw - imuDegrees);
         drive.driveFieldCentric(gamepad.getLeftX(), gamepad.getLeftY(), Math.abs(dif) > 3 ? Range.clip(dif * Kp, -0.3, 0.3) : 0, imuDegrees + (isRed ? -90 : 90));
+    }
+
+    private double angleWrap(double headingError) {
+        while (headingError > 180) headingError -= 360;
+        while (headingError <= -180) headingError += 360;
+        return headingError;
     }
 }
