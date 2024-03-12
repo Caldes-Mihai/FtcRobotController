@@ -79,7 +79,7 @@ public class HandleAuto {
                 .build();
         setManualExposure(6, 250);
         autoDriveSubsystem = new AutoDriveSubsystem(hardwareMap, aprilTagProcessor, DEBUG ? SPAWN_POS : currentSpawnPosition, DEBUG ? IS_RED : isRed);
-        intakeSubsystem = new IntakeSubsystem(hardwareMap, 1, null);
+        intakeSubsystem = new IntakeSubsystem(hardwareMap, 1, null, null);
         outtakeSubsystem = new OuttakeSubsystem(hardwareMap, null);
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
         if (!DEBUG) {

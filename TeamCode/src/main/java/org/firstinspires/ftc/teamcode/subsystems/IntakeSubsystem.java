@@ -21,18 +21,20 @@ public class IntakeSubsystem extends SubsystemBase {
     private final CacheableServo intake_servo;
     private final AnalogInput beam;
     private final GamepadEx gamepad;
+    private final GamepadEx gamepad2;
     public int pixels;
     private boolean state = false;
     private boolean oldState;
     private boolean slow = false;
 
 
-    public IntakeSubsystem(HardwareMap hardwareMap, int pixels, GamepadEx gamepad) {
+    public IntakeSubsystem(HardwareMap hardwareMap, int pixels, GamepadEx gamepad, GamepadEx gamepad2) {
         this.intake = new CacheableMotor(hardwareMap, "intake");
         this.intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 270);
         this.beam = hardwareMap.analogInput.get("beam");
         this.pixels = pixels;
         this.gamepad = gamepad;
+        this.gamepad2 = gamepad2;
         intake.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
     }
 
@@ -43,8 +45,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public void activate() {
         intake.set(slow ? MAX_SLOW_SPEED : MAX_SPEED);
         state = beam.getVoltage() < 1;
-        if (state && !oldState)
+        if (state && !oldState) {
             pixels++;
+            if (gamepad != null && gamepad2 != null) {
+                gamepad.gamepad.rumble(1, 1, 250);
+                gamepad2.gamepad.rumble(1, 1, 250);
+            }
+        }
         oldState = state;
     }
 
@@ -70,19 +77,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void handle() {
         setSlow(false);
-        if (gamepad.getButton(GamepadKeys.Button.X)) {
+        if (gamepad.getButton(GamepadKeys.Button.X) || gamepad2.getButton(GamepadKeys.Button.X)) {
             setReversed(true);
             this.activate();
-        } else if (gamepad.getButton(GamepadKeys.Button.B)) {
+        } else if (gamepad.getButton(GamepadKeys.Button.B) || gamepad2.getButton(GamepadKeys.Button.B)) {
             setReversed(false);
             this.activate();
         } else
             this.deactivate();
-        if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+        if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) || gamepad2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
             this.extend();
         } else
             this.retract();
-        if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+        if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) || gamepad2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
             resetPixels();
         }
     }

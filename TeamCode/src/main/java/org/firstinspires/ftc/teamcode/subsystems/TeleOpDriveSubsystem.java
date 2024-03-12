@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
@@ -10,6 +11,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
@@ -18,6 +20,9 @@ import org.firstinspires.ftc.teamcode.drive.Wheels;
 
 @Config
 public class TeleOpDriveSubsystem extends SubsystemBase {
+    public static boolean debug = false;
+    public static double target = 0;
+    public static double Kp = 0.01;
     private static CacheableMotor leftFrontDrive;
     private static CacheableMotor leftBackDrive;
     private static CacheableMotor rightFrontDrive;
@@ -27,7 +32,9 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
     private final GamepadEx gamepad;
     private final boolean isRed;
     private final CommandOpMode opMode;
+    private double yaw, oldYaw, distance, dif;
     private double imuDegrees;
+    private Vector2d joystick;
 
     public TeleOpDriveSubsystem(HardwareMap hardwareMap, GamepadEx gamepad, boolean isRed, CommandOpMode opMode) {
         this.imu = hardwareMap.get(IMU.class, "imu");
@@ -57,6 +64,15 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
         if (gamepad.getButton(GamepadKeys.Button.START))
             imu.resetYaw();
         imuDegrees = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        drive.driveFieldCentric(gamepad.getLeftX(), gamepad.getLeftY(), gamepad.getRightX(), imuDegrees + (isRed ? -90 : 90));
+        joystick = new Vector2d(gamepad.getRightX(), gamepad.getRightY());
+        joystick = joystick.rotated(Math.toRadians(isRed ? 0 : 180));
+        yaw = Math.atan2(-joystick.getY(), joystick.getX());
+        distance = joystick.distTo(new Vector2d(0, 0));
+        if (yaw != oldYaw && distance > 0.7)
+            oldYaw = yaw;
+        if (debug)
+            oldYaw = target;
+        dif = oldYaw - imuDegrees;
+        drive.driveFieldCentric(gamepad.getLeftX(), gamepad.getLeftY(), Math.abs(Math.toDegrees(dif)) > 3 ? Range.clip(dif * Kp, -0.3, 0.3) : 0, imuDegrees + (isRed ? -90 : 90));
     }
 }
