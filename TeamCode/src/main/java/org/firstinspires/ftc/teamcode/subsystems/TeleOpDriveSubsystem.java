@@ -66,13 +66,13 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
         imuDegrees = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         joystick = new Vector2d(gamepad.getRightX(), gamepad.getRightY());
         joystick = joystick.rotated(Math.toRadians(isRed ? 0 : 180));
-        yaw = Math.atan2(-joystick.getY(), joystick.getX());
+        yaw = Math.toDegrees(Math.atan2(-joystick.getY(), joystick.getX()));
         distance = joystick.distTo(new Vector2d(0, 0));
         if (yaw != oldYaw && distance > 0.7)
             oldYaw = yaw;
         if (debug)
             oldYaw = target;
         dif = oldYaw - imuDegrees;
-        drive.driveFieldCentric(gamepad.getLeftX(), gamepad.getLeftY(), Math.abs(Math.toDegrees(dif)) > 3 ? Range.clip(dif * Kp, -0.3, 0.3) : 0, imuDegrees + (isRed ? -90 : 90));
+        drive.driveFieldCentric(gamepad.getLeftX(), gamepad.getLeftY(), Math.abs(dif) > 3 ? Range.clip(dif * Kp, -0.3, 0.3) : 0, imuDegrees + (isRed ? -90 : 90));
     }
 }
