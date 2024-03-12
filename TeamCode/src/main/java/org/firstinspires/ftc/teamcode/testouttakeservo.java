@@ -32,45 +32,53 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "test intake")
 @Config
-public class testintake extends LinearOpMode {
+@TeleOp(name = "test outtake servo")
+public class testouttakeservo extends LinearOpMode {
 
-    public static double retract = 0;
-    public static double extend = 0.3;
-    public static double stage = 5;
+    public static double extended = 0.7;
+    public static double retracted = 0.7;
+
+    public static boolean isExtended = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-        CRServo holder = hardwareMap.get(CRServo.class, "holder");
-        AnalogInput beam = hardwareMap.analogInput.get("beam");
-        int pixels = 0;
-        boolean state, oldState = false;
+        Servo slider1_servo = hardwareMap.get(Servo.class, "slider1_servo");
+        Servo slider2_servo = hardwareMap.get(Servo.class, "slider2_servo");
+        DcMotor slider1 = hardwareMap.get(DcMotor.class, "slider1");
+        DcMotor slider2 = hardwareMap.get(DcMotor.class, "slider2");
+        slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slider2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slider1_servo.setDirection(Servo.Direction.REVERSE);
         waitForStart();
+        slider1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slider1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slider2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         while (opModeIsActive()) {
-            if (gamepad2.x) {
-                intake.setPower(-1);
-                holder.setPower(-1);
-            } else if (gamepad2.b) {
-                intake.setPower(1);
-                holder.setPower(1);
+            if (isExtended) {
+                slider1_servo.setPosition(extended);
+                slider2_servo.setPosition(extended);
             } else {
-                intake.setPower(0);
-                holder.setPower(0);
+                slider1_servo.setPosition(retracted);
+                slider2_servo.setPosition(retracted);
             }
-            if (gamepad2.right_bumper)
-                pixels = 0;
-            state = beam.getVoltage() < 1;
-            if (state && !oldState)
-                pixels++;
-            oldState = state;
-            telemetry.addData("beam", state);
-            telemetry.addData("pixels", pixels);
+            if (gamepad2.right_trigger > 0.3) {
+                //extinde
+                slider1.setPower(-gamepad2.right_trigger);
+                slider2.setPower(gamepad2.right_trigger);
+            } else if (gamepad2.left_trigger > 0.3) {
+                slider1.setPower(gamepad2.left_trigger);
+                slider2.setPower(-gamepad2.left_trigger);
+            } else {
+                slider1.setPower(0);
+                slider2.setPower(0);
+            }
+            telemetry.addData("1", slider1_servo.getPosition());
+            telemetry.addData("2", slider2_servo.getPosition());
             telemetry.update();
         }
     }

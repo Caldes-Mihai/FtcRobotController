@@ -3,11 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -15,9 +13,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
-import org.firstinspires.ftc.teamcode.cache.CacheableCRServo;
-import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
-import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.GoFromBoardToPixelStackCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToBoardCommand;
@@ -29,7 +24,6 @@ import org.firstinspires.ftc.teamcode.commands.PlacePixelCommand;
 import org.firstinspires.ftc.teamcode.commands.PrepareOuttake;
 import org.firstinspires.ftc.teamcode.commands.RetractSlidersCommand;
 import org.firstinspires.ftc.teamcode.commands.StandBySlidersCommand;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
@@ -56,19 +50,9 @@ public class HandleAuto {
      * The variable to store our instance of the vision portal.
      */
     private static VisionPortal visionPortal;
-    private static SampleMecanumDrive drive;
     private static AutoDriveSubsystem autoDriveSubsystem;
     private static IntakeSubsystem intakeSubsystem;
     private static OuttakeSubsystem outtakeSubsystem;
-    private static Pose2d startPose;
-    private static CacheableMotor intake;
-    private static CacheableServo intake_servo;
-    private static CacheableMotor slider1;
-    private static CacheableMotor slider2;
-    private static CacheableServo slider1_servo;
-    private static CacheableServo slider2_servo;
-    private static CacheableCRServo holder;
-    private static AnalogInput beam;
     private static PropProcessor.Positions propPosition;
     private static CommandOpMode opMode;
     private static HardwareMap hardwareMap;
@@ -83,14 +67,6 @@ public class HandleAuto {
         telemetry = new MultipleTelemetry(opMode.telemetry, FtcDashboard.getInstance().getTelemetry());
         opMode.telemetry = telemetry;
         cacheManager = new CacheManager(hardwareMap);
-        intake = new CacheableMotor(hardwareMap, "intake");
-        intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 270);
-        slider1 = new CacheableMotor(hardwareMap, "slider1");
-        slider2 = new CacheableMotor(hardwareMap, "slider2");
-        slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
-        slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
-        holder = new CacheableCRServo(hardwareMap, "holder");
-        beam = hardwareMap.analogInput.get("beam");
         processor = new PropProcessor(telemetry);
         processor.setRed(isRed);
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -102,37 +78,10 @@ public class HandleAuto {
                 .addProcessors(processor, aprilTagProcessor)
                 .build();
         setManualExposure(6, 250);
-        drive = new SampleMecanumDrive(hardwareMap);
-        autoDriveSubsystem = new AutoDriveSubsystem(drive, aprilTagProcessor, false);
-        intakeSubsystem = new IntakeSubsystem(intake, intake_servo, beam);
-        outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, slider1_servo, slider2_servo, holder);
+        autoDriveSubsystem = new AutoDriveSubsystem(hardwareMap, aprilTagProcessor, DEBUG ? SPAWN_POS : currentSpawnPosition, DEBUG ? IS_RED : isRed);
+        intakeSubsystem = new IntakeSubsystem(hardwareMap, 1, null);
+        outtakeSubsystem = new OuttakeSubsystem(hardwareMap, null);
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
-        if (!DEBUG) {
-            if (!isRed) {
-                if (currentSpawnPosition.equals(Positions.DOWN))
-                    startPose = new Pose2d(-36, 63, Math.toRadians(-90));
-                else
-                    startPose = new Pose2d(12, 63, Math.toRadians(-90));
-            } else {
-                if (currentSpawnPosition.equals(Positions.DOWN))
-                    startPose = new Pose2d(-36, -63, Math.toRadians(90));
-                else
-                    startPose = new Pose2d(12, -63, Math.toRadians(90));
-            }
-        } else {
-            if (!IS_RED) {
-                if (SPAWN_POS.equals(Positions.DOWN))
-                    startPose = new Pose2d(-36, 63, Math.toRadians(-90));
-                else
-                    startPose = new Pose2d(12, 63, Math.toRadians(-90));
-            } else {
-                if (SPAWN_POS.equals(Positions.DOWN))
-                    startPose = new Pose2d(-36, -63, Math.toRadians(90));
-                else
-                    startPose = new Pose2d(12, -63, Math.toRadians(90));
-            }
-        }
-        drive.setPoseEstimate(startPose);
         if (!DEBUG) {
             if (currentSpawnPosition.equals(Positions.DOWN))
                 opMode.schedule(new SequentialCommandGroup(

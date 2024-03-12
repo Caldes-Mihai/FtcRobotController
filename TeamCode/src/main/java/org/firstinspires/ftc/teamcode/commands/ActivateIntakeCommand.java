@@ -18,10 +18,7 @@ public class ActivateIntakeCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (!reversed) {
-            subsystem.extend();
-            subsystem.lower();
-        }
+        if (!reversed) subsystem.extend();
         subsystem.activate();
     }
 

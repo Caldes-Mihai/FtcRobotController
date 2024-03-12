@@ -34,7 +34,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -47,7 +46,6 @@ import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleDroneCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleOuttakeCommand;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.subsystems.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
@@ -90,36 +88,18 @@ public class HandleTeleOp {
         cacheManager = new CacheManager(hardwareMap);
         driver = new GamepadEx(opMode.gamepad1);
         tool = new GamepadEx(opMode.gamepad2);
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.resetYaw();
-        parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                DriveConstants.LOGO_FACING_DIR,
-                DriveConstants.USB_FACING_DIR));
-        imu.initialize(parameters);
-        leftFrontDrive = new CacheableMotor(hardwareMap, "front_left_motor");
-        leftBackDrive = new CacheableMotor(hardwareMap, "back_left_motor");
-        rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
-        rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
-        intake = new CacheableMotor(hardwareMap, "intake");
-        intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 270);
-        slider1 = new CacheableMotor(hardwareMap, "slider1");
-        slider2 = new CacheableMotor(hardwareMap, "slider2");
-        slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
-        slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
-        holder = new CacheableCRServo(hardwareMap, "holder");
-        drone = new CacheableServo(hardwareMap, "drone", 0, 270);
         teleOpDriveSubsystem = new TeleOpDriveSubsystem(
-                leftFrontDrive, leftBackDrive, rightFrontDrive, rightBackDrive, imu,
-                driver, isRed, opMode
+                hardwareMap, driver, isRed, opMode
         );
-        intakeSubsystem = new IntakeSubsystem(intake, intake_servo, null, tool);
-        outtakeSubsystem = new OuttakeSubsystem(slider1, slider2, slider1_servo, slider2_servo, holder, tool);
-        droneSubsystem = new DroneSubsystem(drone, driver);
+        intakeSubsystem = new IntakeSubsystem(hardwareMap, 0, tool);
+        outtakeSubsystem = new OuttakeSubsystem(hardwareMap, tool);
+        droneSubsystem = new DroneSubsystem(hardwareMap, driver);
         opMode.register(teleOpDriveSubsystem, intakeSubsystem, outtakeSubsystem, droneSubsystem);
         teleOpDriveSubsystem.setDefaultCommand(new DriveCommand(teleOpDriveSubsystem));
         intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));
         outtakeSubsystem.setDefaultCommand(new HandleOuttakeCommand(outtakeSubsystem));
         droneSubsystem.setDefaultCommand(new HandleDroneCommand(droneSubsystem));
+        outtakeSubsystem.setTelemetry(telemetry);
         opMode.schedule(new RunCommand(telemetry::update));
     }
 

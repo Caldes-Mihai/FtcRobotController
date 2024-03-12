@@ -12,28 +12,6 @@
             name="Expansion Hub 2"
             port="2">
             <goBILDA5202SeriesMotor
-                name="front_left_motor"
-                port="0" />
-            <goBILDA5202SeriesMotor
-                name="back_left_motor"
-                port="1" />
-            <goBILDA5202SeriesMotor
-                name="slider1"
-                port="2" />
-            <goBILDA5202SeriesMotor
-                name="intake"
-                port="3" />
-            <ContinuousRotationServo
-                name="holder"
-                port="2" />
-            <Servo
-                name="slider1_servo"
-                port="0" />
-        </LynxModule>
-        <LynxModule
-            name="Control Hub"
-            port="173">
-            <goBILDA5202SeriesMotor
                 name="front_right_motor"
                 port="0" />
             <goBILDA5202SeriesMotor
@@ -53,11 +31,33 @@
                 bus="0"
                 port="0" />
             <Servo
-                name="drone"
-                port="1" />
-            <Servo
                 name="intake_servo"
                 port="2" />
+        </LynxModule>
+        <LynxModule
+            name="Control Hub"
+            port="173">
+            <goBILDA5202SeriesMotor
+                name="front_left_motor"
+                port="0" />
+            <goBILDA5202SeriesMotor
+                name="back_left_motor"
+                port="1" />
+            <goBILDA5202SeriesMotor
+                name="slider1"
+                port="2" />
+            <goBILDA5202SeriesMotor
+                name="intake"
+                port="3" />
+            <ContinuousRotationServo
+                name="holder"
+                port="2" />
+            <Servo
+                name="slider1_servo"
+                port="0" />
+            <Servo
+                name="drone"
+                port="4" />
         </LynxModule>
     </LynxUsbDevice>
 </Robot>

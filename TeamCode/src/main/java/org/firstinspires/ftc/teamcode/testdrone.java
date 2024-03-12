@@ -38,8 +38,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "test drone")
 public class testdrone extends LinearOpMode {
 
-    public static double start = 0.5;
-    public static double end = 0;
+    public static double start = 0.82;
+    public static double end = 0.5;
 
     public static boolean shoot = false;
 

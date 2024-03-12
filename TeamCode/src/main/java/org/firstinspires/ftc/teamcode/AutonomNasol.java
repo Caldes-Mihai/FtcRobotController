@@ -32,46 +32,46 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "test intake")
+@TeleOp(name = "autonom")
 @Config
-public class testintake extends LinearOpMode {
+public class AutonomNasol extends LinearOpMode {
 
-    public static double retract = 0;
-    public static double extend = 0.3;
-    public static double stage = 5;
+    ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-        CRServo holder = hardwareMap.get(CRServo.class, "holder");
-        AnalogInput beam = hardwareMap.analogInput.get("beam");
-        int pixels = 0;
-        boolean state, oldState = false;
+        DcMotor lf = hardwareMap.get(DcMotor.class, "front_left_motor");
+        DcMotor lb = hardwareMap.get(DcMotor.class, "back_left_motor");
+        DcMotor rf = hardwareMap.get(DcMotor.class, "front_right_motor");
+        DcMotor rb = hardwareMap.get(DcMotor.class, "back_right_motor");
+        lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lb.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
+        timer.reset();
         while (opModeIsActive()) {
-            if (gamepad2.x) {
-                intake.setPower(-1);
-                holder.setPower(-1);
-            } else if (gamepad2.b) {
-                intake.setPower(1);
-                holder.setPower(1);
+            if (timer.seconds() > 2) {
+                lf.setPower(0);
+                lb.setPower(0);
+                rf.setPower(0);
+                rb.setPower(0);
+            } else if (timer.seconds() > 1.5) {
+                lf.setPower(0.5);
+                lb.setPower(0.5);
+                rf.setPower(0.5);
+                rb.setPower(0.5);
             } else {
-                intake.setPower(0);
-                holder.setPower(0);
+                lf.setPower(-0.5);
+                lb.setPower(-0.5);
+                rf.setPower(-0.5);
+                rb.setPower(-0.5);
             }
-            if (gamepad2.right_bumper)
-                pixels = 0;
-            state = beam.getVoltage() < 1;
-            if (state && !oldState)
-                pixels++;
-            oldState = state;
-            telemetry.addData("beam", state);
-            telemetry.addData("pixels", pixels);
-            telemetry.update();
         }
     }
 }

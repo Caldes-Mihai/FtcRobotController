@@ -6,8 +6,10 @@ import com.acmerobotics.roadrunner.localization.Localizer;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.teamcode.HandleAuto;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
@@ -25,7 +27,7 @@ import java.util.List;
 public class AutoDriveSubsystem extends SubsystemBase {
 
     private final SampleMecanumDrive drive;
-    private final boolean fieldCentric;
+    private final boolean fieldCentric = false;
     private final AprilTagProcessor processor;
     //camera offset from center (in inches)
     private final double offsetY = 12;
@@ -40,10 +42,20 @@ public class AutoDriveSubsystem extends SubsystemBase {
     private TrajectorySequence centerTrajectory;
     private TrajectorySequence rightTrajectory;
 
-    public AutoDriveSubsystem(SampleMecanumDrive drive, AprilTagProcessor processor, boolean isFieldCentric) {
-        this.drive = drive;
+    public AutoDriveSubsystem(HardwareMap hardwareMap, AprilTagProcessor processor, HandleAuto.Positions currentSpawnPosition, boolean isRed) {
+        this.drive = new SampleMecanumDrive(hardwareMap);
+        if (!isRed) {
+            if (currentSpawnPosition.equals(HandleAuto.Positions.DOWN))
+                drive.setPoseEstimate(new Pose2d(-36, 63, Math.toRadians(-90)));
+            else
+                drive.setPoseEstimate(new Pose2d(12, 63, Math.toRadians(-90)));
+        } else {
+            if (currentSpawnPosition.equals(HandleAuto.Positions.DOWN))
+                drive.setPoseEstimate(new Pose2d(-36, -63, Math.toRadians(90)));
+            else
+                drive.setPoseEstimate(new Pose2d(12, -63, Math.toRadians(90)));
+        }
         this.processor = processor;
-        fieldCentric = isFieldCentric;
     }
 
     public TrajectorySequence getLeftTrajectory() {

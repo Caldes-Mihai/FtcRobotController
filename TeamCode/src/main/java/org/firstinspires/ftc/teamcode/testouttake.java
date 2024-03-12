@@ -40,8 +40,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "test outtake")
 public class testouttake extends LinearOpMode {
 
-    public static double extended = 0.1;
-    public static double retracted = 0.25;
+    public static double extended = 0.7;
+    public static double retracted = 0.7;
 
     public static boolean isExtended = false;
 
@@ -60,23 +60,27 @@ public class testouttake extends LinearOpMode {
         slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (opModeIsActive()) {
             if (isExtended) {
-
                 slider1_servo.setPosition(extended);
                 slider2_servo.setPosition(extended);
             } else {
                 slider1_servo.setPosition(retracted);
                 slider2_servo.setPosition(retracted);
             }
-            if (gamepad2.x) {
+            if (gamepad2.right_trigger > 0.3) {
                 //extinde
-                slider1.setPower(-0.3);
-                slider2.setPower(0.3);
-            } else if (gamepad2.b) {
-                slider1.setPower(0.3);
-                slider2.setPower(-0.3);
+                slider1.setPower(-gamepad2.right_trigger);
+                slider2.setPower(gamepad2.right_trigger);
+            } else if (gamepad2.left_trigger > 0.3) {
+                slider1.setPower(gamepad2.left_trigger);
+                slider2.setPower(-gamepad2.left_trigger);
             } else {
                 slider1.setPower(0);
                 slider2.setPower(0);
+            }
+            if (gamepad2.right_bumper) {
+                holder.setPower(-1);
+            } else {
+                holder.setPower(0);
             }
             telemetry.addData("slider 1", slider1.getCurrentPosition());
             telemetry.addData("slider 2", slider2.getCurrentPosition());

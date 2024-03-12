@@ -32,45 +32,34 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "test intake")
 @Config
-public class testintake extends LinearOpMode {
-
-    public static double retract = 0;
-    public static double extend = 0.3;
-    public static double stage = 5;
-
+@TeleOp(name = "test slider")
+public class testslider extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-        CRServo holder = hardwareMap.get(CRServo.class, "holder");
-        AnalogInput beam = hardwareMap.analogInput.get("beam");
-        int pixels = 0;
-        boolean state, oldState = false;
+        DcMotor slider1 = hardwareMap.get(DcMotor.class, "slider1");
+        DcMotor slider2 = hardwareMap.get(DcMotor.class, "slider2");
+        slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slider2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
+        slider1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (opModeIsActive()) {
-            if (gamepad2.x) {
-                intake.setPower(-1);
-                holder.setPower(-1);
-            } else if (gamepad2.b) {
-                intake.setPower(1);
-                holder.setPower(1);
+            telemetry.addData("slider 1", slider1.getCurrentPosition());
+            if (gamepad2.right_trigger > 0.3) {
+                //extinde
+                slider1.setPower(-gamepad2.right_trigger);
+                slider2.setPower(gamepad2.right_trigger);
+            } else if (gamepad2.left_trigger > 0.3) {
+                slider1.setPower(gamepad2.left_trigger);
+                slider2.setPower(-gamepad2.left_trigger);
             } else {
-                intake.setPower(0);
-                holder.setPower(0);
+                slider1.setPower(0);
+                slider2.setPower(0);
             }
-            if (gamepad2.right_bumper)
-                pixels = 0;
-            state = beam.getVoltage() < 1;
-            if (state && !oldState)
-                pixels++;
-            oldState = state;
-            telemetry.addData("beam", state);
-            telemetry.addData("pixels", pixels);
+            telemetry.addData("slider 2", slider2.getCurrentPosition());
             telemetry.update();
         }
     }

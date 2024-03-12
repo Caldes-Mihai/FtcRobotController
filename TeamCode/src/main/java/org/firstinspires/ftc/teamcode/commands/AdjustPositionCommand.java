@@ -7,8 +7,7 @@ import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 public class AdjustPositionCommand extends CommandBase {
     private final AutoDriveSubsystem subsystem;
 
-    public AdjustPositionCommand(AutoDriveSubsystem
-                                         subsystem) {
+    public AdjustPositionCommand(AutoDriveSubsystem subsystem) {
         this.subsystem = subsystem;
         addRequirements(subsystem);
     }

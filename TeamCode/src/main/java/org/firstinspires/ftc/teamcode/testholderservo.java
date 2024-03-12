@@ -32,46 +32,22 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "test intake")
 @Config
-public class testintake extends LinearOpMode {
-
-    public static double retract = 0;
-    public static double extend = 0.3;
-    public static double stage = 5;
+@TeleOp(name = "test holder servo")
+public class testholderservo extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
         CRServo holder = hardwareMap.get(CRServo.class, "holder");
-        AnalogInput beam = hardwareMap.analogInput.get("beam");
-        int pixels = 0;
-        boolean state, oldState = false;
         waitForStart();
         while (opModeIsActive()) {
-            if (gamepad2.x) {
-                intake.setPower(-1);
+            if (gamepad2.right_bumper) {
                 holder.setPower(-1);
-            } else if (gamepad2.b) {
-                intake.setPower(1);
-                holder.setPower(1);
             } else {
-                intake.setPower(0);
                 holder.setPower(0);
             }
-            if (gamepad2.right_bumper)
-                pixels = 0;
-            state = beam.getVoltage() < 1;
-            if (state && !oldState)
-                pixels++;
-            oldState = state;
-            telemetry.addData("beam", state);
-            telemetry.addData("pixels", pixels);
-            telemetry.update();
         }
     }
 }
