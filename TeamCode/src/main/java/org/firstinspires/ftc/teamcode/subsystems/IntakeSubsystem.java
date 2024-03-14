@@ -92,5 +92,15 @@ public class IntakeSubsystem extends SubsystemBase {
         if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) || gamepad2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
             resetPixels();
         }
+        if (pixels == 1) {
+            gamepad.gamepad.setLedColor(75, 170, 252, 12000);
+            gamepad2.gamepad.setLedColor(75, 170, 252, 12000);
+        } else if (pixels == 2) {
+            gamepad.gamepad.setLedColor(255, 146, 68, 12000);
+            gamepad2.gamepad.setLedColor(255, 146, 68, 12000);
+        } else {
+            gamepad.gamepad.setLedColor(255, 255, 255, 12000);
+            gamepad2.gamepad.setLedColor(255, 255, 255, 12000);
+        }
     }
 }
