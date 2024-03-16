@@ -32,7 +32,13 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
     private final GamepadEx gamepad;
     private final boolean isRed;
     private final CommandOpMode opMode;
-    private double yaw, oldYaw, distance, dif;
+    private final double SLOW_SPEED = 0.3;
+    private final double NORMAL_SPEED = 1;
+    private double yaw;
+    private double oldYaw;
+    private double distance;
+    private double dif;
+    private double CURRENT_SPEED = 1;
     private double imuDegrees;
     private Vector2d joystick;
 
@@ -73,7 +79,15 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
         if (debug)
             oldYaw = target;
         dif = angleWrap(oldYaw - imuDegrees);
-        drive.driveFieldCentric(gamepad.getLeftX(), gamepad.getLeftY(), Math.abs(dif) > 3 ? Range.clip(dif * Kp, -0.3, 0.3) : 0, imuDegrees + (isRed ? -90 : 90));
+        if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+            CURRENT_SPEED = SLOW_SPEED;
+        else
+            CURRENT_SPEED = NORMAL_SPEED;
+        opMode.telemetry.addData("target", oldYaw);
+        opMode.telemetry.addData("imu", imuDegrees);
+        opMode.telemetry.addData("dif", dif);
+        opMode.telemetry.addData("power", Math.abs(dif) > 3 ? Range.clip(dif * Kp, -0.3, 0.3) : 0);
+        drive.driveFieldCentric(gamepad.getLeftX() * CURRENT_SPEED, gamepad.getLeftY() * CURRENT_SPEED, Math.abs(dif) > 3 ? Range.clip(dif * Kp, -0.3, 0.3) : 0, imuDegrees + (isRed ? -90 : 90));
     }
 
     private double angleWrap(double headingError) {
