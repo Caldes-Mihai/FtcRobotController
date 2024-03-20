@@ -17,7 +17,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     public static double RETRACTED_SLIDERS_POS = 0;
     public static double RETRACTED_SLIDER_SERVO_POS = 0.7;
 
-    public static double EXTENDED_SLIDERS_POS = 3200;
+    public static double EXTENDED_SLIDERS_POS = 5200;
     public static double EXTENDED_SLIDER_SERVO_POS = 0.55;
     public static double SLIDERS_THRESHOLD = 200;
     private final CacheableMotor slider1;
@@ -50,7 +50,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (Math.abs(slider1.getCurrentPosition()) >= 1800) {
+        if (Math.abs(slider1.getCurrentPosition()) >= EXTENDED_SLIDERS_POS / 2) {
             slider1_servo.setPosition(EXTENDED_SLIDER_SERVO_POS);
             slider2_servo.setPosition(EXTENDED_SLIDER_SERVO_POS);
         } else {
