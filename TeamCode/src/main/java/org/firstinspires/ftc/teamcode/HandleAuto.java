@@ -14,14 +14,14 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
 import org.firstinspires.ftc.teamcode.commands.AdjustPositionCommand;
+import org.firstinspires.ftc.teamcode.commands.DeactivateClawCommand;
 import org.firstinspires.ftc.teamcode.commands.GoFromBoardToPixelStackCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToBoardCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToPixelStackCommand;
 import org.firstinspires.ftc.teamcode.commands.GoToPropCommand;
 import org.firstinspires.ftc.teamcode.commands.PickupCommand;
-import org.firstinspires.ftc.teamcode.commands.PlaceCommand;
 import org.firstinspires.ftc.teamcode.commands.PlacePixelCommand;
-import org.firstinspires.ftc.teamcode.commands.PrepareOuttake;
+import org.firstinspires.ftc.teamcode.commands.PrepareOuttakeCommand;
 import org.firstinspires.ftc.teamcode.commands.RetractSlidersCommand;
 import org.firstinspires.ftc.teamcode.commands.StandBySlidersCommand;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
@@ -79,8 +79,8 @@ public class HandleAuto {
                 .build();
         setManualExposure(6, 250);
         autoDriveSubsystem = new AutoDriveSubsystem(hardwareMap, aprilTagProcessor, DEBUG ? SPAWN_POS : currentSpawnPosition, DEBUG ? IS_RED : isRed);
-        intakeSubsystem = new IntakeSubsystem(hardwareMap, 1, null, null);
-        outtakeSubsystem = new OuttakeSubsystem(hardwareMap, null);
+        intakeSubsystem = new IntakeSubsystem(hardwareMap, null, null);
+        outtakeSubsystem = new OuttakeSubsystem(hardwareMap, intakeSubsystem, null);
         opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
         if (!DEBUG) {
             if (currentSpawnPosition.equals(Positions.DOWN))
@@ -93,9 +93,8 @@ public class HandleAuto {
                         new AdjustPositionCommand(autoDriveSubsystem),
                         new ParallelCommandGroup(
                                 new GoToBoardCommand(autoDriveSubsystem, isRed, false),
-                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                        new PlaceCommand(outtakeSubsystem),
-                        new PlaceCommand(outtakeSubsystem),
+                                new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
+                        new DeactivateClawCommand(outtakeSubsystem),
                         new AdjustPositionCommand(autoDriveSubsystem),
                         new ParallelCommandGroup(
                                 new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, false),
@@ -105,9 +104,8 @@ public class HandleAuto {
                         new AdjustPositionCommand(autoDriveSubsystem),
                         new ParallelCommandGroup(
                                 new GoToBoardCommand(autoDriveSubsystem, isRed, false),
-                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                        new PlaceCommand(outtakeSubsystem),
-                        new PlaceCommand(outtakeSubsystem),
+                                new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
+                        new DeactivateClawCommand(outtakeSubsystem),
                         new RetractSlidersCommand(outtakeSubsystem),
                         new StandBySlidersCommand(outtakeSubsystem),
                         new AdjustPositionCommand(autoDriveSubsystem)
@@ -119,8 +117,8 @@ public class HandleAuto {
                         new AdjustPositionCommand(autoDriveSubsystem),
                         new ParallelCommandGroup(
                                 new GoToBoardCommand(autoDriveSubsystem, isRed, true),
-                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                        new PlaceCommand(outtakeSubsystem),
+                                new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
+                        new DeactivateClawCommand(outtakeSubsystem),
                         new AdjustPositionCommand(autoDriveSubsystem),
                         new ParallelCommandGroup(
                                 new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
@@ -130,9 +128,8 @@ public class HandleAuto {
                         new AdjustPositionCommand(autoDriveSubsystem),
                         new ParallelCommandGroup(
                                 new GoToBoardCommand(autoDriveSubsystem, isRed, true),
-                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                        new PlaceCommand(outtakeSubsystem),
-                        new PlaceCommand(outtakeSubsystem),
+                                new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
+                        new DeactivateClawCommand(outtakeSubsystem),
                         new AdjustPositionCommand(autoDriveSubsystem),
                         new ParallelCommandGroup(
                                 new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
@@ -142,9 +139,8 @@ public class HandleAuto {
                         new AdjustPositionCommand(autoDriveSubsystem),
                         new ParallelCommandGroup(
                                 new GoToBoardCommand(autoDriveSubsystem, isRed, true),
-                                new PrepareOuttake(outtakeSubsystem, autoDriveSubsystem)),
-                        new PlaceCommand(outtakeSubsystem),
-                        new PlaceCommand(outtakeSubsystem),
+                                new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
+                        new DeactivateClawCommand(outtakeSubsystem),
                         new RetractSlidersCommand(outtakeSubsystem),
                         new StandBySlidersCommand(outtakeSubsystem),
                         new AdjustPositionCommand(autoDriveSubsystem)

@@ -34,12 +34,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+
 @Config
 @TeleOp(name = "test drone")
 public class testdrone extends LinearOpMode {
-
-    public static double start = 0.82;
-    public static double end = 0.5;
 
     public static boolean shoot = false;
 
@@ -49,9 +48,9 @@ public class testdrone extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             if (shoot) {
-                drone.setPosition(end);
+                drone.setPosition(ConstantValues.DRONE_END);
             } else {
-                drone.setPosition(start);
+                drone.setPosition(ConstantValues.DRONE_START);
             }
         }
     }

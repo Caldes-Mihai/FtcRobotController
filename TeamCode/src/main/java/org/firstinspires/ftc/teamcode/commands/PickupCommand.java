@@ -11,11 +11,8 @@ public class PickupCommand extends SequentialCommandGroup {
     public PickupCommand(IntakeSubsystem subsystem, OuttakeSubsystem outtakeSubsystem) {
         addCommands(
                 new ActivateIntakeCommand(subsystem, false, false),
-                new ActivateHolderCommand(outtakeSubsystem, false),
-                new WaitUntilCommand(() -> subsystem.pixels == 2),
-                new ResetPixelCount(subsystem),
+                new WaitUntilCommand(() -> subsystem.pixel1 && subsystem.pixel2),
                 new ActivateIntakeCommand(subsystem, true, false),
-                new DeactivateHolderCommand(outtakeSubsystem),
                 new WaitCommand(500),
                 new DeactivateIntakeCommand(subsystem)
         );

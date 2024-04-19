@@ -17,12 +17,12 @@
             <goBILDA5202SeriesMotor
                 name="back_right_motor"
                 port="1" />
-            <goBILDA5202SeriesMotor
-                name="slider2"
-                port="2" />
             <Servo
                 name="slider2_servo"
                 port="0" />
+            <Servo
+                name="claw2"
+                port="2" />
             <AnalogInput
                 name="beam"
                 port="0" />
@@ -32,7 +32,7 @@
                 port="0" />
             <Servo
                 name="intake_servo"
-                port="2" />
+                port="4" />
         </LynxModule>
         <LynxModule
             name="Control Hub"
@@ -44,17 +44,17 @@
                 name="back_left_motor"
                 port="1" />
             <goBILDA5202SeriesMotor
-                name="slider1"
+                name="slider"
                 port="2" />
             <goBILDA5202SeriesMotor
                 name="intake"
                 port="3" />
-            <ContinuousRotationServo
-                name="holder"
-                port="2" />
             <Servo
                 name="slider1_servo"
                 port="0" />
+            <Servo
+                name="claw1"
+                port="2" />
             <Servo
                 name="drone"
                 port="4" />

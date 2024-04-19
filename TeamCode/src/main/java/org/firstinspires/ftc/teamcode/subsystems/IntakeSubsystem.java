@@ -5,34 +5,33 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 import org.firstinspires.ftc.teamcode.cache.CacheableServo;
+import org.firstinspires.ftc.teamcode.drive.ConstantValues;
 
 @Config
 public class IntakeSubsystem extends SubsystemBase {
-    public static double MAX_SPEED = 1;
-    public static double MAX_SLOW_SPEED = 0.3;
-    public static double SERVO_RETRACT_POS = 0;
-    public static double SERVO_EXTEND_POS = 0;
     private final CacheableMotor intake;
     private final CacheableServo intake_servo;
-    private final AnalogInput beam;
+    private final NormalizedColorSensor pixel1sensor;
+    private final NormalizedColorSensor pixel2sensor;
     private final GamepadEx gamepad;
     private final GamepadEx gamepad2;
-    public int pixels;
-    private boolean state = false;
-    private boolean oldState;
+    public boolean pixel1;
+    public boolean pixel2;
+    public boolean oldPixel1;
+    public boolean oldPixel2;
     private boolean slow = false;
 
-
-    public IntakeSubsystem(HardwareMap hardwareMap, int pixels, GamepadEx gamepad, GamepadEx gamepad2) {
+    public IntakeSubsystem(HardwareMap hardwareMap, GamepadEx gamepad, GamepadEx gamepad2) {
         this.intake = new CacheableMotor(hardwareMap, "intake");
         this.intake_servo = new CacheableServo(hardwareMap, "intake_servo", 0, 270);
-        this.beam = hardwareMap.analogInput.get("beam");
-        this.pixels = pixels;
+        this.pixel1sensor = hardwareMap.get(NormalizedColorSensor.class, "pixel1");
+        this.pixel2sensor = hardwareMap.get(NormalizedColorSensor.class, "pixel2");
         this.gamepad = gamepad;
         this.gamepad2 = gamepad2;
         intake.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
@@ -43,16 +42,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void activate() {
-        intake.set(slow ? MAX_SLOW_SPEED : MAX_SPEED);
-        state = beam.getVoltage() < 1;
-        if (state && !oldState) {
-            pixels++;
-            if (gamepad != null && gamepad2 != null) {
-                gamepad.gamepad.rumble(1, 1, 250);
-                gamepad2.gamepad.rumble(1, 1, 250);
-            }
-        }
-        oldState = state;
+        intake.set(slow ? ConstantValues.INTAKE_MAX_SLOW_SPEED : ConstantValues.INTAKE_MAX_SPEED);
     }
 
     public void setSlow(boolean slow) {
@@ -63,21 +53,17 @@ public class IntakeSubsystem extends SubsystemBase {
         intake.set(0);
     }
 
-    public void resetPixels() {
-        pixels = 0;
-    }
-
     public void extend() {
-        intake_servo.setPosition(SERVO_EXTEND_POS);
+        intake_servo.setPosition(ConstantValues.INTAKE_SERVO_EXTEND_POS);
     }
 
     public void retract() {
-        intake_servo.setPosition(SERVO_RETRACT_POS);
+        intake_servo.setPosition(ConstantValues.INTAKE_SERVO_RETRACT_POS);
     }
 
     public void handle() {
         setSlow(false);
-        if (gamepad.getButton(GamepadKeys.Button.X) || gamepad2.getButton(GamepadKeys.Button.X)) {
+        if ((!pixel1 || !pixel2) && (gamepad.getButton(GamepadKeys.Button.X) || gamepad2.getButton(GamepadKeys.Button.X))) {
             setReversed(true);
             this.activate();
         } else if (gamepad.getButton(GamepadKeys.Button.B) || gamepad2.getButton(GamepadKeys.Button.B)) {
@@ -85,22 +71,55 @@ public class IntakeSubsystem extends SubsystemBase {
             this.activate();
         } else
             this.deactivate();
-        if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) || gamepad2.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+        if (gamepad.getButton(GamepadKeys.Button.DPAD_UP) || gamepad2.getButton(GamepadKeys.Button.DPAD_UP)) {
             this.extend();
         } else
             this.retract();
-        if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) || gamepad2.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-            resetPixels();
+    }
+
+    @Override
+    public void periodic() {
+        pixel1 = !getPixel(pixel1sensor).equals(Pixels.NONE);
+        pixel2 = !getPixel(pixel2sensor).equals(Pixels.NONE);
+        if (pixel1 != oldPixel1 || pixel2 != oldPixel2) {
+            if (gamepad != null && gamepad2 != null) {
+                gamepad.gamepad.rumble(1, 1, 250);
+                gamepad2.gamepad.rumble(1, 1, 250);
+            }
         }
-        if (pixels == 1) {
-            gamepad.gamepad.setLedColor(75, 170, 252, 12000);
-            gamepad2.gamepad.setLedColor(75, 170, 252, 12000);
-        } else if (pixels == 2) {
-            gamepad.gamepad.setLedColor(255, 146, 68, 12000);
-            gamepad2.gamepad.setLedColor(255, 146, 68, 12000);
-        } else {
-            gamepad.gamepad.setLedColor(255, 255, 255, 12000);
-            gamepad2.gamepad.setLedColor(255, 255, 255, 12000);
+        oldPixel1 = pixel1;
+        oldPixel2 = pixel2;
+        if (gamepad != null && gamepad2 != null) {
+            NormalizedRGBA rgba1 = pixel1sensor.getNormalizedColors();
+            NormalizedRGBA rgba2 = pixel2sensor.getNormalizedColors();
+            gamepad.gamepad.setLedColor(rgba1.red, rgba1.green, rgba1.blue, 12000);
+            gamepad2.gamepad.setLedColor(rgba2.red, rgba2.green, rgba2.blue, 12000);
         }
     }
+
+    public Pixels getPixel(NormalizedColorSensor sensor) {
+        NormalizedRGBA rgba = sensor.getNormalizedColors();
+        if (withinRange(rgba.red, ConstantValues.WHITE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green, ConstantValues.WHITE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue, ConstantValues.WHITE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+            return Pixels.WHITE;
+        else if (withinRange(rgba.red, ConstantValues.YELLOW_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green, ConstantValues.YELLOW_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue, ConstantValues.YELLOW_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+            return Pixels.YELLOW;
+        else if (withinRange(rgba.red, ConstantValues.GREEN_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green, ConstantValues.GREEN_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue, ConstantValues.GREEN_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+            return Pixels.GREEN;
+        else if (withinRange(rgba.red, ConstantValues.PURPLE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green, ConstantValues.PURPLE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue, ConstantValues.PURPLE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+            return Pixels.PURPLE;
+        return Pixels.NONE;
+    }
+
+    boolean withinRange(double input1, double input2, double deviation) {
+        return Math.abs(input1 - input2) <= deviation;
+    }
+
+    public enum Pixels {
+        WHITE,
+        PURPLE,
+        GREEN,
+        YELLOW,
+        NONE
+    }
+
 }

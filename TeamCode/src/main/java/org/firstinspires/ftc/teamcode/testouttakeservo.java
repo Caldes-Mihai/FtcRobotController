@@ -35,47 +35,46 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+
 @Config
 @TeleOp(name = "test outtake servo")
 public class testouttakeservo extends LinearOpMode {
-
-    public static double extended = 0.7;
-    public static double retracted = 0.7;
-
-    public static boolean isExtended = false;
+    public static int state = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Servo slider1_servo = hardwareMap.get(Servo.class, "slider1_servo");
         Servo slider2_servo = hardwareMap.get(Servo.class, "slider2_servo");
         DcMotor slider1 = hardwareMap.get(DcMotor.class, "slider1");
-        DcMotor slider2 = hardwareMap.get(DcMotor.class, "slider2");
         slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slider2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slider1_servo.setDirection(Servo.Direction.REVERSE);
+        if (ConstantValues.INVERT_SLIDER)
+            slider1.setDirection(DcMotor.Direction.REVERSE);
+        if (ConstantValues.INVERT_SLIDER1_SERVO)
+            slider1_servo.setDirection(Servo.Direction.REVERSE);
+        if (ConstantValues.INVERT_SLIDER2_SERVO)
+            slider2_servo.setDirection(Servo.Direction.REVERSE);
         waitForStart();
         slider1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slider1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slider2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         while (opModeIsActive()) {
-            if (isExtended) {
-                slider1_servo.setPosition(extended);
-                slider2_servo.setPosition(extended);
+            if (state == 2) {
+                slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
+                slider2_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
+            } else if (state == 1) {
+                slider1_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
+                slider2_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
             } else {
-                slider1_servo.setPosition(retracted);
-                slider2_servo.setPosition(retracted);
+                slider1_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
+                slider2_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
             }
             if (gamepad2.right_trigger > 0.3) {
                 //extinde
                 slider1.setPower(-gamepad2.right_trigger);
-                slider2.setPower(gamepad2.right_trigger);
             } else if (gamepad2.left_trigger > 0.3) {
                 slider1.setPower(gamepad2.left_trigger);
-                slider2.setPower(-gamepad2.left_trigger);
             } else {
                 slider1.setPower(0);
-                slider2.setPower(0);
             }
             telemetry.addData("1", slider1_servo.getPosition());
             telemetry.addData("2", slider2_servo.getPosition());

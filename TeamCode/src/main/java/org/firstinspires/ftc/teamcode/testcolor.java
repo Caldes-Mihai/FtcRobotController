@@ -32,46 +32,25 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
-@TeleOp(name = "autonom")
+@TeleOp(name = "test color")
 @Config
-public class AutonomNasol extends LinearOpMode {
+public class testcolor extends LinearOpMode {
 
-    ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotor lf = hardwareMap.get(DcMotor.class, "front_left_motor");
-        DcMotor lb = hardwareMap.get(DcMotor.class, "back_left_motor");
-        DcMotor rf = hardwareMap.get(DcMotor.class, "front_right_motor");
-        DcMotor rb = hardwareMap.get(DcMotor.class, "back_right_motor");
-        lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lb.setDirection(DcMotorSimple.Direction.REVERSE);
+        NormalizedColorSensor pixel1 = hardwareMap.get(NormalizedColorSensor.class, "pixel1");
+        NormalizedRGBA rgba = pixel1.getNormalizedColors();
         waitForStart();
-        timer.reset();
         while (opModeIsActive()) {
-            if (timer.seconds() > 2) {
-                lf.setPower(0);
-                lb.setPower(0);
-                rf.setPower(0);
-                rb.setPower(0);
-            } else if (timer.seconds() > 1.5) {
-                lf.setPower(0.5);
-                lb.setPower(0.5);
-                rf.setPower(0.5);
-                rb.setPower(0.5);
-            } else {
-                lf.setPower(-0.5);
-                lb.setPower(-0.5);
-                rf.setPower(-0.5);
-                rb.setPower(-0.5);
-            }
+            telemetry.addData("red", rgba.red * 255);
+            telemetry.addData("green", rgba.green * 255);
+            telemetry.addData("blue", rgba.blue * 255);
+            telemetry.addData("color", rgba.toColor());
+            telemetry.update();
         }
     }
 }

@@ -33,8 +33,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.drive.ConstantValues;
 
 @TeleOp(name = "test intake")
 @Config
@@ -47,7 +49,8 @@ public class testintake extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-        CRServo holder = hardwareMap.get(CRServo.class, "holder");
+        Servo claw1 = hardwareMap.get(Servo.class, "claw1");
+        Servo claw2 = hardwareMap.get(Servo.class, "claw2");
         AnalogInput beam = hardwareMap.analogInput.get("beam");
         int pixels = 0;
         boolean state, oldState = false;
@@ -55,19 +58,23 @@ public class testintake extends LinearOpMode {
         while (opModeIsActive()) {
             if (gamepad2.x) {
                 intake.setPower(-1);
-                holder.setPower(-1);
             } else if (gamepad2.b) {
                 intake.setPower(1);
-                holder.setPower(1);
             } else {
                 intake.setPower(0);
-                holder.setPower(0);
             }
             if (gamepad2.right_bumper)
                 pixels = 0;
             state = beam.getVoltage() < 1;
             if (state && !oldState)
                 pixels++;
+            if (pixels >= 2) {
+                claw1.setPosition(ConstantValues.CLAW_HOLD_POS);
+                claw2.setPosition(ConstantValues.CLAW_HOLD_POS);
+            } else {
+                claw1.setPosition(ConstantValues.CLAW_RELEASE_POS);
+                claw2.setPosition(ConstantValues.CLAW_RELEASE_POS);
+            }
             oldState = state;
             telemetry.addData("beam", state);
             telemetry.addData("pixels", pixels);

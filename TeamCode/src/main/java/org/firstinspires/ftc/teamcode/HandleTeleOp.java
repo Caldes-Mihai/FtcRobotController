@@ -91,8 +91,8 @@ public class HandleTeleOp {
         teleOpDriveSubsystem = new TeleOpDriveSubsystem(
                 hardwareMap, driver, isRed, opMode
         );
-        intakeSubsystem = new IntakeSubsystem(hardwareMap, 0, tool, driver);
-        outtakeSubsystem = new OuttakeSubsystem(hardwareMap, tool);
+        intakeSubsystem = new IntakeSubsystem(hardwareMap, tool, driver);
+        outtakeSubsystem = new OuttakeSubsystem(hardwareMap, intakeSubsystem, tool);
         droneSubsystem = new DroneSubsystem(hardwareMap, driver);
         opMode.register(teleOpDriveSubsystem, intakeSubsystem, outtakeSubsystem, droneSubsystem);
         teleOpDriveSubsystem.setDefaultCommand(new DriveCommand(teleOpDriveSubsystem));

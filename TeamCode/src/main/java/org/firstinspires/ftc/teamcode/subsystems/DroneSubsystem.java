@@ -7,11 +7,10 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.cache.CacheableServo;
+import org.firstinspires.ftc.teamcode.drive.ConstantValues;
 
 @Config
 public class DroneSubsystem extends SubsystemBase {
-    public static double start = 0.82;
-    public static double end = 0.5;
     private final CacheableServo drone;
     private final GamepadEx gamepad;
 
@@ -22,8 +21,8 @@ public class DroneSubsystem extends SubsystemBase {
 
     public void handle() {
         if (gamepad.getButton(GamepadKeys.Button.Y))
-            drone.setPosition(end);
+            drone.setPosition(ConstantValues.DRONE_END);
         else
-            drone.setPosition(start);
+            drone.setPosition(ConstantValues.DRONE_START);
     }
 }

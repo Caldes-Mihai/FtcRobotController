@@ -6,42 +6,39 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.cache.CacheableCRServo;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 import org.firstinspires.ftc.teamcode.cache.CacheableServo;
+import org.firstinspires.ftc.teamcode.drive.ConstantValues;
 
 @Config
 public class OuttakeSubsystem extends SubsystemBase {
-    public static double RETRACTED_SLIDERS_POS = 0;
-    public static double RETRACTED_SLIDER_SERVO_POS = 0.7;
-
-    public static double EXTENDED_SLIDERS_POS = 5200;
-    public static double EXTENDED_SLIDER_SERVO_POS = 0.55;
-    public static double SLIDERS_THRESHOLD = 200;
-    private final CacheableMotor slider1;
-    private final CacheableMotor slider2;
+    private final CacheableMotor slider;
     private final CacheableServo slider1_servo;
     private final CacheableServo slider2_servo;
-    private final CacheableCRServo holder;
+    private final CacheableServo claw1;
+    private final CacheableServo claw2;
+    private final IntakeSubsystem intake;
     private final GamepadEx gamepad;
     private final double power = 1;
-    private double factor = 1;
+    private final ElapsedTime timer = new ElapsedTime();
     private Telemetry telemetry;
 
-    public OuttakeSubsystem(HardwareMap hardwareMap, GamepadEx gamepad) {
-        this.slider1 = new CacheableMotor(hardwareMap, "slider1");
-        this.slider2 = new CacheableMotor(hardwareMap, "slider2");
+    public OuttakeSubsystem(HardwareMap hardwareMap, IntakeSubsystem intake, GamepadEx gamepad) {
+        this.slider = new CacheableMotor(hardwareMap, "slider");
         this.slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
         this.slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
-        this.holder = new CacheableCRServo(hardwareMap, "holder");
+        this.claw1 = new CacheableServo(hardwareMap, "claw1", 0, 180);
+        this.claw2 = new CacheableServo(hardwareMap, "claw2", 0, 180);
+        this.intake = intake;
         this.gamepad = gamepad;
-        slider1.setInverted(true);
-        slider1.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slider2.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slider1.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slider2.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slider.setInverted(ConstantValues.INVERT_SLIDER);
+        slider1_servo.setInverted(ConstantValues.INVERT_SLIDER1_SERVO);
+        slider2_servo.setInverted(ConstantValues.INVERT_SLIDER2_SERVO);
+        slider.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slider.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void setTelemetry(Telemetry t) {
@@ -50,56 +47,69 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (Math.abs(slider1.getCurrentPosition()) >= EXTENDED_SLIDERS_POS / 2) {
-            slider1_servo.setPosition(EXTENDED_SLIDER_SERVO_POS);
-            slider2_servo.setPosition(EXTENDED_SLIDER_SERVO_POS);
+        if (Math.abs(slider.getCurrentPosition()) >= ConstantValues.EXTENDED_SLIDERS_POS / 2) {
+            slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
+            slider2_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
+        } else if (intake.pixel1 && intake.pixel2) {
+            slider1_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
+            slider2_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
+            if (!intake.oldPixel1) timer.reset();
+            if (timer.seconds() >= 1) {
+                hold();
+            }
         } else {
-            slider1_servo.setPosition(RETRACTED_SLIDER_SERVO_POS);
-            slider2_servo.setPosition(RETRACTED_SLIDER_SERVO_POS);
+            slider1_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
+            slider2_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
         }
-        telemetry.addData("pos", Math.abs(slider1.getCurrentPosition()));
-        telemetry.addData("target", EXTENDED_SLIDERS_POS);
+        telemetry.addData("pos", Math.abs(slider.getCurrentPosition()));
+        telemetry.addData("target", ConstantValues.EXTENDED_SLIDERS_POS);
     }
 
     public void extend() {
-        slider1.set(power);
-        slider2.set(power);
+        slider.set(power);
     }
 
     public void standBy() {
-        slider1.set(0);
-        slider2.set(0);
+        slider.set(0);
     }
 
     public void retract() {
-        slider1.set(-power);
-        slider2.set(-power);
+        slider.set(-power);
     }
 
-
-    public void setReversed(boolean isReversed) {
-        factor = isReversed ? -1 : 1;
+    public void hold() {
+        holdClaw1();
+        holdClaw2();
     }
 
-    public void activateHolder() {
-        holder.setPower(factor);
+    public void release() {
+        releaseClaw1();
+        releaseClaw2();
     }
 
-    public void deactivateHolder() {
-        holder.setPower(0);
+    public void holdClaw1() {
+        claw1.setPosition(ConstantValues.CLAW_HOLD_POS);
+    }
+
+    public void holdClaw2() {
+        claw2.setPosition(ConstantValues.CLAW_HOLD_POS);
+    }
+
+    public void releaseClaw1() {
+        claw1.setPosition(ConstantValues.CLAW_RELEASE_POS);
+    }
+
+    public void releaseClaw2() {
+        claw2.setPosition(ConstantValues.CLAW_RELEASE_POS);
     }
 
     public void handle() {
         if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-            this.setReversed(false);
-            this.activateHolder();
+            releaseClaw2();
         }
-        if (gamepad.getButton(GamepadKeys.Button.X)) {
-            this.setReversed(true);
-            this.activateHolder();
+        if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+            releaseClaw1();
         }
-        if (!gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) && !gamepad.getButton(GamepadKeys.Button.X))
-            this.deactivateHolder();
         if (gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3 && !isExtended()) {
             extend();
         } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.3 && !isRetracted())
@@ -110,11 +120,11 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public boolean isExtended() {
-        return withinRange(Math.abs(slider1.getCurrentPosition()), EXTENDED_SLIDERS_POS, SLIDERS_THRESHOLD);
+        return withinRange(Math.abs(slider.getCurrentPosition()), ConstantValues.EXTENDED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
     }
 
     public boolean isRetracted() {
-        return withinRange(Math.abs(slider1.getCurrentPosition()), RETRACTED_SLIDERS_POS, SLIDERS_THRESHOLD);
+        return withinRange(Math.abs(slider.getCurrentPosition()), ConstantValues.RETRACTED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
     }
 
     boolean withinRange(double input1, double input2, double deviation) {
