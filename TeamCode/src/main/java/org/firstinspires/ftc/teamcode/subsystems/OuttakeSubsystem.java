@@ -30,8 +30,8 @@ public class OuttakeSubsystem extends SubsystemBase {
         this.slider = new CacheableMotor(hardwareMap, "slider");
         this.slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
         this.slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
-        this.claw1 = new CacheableServo(hardwareMap, "claw1", 0, 180);
-        this.claw2 = new CacheableServo(hardwareMap, "claw2", 0, 180);
+        this.claw1 = new CacheableServo(hardwareMap, "claw1", 0, 270);
+        this.claw2 = new CacheableServo(hardwareMap, "claw2", 0, 270);
         this.intake = intake;
         this.gamepad = gamepad;
         slider.setInverted(ConstantValues.INVERT_SLIDER);
