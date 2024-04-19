@@ -35,13 +35,9 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
-import org.firstinspires.ftc.teamcode.cache.CacheableCRServo;
-import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
-import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleDroneCommand;
 import org.firstinspires.ftc.teamcode.commands.HandleIntakeCommand;
@@ -53,22 +49,8 @@ import org.firstinspires.ftc.teamcode.subsystems.TeleOpDriveSubsystem;
 
 public class HandleTeleOp {
     public static long delta;
-    private static IMU imu;
-    private static CacheableMotor leftFrontDrive;
-    private static CacheableMotor leftBackDrive;
-    private static CacheableMotor rightFrontDrive;
-    private static CacheableMotor rightBackDrive;
-    private static CacheableMotor intake;
-    private static CacheableServo intake_servo;
-    private static CacheableMotor slider1;
-    private static CacheableMotor slider2;
-    private static CacheableServo slider1_servo;
-    private static CacheableServo slider2_servo;
-    private static CacheableServo drone;
-    private static CacheableCRServo holder;
     private static GamepadEx driver;
     private static GamepadEx tool;
-    private static IMU.Parameters parameters;
     private static TeleOpDriveSubsystem teleOpDriveSubsystem;
     private static IntakeSubsystem intakeSubsystem;
     private static OuttakeSubsystem outtakeSubsystem;
