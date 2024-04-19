@@ -35,6 +35,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
+import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+
 @TeleOp(name = "test color")
 @Config
 public class testcolor extends LinearOpMode {
@@ -49,8 +51,33 @@ public class testcolor extends LinearOpMode {
             telemetry.addData("red", rgba.red * 255);
             telemetry.addData("green", rgba.green * 255);
             telemetry.addData("blue", rgba.blue * 255);
-            telemetry.addData("color", rgba.toColor());
+            telemetry.addData("pixel", getPixel(pixel1).toString());
             telemetry.update();
         }
+    }
+
+    public Pixels getPixel(NormalizedColorSensor sensor) {
+        NormalizedRGBA rgba = sensor.getNormalizedColors();
+        if (withinRange(rgba.red * 255, ConstantValues.WHITE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.WHITE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.WHITE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+            return Pixels.WHITE;
+        else if (withinRange(rgba.red * 255, ConstantValues.YELLOW_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.YELLOW_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.YELLOW_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+            return Pixels.YELLOW;
+        else if (withinRange(rgba.red * 255, ConstantValues.GREEN_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.GREEN_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.GREEN_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+            return Pixels.GREEN;
+        else if (withinRange(rgba.red * 255, ConstantValues.PURPLE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.PURPLE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.PURPLE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+            return Pixels.PURPLE;
+        return Pixels.NONE;
+    }
+
+    private boolean withinRange(double input1, double input2, double deviation) {
+        return Math.abs(input1 - input2) <= deviation;
+    }
+
+    private enum Pixels {
+        WHITE,
+        PURPLE,
+        GREEN,
+        YELLOW,
+        NONE
     }
 }

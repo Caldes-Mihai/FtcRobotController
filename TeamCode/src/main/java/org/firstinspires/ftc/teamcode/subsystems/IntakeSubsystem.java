@@ -92,29 +92,29 @@ public class IntakeSubsystem extends SubsystemBase {
         if (gamepad != null && gamepad2 != null) {
             NormalizedRGBA rgba1 = pixel1sensor.getNormalizedColors();
             NormalizedRGBA rgba2 = pixel2sensor.getNormalizedColors();
-            gamepad.gamepad.setLedColor(rgba1.red, rgba1.green, rgba1.blue, 12000);
-            gamepad2.gamepad.setLedColor(rgba2.red, rgba2.green, rgba2.blue, 12000);
+            gamepad.gamepad.setLedColor(rgba1.red * 255, rgba1.green * 255, rgba1.blue * 255, 12000);
+            gamepad2.gamepad.setLedColor(rgba2.red * 255, rgba2.green * 255, rgba2.blue * 255, 12000);
         }
     }
 
     public Pixels getPixel(NormalizedColorSensor sensor) {
         NormalizedRGBA rgba = sensor.getNormalizedColors();
-        if (withinRange(rgba.red, ConstantValues.WHITE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green, ConstantValues.WHITE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue, ConstantValues.WHITE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+        if (withinRange(rgba.red * 255, ConstantValues.WHITE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.WHITE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.WHITE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
             return Pixels.WHITE;
-        else if (withinRange(rgba.red, ConstantValues.YELLOW_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green, ConstantValues.YELLOW_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue, ConstantValues.YELLOW_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+        else if (withinRange(rgba.red * 255, ConstantValues.YELLOW_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.YELLOW_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.YELLOW_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
             return Pixels.YELLOW;
-        else if (withinRange(rgba.red, ConstantValues.GREEN_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green, ConstantValues.GREEN_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue, ConstantValues.GREEN_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+        else if (withinRange(rgba.red * 255, ConstantValues.GREEN_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.GREEN_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.GREEN_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
             return Pixels.GREEN;
-        else if (withinRange(rgba.red, ConstantValues.PURPLE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green, ConstantValues.PURPLE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue, ConstantValues.PURPLE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+        else if (withinRange(rgba.red * 255, ConstantValues.PURPLE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.PURPLE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.PURPLE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
             return Pixels.PURPLE;
         return Pixels.NONE;
     }
 
-    boolean withinRange(double input1, double input2, double deviation) {
+    private boolean withinRange(double input1, double input2, double deviation) {
         return Math.abs(input1 - input2) <= deviation;
     }
 
-    public enum Pixels {
+    private enum Pixels {
         WHITE,
         PURPLE,
         GREEN,

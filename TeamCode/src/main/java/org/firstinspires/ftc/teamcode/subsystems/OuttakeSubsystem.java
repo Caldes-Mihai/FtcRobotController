@@ -127,7 +127,7 @@ public class OuttakeSubsystem extends SubsystemBase {
         return withinRange(Math.abs(slider.getCurrentPosition()), ConstantValues.RETRACTED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
     }
 
-    boolean withinRange(double input1, double input2, double deviation) {
+    private boolean withinRange(double input1, double input2, double deviation) {
         return Math.abs(input1 - input2) <= deviation;
     }
 }

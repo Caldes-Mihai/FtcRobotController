@@ -183,7 +183,7 @@ public class PropProcessor implements VisionProcessor {
         return position;
     }
 
-    boolean withinRange(double input1, double input2, double deviation) {
+    private boolean withinRange(double input1, double input2, double deviation) {
         return Math.abs(input1 - input2) <= deviation;
     }
 
