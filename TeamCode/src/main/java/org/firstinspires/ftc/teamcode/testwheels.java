@@ -32,35 +32,42 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
+import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+
+@TeleOp(name = "test wheels")
 @Config
-@TeleOp(name = "test slider")
-public class testslider extends LinearOpMode {
+public class testwheels extends LinearOpMode {
+
     @Override
-    public void runOpMode() throws InterruptedException {
-        DcMotor slider1 = hardwareMap.get(DcMotor.class, "slider1");
-        DcMotor slider2 = hardwareMap.get(DcMotor.class, "slider2");
-        slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slider2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    public void runOpMode() {
+        CacheableMotor leftFrontDrive = new CacheableMotor(hardwareMap, "front_left_motor");
+        CacheableMotor leftBackDrive = new CacheableMotor(hardwareMap, "back_left_motor");
+        CacheableMotor rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
+        CacheableMotor rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
+        leftFrontDrive.setInverted(ConstantValues.INVERT_LEFT_FRONT);
+        rightFrontDrive.setInverted(ConstantValues.INVERT_RIGHT_FRONT);
+        leftBackDrive.setInverted(ConstantValues.INVERT_LEFT_BACK);
+        rightBackDrive.setInverted(ConstantValues.INVERT_RIGHT_BACK);
         waitForStart();
-        slider1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (opModeIsActive()) {
-            telemetry.addData("slider 1", slider1.getCurrentPosition());
-            if (gamepad2.right_trigger > 0.3) {
-                //extinde
-                slider1.setPower(-gamepad2.right_trigger);
-                slider2.setPower(gamepad2.right_trigger);
-            } else if (gamepad2.left_trigger > 0.3) {
-                slider1.setPower(gamepad2.left_trigger);
-                slider2.setPower(-gamepad2.left_trigger);
-            } else {
-                slider1.setPower(0);
-                slider2.setPower(0);
-            }
-            telemetry.addData("slider 2", slider2.getCurrentPosition());
-            telemetry.update();
+            if (gamepad1.x)
+                leftFrontDrive.set(1);
+            else
+                leftFrontDrive.set(0);
+            if (gamepad1.y)
+                rightFrontDrive.set(1);
+            else
+                rightFrontDrive.set(0);
+            if (gamepad1.a)
+                leftBackDrive.set(1);
+            else
+                leftBackDrive.set(0);
+            if (gamepad1.b)
+                rightBackDrive.set(1);
+            else
+                rightBackDrive.set(0);
         }
     }
 }
