@@ -76,9 +76,11 @@ public class testouttake extends LinearOpMode {
             if (wristState == 0) {
                 claw_wrist.setPosition(ConstantValues.CLAW_WRIST_HORIZONTAL);
             } else if (wristState == 1) {
-                claw_wrist.setPosition(ConstantValues.CLAW_WRIST_VERTICAL);
+                claw_wrist.setPosition(ConstantValues.CLAW_WRIST_LEFT_DIAGONAL);
             } else if (wristState == 2) {
-                claw_wrist.setPosition(ConstantValues.CLAW_WRIST_DIAGONAL);
+                claw_wrist.setPosition(ConstantValues.CLAW_WRIST_VERTICAL);
+            } else {
+                claw_wrist.setPosition(ConstantValues.CLAW_WRIST_RIGHT_DIAGONAL);
             }
             if (state == 2) {
                 slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);

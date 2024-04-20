@@ -19,8 +19,9 @@ public class ConstantValues {
     public static double CLAW_HOLD_POS = 0.5;
     public static double CLAW_RELEASE_POS = 0;
     public static double CLAW_WRIST_HORIZONTAL = 0;
+    public static double CLAW_WRIST_LEFT_DIAGONAL = 0;
     public static double CLAW_WRIST_VERTICAL = 0;
-    public static double CLAW_WRIST_DIAGONAL = 0;
+    public static double CLAW_WRIST_RIGHT_DIAGONAL = 0;
     public static double RETRACTED_SLIDERS_POS = 0;
     public static double RETRACTED_SLIDER_SERVO_POS = 1;
 

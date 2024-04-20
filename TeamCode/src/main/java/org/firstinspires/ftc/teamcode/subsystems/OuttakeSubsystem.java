@@ -128,18 +128,22 @@ public class OuttakeSubsystem extends SubsystemBase {
         wristState = gamepad.getButton(ConstantValues.CLAW_WRIST);
         if (wristState != oldWristState)
             if (wristOrientation.equals(WristOrientation.HORIZONTAL))
+                wristOrientation = WristOrientation.LEFT_DIAGONAL;
+            else if (wristOrientation.equals(WristOrientation.LEFT_DIAGONAL))
                 wristOrientation = WristOrientation.VERTICAL;
             else if (wristOrientation.equals(WristOrientation.VERTICAL))
-                wristOrientation = WristOrientation.DIAGONAL;
-            else if (wristOrientation.equals(WristOrientation.DIAGONAL))
+                wristOrientation = WristOrientation.RIGHT_DIAGONAL;
+            else if (wristOrientation.equals(WristOrientation.RIGHT_DIAGONAL))
                 wristOrientation = WristOrientation.HORIZONTAL;
         oldWristState = wristState;
         if (wristOrientation.equals(WristOrientation.HORIZONTAL))
             claw_wrist.setPosition(ConstantValues.CLAW_WRIST_HORIZONTAL);
+        else if (wristOrientation.equals(WristOrientation.LEFT_DIAGONAL))
+            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_LEFT_DIAGONAL);
         else if (wristOrientation.equals(WristOrientation.VERTICAL))
             claw_wrist.setPosition(ConstantValues.CLAW_WRIST_VERTICAL);
-        else if (wristOrientation.equals(WristOrientation.DIAGONAL))
-            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_DIAGONAL);
+        else if (wristOrientation.equals(WristOrientation.RIGHT_DIAGONAL))
+            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_RIGHT_DIAGONAL);
         if (gamepad.getTrigger(ConstantValues.EXTEND_OUTTAKE) > 0.3 && !isExtended()) {
             extend();
         } else if (gamepad.getTrigger(ConstantValues.RETRACT_OUTTAKE) > 0.3 && !isRetracted())
@@ -159,7 +163,8 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     private enum WristOrientation {
         HORIZONTAL,
+        LEFT_DIAGONAL,
         VERTICAL,
-        DIAGONAL
+        RIGHT_DIAGONAL
     }
 }
