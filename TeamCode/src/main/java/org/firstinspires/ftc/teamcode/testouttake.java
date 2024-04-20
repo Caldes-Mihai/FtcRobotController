@@ -42,6 +42,7 @@ import org.firstinspires.ftc.teamcode.util.ConstantValues;
 public class testouttake extends LinearOpMode {
 
     public static int state = 0;
+    public static int wristState = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -51,6 +52,7 @@ public class testouttake extends LinearOpMode {
         DcMotor slider2 = hardwareMap.get(DcMotor.class, "slider2");
         Servo claw1 = hardwareMap.get(Servo.class, "claw1");
         Servo claw2 = hardwareMap.get(Servo.class, "claw2");
+        Servo claw_wrist = hardwareMap.get(Servo.class, "claw_wrist");
         if (ConstantValues.INVERT_SLIDER1)
             slider1.setDirection(DcMotor.Direction.REVERSE);
         if (ConstantValues.INVERT_SLIDER2)
@@ -59,12 +61,25 @@ public class testouttake extends LinearOpMode {
             slider1_servo.setDirection(Servo.Direction.REVERSE);
         if (ConstantValues.INVERT_SLIDER2_SERVO)
             slider2_servo.setDirection(Servo.Direction.REVERSE);
+        if (ConstantValues.INVERT_CLAW1)
+            claw1.setDirection(Servo.Direction.REVERSE);
+        if (ConstantValues.INVERT_CLAW2)
+            claw2.setDirection(Servo.Direction.REVERSE);
+        if (ConstantValues.INVERT_CLAW_WRIST)
+            claw_wrist.setDirection(Servo.Direction.REVERSE);
         slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slider2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
         slider1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (opModeIsActive()) {
+            if (wristState == 0) {
+                claw_wrist.setPosition(ConstantValues.CLAW_WRIST_HORIZONTAL);
+            } else if (wristState == 1) {
+                claw_wrist.setPosition(ConstantValues.CLAW_WRIST_VERTICAL);
+            } else if (wristState == 2) {
+                claw_wrist.setPosition(ConstantValues.CLAW_WRIST_DIAGONAL);
+            }
             if (state == 2) {
                 slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
                 slider2_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);

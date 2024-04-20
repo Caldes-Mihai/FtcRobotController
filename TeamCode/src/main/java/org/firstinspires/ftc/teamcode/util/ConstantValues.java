@@ -13,8 +13,14 @@ public class ConstantValues {
     public static boolean INVERT_SLIDER2 = true;
     public static boolean INVERT_SLIDER1_SERVO = true;
     public static boolean INVERT_SLIDER2_SERVO = false;
+    public static boolean INVERT_CLAW1 = true;
+    public static boolean INVERT_CLAW2 = false;
+    public static boolean INVERT_CLAW_WRIST = false;
     public static double CLAW_HOLD_POS = 0.5;
     public static double CLAW_RELEASE_POS = 0;
+    public static double CLAW_WRIST_HORIZONTAL = 0;
+    public static double CLAW_WRIST_VERTICAL = 0;
+    public static double CLAW_WRIST_DIAGONAL = 0;
     public static double RETRACTED_SLIDERS_POS = 0;
     public static double RETRACTED_SLIDER_SERVO_POS = 1;
 
@@ -40,6 +46,8 @@ public class ConstantValues {
     public static GamepadKeys.Button EXTEND_INTAKE = GamepadKeys.Button.DPAD_UP;
     public static GamepadKeys.Button CLAW_1 = GamepadKeys.Button.LEFT_BUMPER;
     public static GamepadKeys.Button CLAW_2 = GamepadKeys.Button.RIGHT_BUMPER;
+
+    public static GamepadKeys.Button CLAW_WRIST = GamepadKeys.Button.A;
     public static GamepadKeys.Trigger EXTEND_OUTTAKE = GamepadKeys.Trigger.RIGHT_TRIGGER;
     public static GamepadKeys.Trigger RETRACT_OUTTAKE = GamepadKeys.Trigger.LEFT_TRIGGER;
     public static GamepadKeys.Button DRONE = GamepadKeys.Button.Y;

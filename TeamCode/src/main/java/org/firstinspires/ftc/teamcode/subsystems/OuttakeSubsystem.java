@@ -20,10 +20,14 @@ public class OuttakeSubsystem extends SubsystemBase {
     private final CacheableServo slider2_servo;
     private final CacheableServo claw1;
     private final CacheableServo claw2;
+    private final CacheableServo claw_wrist;
     private final IntakeSubsystem intake;
     private final GamepadEx gamepad;
     private final double power = 1;
     private final ElapsedTime timer = new ElapsedTime();
+    private WristOrientation wristOrientation = WristOrientation.HORIZONTAL;
+    private boolean wristState = false;
+    private boolean oldWristState = false;
     private Telemetry telemetry;
 
     public OuttakeSubsystem(HardwareMap hardwareMap, IntakeSubsystem intake, GamepadEx gamepad) {
@@ -33,12 +37,16 @@ public class OuttakeSubsystem extends SubsystemBase {
         this.slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
         this.claw1 = new CacheableServo(hardwareMap, "claw1", 0, 270);
         this.claw2 = new CacheableServo(hardwareMap, "claw2", 0, 270);
+        this.claw_wrist = new CacheableServo(hardwareMap, "claw_wrist", 0, 270);
         this.intake = intake;
         this.gamepad = gamepad;
         slider1.setInverted(ConstantValues.INVERT_SLIDER1);
         slider2.setInverted(ConstantValues.INVERT_SLIDER2);
         slider1_servo.setInverted(ConstantValues.INVERT_SLIDER1_SERVO);
         slider2_servo.setInverted(ConstantValues.INVERT_SLIDER2_SERVO);
+        claw1.setInverted(ConstantValues.INVERT_CLAW1);
+        claw2.setInverted(ConstantValues.INVERT_CLAW2);
+        claw_wrist.setInverted(ConstantValues.INVERT_CLAW_WRIST);
         slider1.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slider2.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slider1.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -117,6 +125,21 @@ public class OuttakeSubsystem extends SubsystemBase {
         if (gamepad.getButton(ConstantValues.CLAW_2)) {
             releaseClaw2();
         }
+        wristState = gamepad.getButton(ConstantValues.CLAW_WRIST);
+        if (wristState != oldWristState)
+            if (wristOrientation.equals(WristOrientation.HORIZONTAL))
+                wristOrientation = WristOrientation.VERTICAL;
+            else if (wristOrientation.equals(WristOrientation.VERTICAL))
+                wristOrientation = WristOrientation.DIAGONAL;
+            else if (wristOrientation.equals(WristOrientation.DIAGONAL))
+                wristOrientation = WristOrientation.HORIZONTAL;
+        oldWristState = wristState;
+        if (wristOrientation.equals(WristOrientation.HORIZONTAL))
+            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_HORIZONTAL);
+        else if (wristOrientation.equals(WristOrientation.VERTICAL))
+            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_VERTICAL);
+        else if (wristOrientation.equals(WristOrientation.DIAGONAL))
+            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_DIAGONAL);
         if (gamepad.getTrigger(ConstantValues.EXTEND_OUTTAKE) > 0.3 && !isExtended()) {
             extend();
         } else if (gamepad.getTrigger(ConstantValues.RETRACT_OUTTAKE) > 0.3 && !isRetracted())
@@ -132,5 +155,11 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     public boolean isRetracted() {
         return ConstantValues.withinRange(Math.abs(slider1.getCurrentPosition()), ConstantValues.RETRACTED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
+    }
+
+    private enum WristOrientation {
+        HORIZONTAL,
+        VERTICAL,
+        DIAGONAL
     }
 }
