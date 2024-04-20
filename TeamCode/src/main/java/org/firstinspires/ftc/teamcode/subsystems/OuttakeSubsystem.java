@@ -14,7 +14,8 @@ import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 @Config
 public class OuttakeSubsystem extends SubsystemBase {
-    private final CacheableMotor slider;
+    private final CacheableMotor slider1;
+    private final CacheableMotor slider2;
     private final CacheableServo slider1_servo;
     private final CacheableServo slider2_servo;
     private final CacheableServo claw1;
@@ -26,18 +27,22 @@ public class OuttakeSubsystem extends SubsystemBase {
     private Telemetry telemetry;
 
     public OuttakeSubsystem(HardwareMap hardwareMap, IntakeSubsystem intake, GamepadEx gamepad) {
-        this.slider = new CacheableMotor(hardwareMap, "slider");
+        this.slider1 = new CacheableMotor(hardwareMap, "slider1");
+        this.slider2 = new CacheableMotor(hardwareMap, "slider2");
         this.slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
         this.slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
         this.claw1 = new CacheableServo(hardwareMap, "claw1", 0, 270);
         this.claw2 = new CacheableServo(hardwareMap, "claw2", 0, 270);
         this.intake = intake;
         this.gamepad = gamepad;
-        slider.setInverted(ConstantValues.INVERT_SLIDER);
+        slider1.setInverted(ConstantValues.INVERT_SLIDER1);
+        slider2.setInverted(ConstantValues.INVERT_SLIDER2);
         slider1_servo.setInverted(ConstantValues.INVERT_SLIDER1_SERVO);
         slider2_servo.setInverted(ConstantValues.INVERT_SLIDER2_SERVO);
-        slider.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slider.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slider1.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slider2.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slider1.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slider2.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void setTelemetry(Telemetry t) {
@@ -46,7 +51,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (Math.abs(slider.getCurrentPosition()) >= ConstantValues.EXTENDED_SLIDERS_POS / 2) {
+        if (Math.abs(slider1.getCurrentPosition()) >= ConstantValues.EXTENDED_SLIDERS_POS / 2) {
             slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
             slider2_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
         } else if (intake.pixel1 && intake.pixel2) {
@@ -60,20 +65,23 @@ public class OuttakeSubsystem extends SubsystemBase {
             slider1_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
             slider2_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
         }
-        telemetry.addData("pos", Math.abs(slider.getCurrentPosition()));
+        telemetry.addData("pos", Math.abs(slider1.getCurrentPosition()));
         telemetry.addData("target", ConstantValues.EXTENDED_SLIDERS_POS);
     }
 
     public void extend() {
-        slider.set(power);
+        slider1.set(power);
+        slider2.set(power);
     }
 
     public void standBy() {
-        slider.set(0);
+        slider1.set(0);
+        slider2.set(0);
     }
 
     public void retract() {
-        slider.set(-power);
+        slider1.set(-power);
+        slider2.set(-power);
     }
 
     public void hold() {
@@ -119,10 +127,10 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public boolean isExtended() {
-        return ConstantValues.withinRange(Math.abs(slider.getCurrentPosition()), ConstantValues.EXTENDED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
+        return ConstantValues.withinRange(Math.abs(slider1.getCurrentPosition()), ConstantValues.EXTENDED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
     }
 
     public boolean isRetracted() {
-        return ConstantValues.withinRange(Math.abs(slider.getCurrentPosition()), ConstantValues.RETRACTED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
+        return ConstantValues.withinRange(Math.abs(slider1.getCurrentPosition()), ConstantValues.RETRACTED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
     }
 }

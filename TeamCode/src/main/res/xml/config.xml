@@ -17,6 +17,9 @@
             <goBILDA5202SeriesMotor
                 name="back_right_motor"
                 port="1" />
+            <goBILDA5202SeriesMotor
+                name="slider2"
+                port="2" />
             <Servo
                 name="slider2_servo"
                 port="0" />
@@ -44,7 +47,7 @@
                 name="back_left_motor"
                 port="1" />
             <goBILDA5202SeriesMotor
-                name="slider"
+                name="slider1"
                 port="2" />
             <goBILDA5202SeriesMotor
                 name="intake"

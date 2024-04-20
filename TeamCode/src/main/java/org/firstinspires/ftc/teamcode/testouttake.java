@@ -48,17 +48,22 @@ public class testouttake extends LinearOpMode {
         Servo slider1_servo = hardwareMap.get(Servo.class, "slider1_servo");
         Servo slider2_servo = hardwareMap.get(Servo.class, "slider2_servo");
         DcMotor slider1 = hardwareMap.get(DcMotor.class, "slider1");
+        DcMotor slider2 = hardwareMap.get(DcMotor.class, "slider2");
         Servo claw1 = hardwareMap.get(Servo.class, "claw1");
         Servo claw2 = hardwareMap.get(Servo.class, "claw2");
-        if (ConstantValues.INVERT_SLIDER)
+        if (ConstantValues.INVERT_SLIDER1)
             slider1.setDirection(DcMotor.Direction.REVERSE);
+        if (ConstantValues.INVERT_SLIDER2)
+            slider2.setDirection(DcMotor.Direction.REVERSE);
         if (ConstantValues.INVERT_SLIDER1_SERVO)
             slider1_servo.setDirection(Servo.Direction.REVERSE);
         if (ConstantValues.INVERT_SLIDER2_SERVO)
             slider2_servo.setDirection(Servo.Direction.REVERSE);
         slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slider2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
         slider1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (opModeIsActive()) {
             if (state == 2) {
                 slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
@@ -73,10 +78,13 @@ public class testouttake extends LinearOpMode {
             if (gamepad2.right_trigger > 0.3) {
                 //extinde
                 slider1.setPower(-gamepad2.right_trigger);
+                slider2.setPower(-gamepad2.right_trigger);
             } else if (gamepad2.left_trigger > 0.3) {
                 slider1.setPower(gamepad2.left_trigger);
+                slider2.setPower(gamepad2.left_trigger);
             } else {
                 slider1.setPower(0);
+                slider2.setPower(0);
             }
             if (gamepad2.left_bumper) {
                 claw1.setPosition(ConstantValues.CLAW_HOLD_POS);

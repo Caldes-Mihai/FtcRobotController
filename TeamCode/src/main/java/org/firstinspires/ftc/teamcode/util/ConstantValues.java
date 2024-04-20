@@ -9,7 +9,8 @@ public class ConstantValues {
     public static boolean INVERT_RIGHT_FRONT = false;
     public static boolean INVERT_LEFT_BACK = true;
     public static boolean INVERT_RIGHT_BACK = false;
-    public static boolean INVERT_SLIDER = true;
+    public static boolean INVERT_SLIDER1 = false;
+    public static boolean INVERT_SLIDER2 = true;
     public static boolean INVERT_SLIDER1_SERVO = true;
     public static boolean INVERT_SLIDER2_SERVO = false;
     public static double CLAW_HOLD_POS = 0.5;
