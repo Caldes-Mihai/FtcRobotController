@@ -3,11 +3,10 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.cache.CacheableServo;
-import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 @Config
 public class DroneSubsystem extends SubsystemBase {
@@ -20,7 +19,7 @@ public class DroneSubsystem extends SubsystemBase {
     }
 
     public void handle() {
-        if (gamepad.getButton(GamepadKeys.Button.Y))
+        if (gamepad.getButton(ConstantValues.DRONE))
             drone.setPosition(ConstantValues.DRONE_END);
         else
             drone.setPosition(ConstantValues.DRONE_START);

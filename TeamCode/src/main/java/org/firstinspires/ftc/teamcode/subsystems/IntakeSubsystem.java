@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -11,7 +10,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 import org.firstinspires.ftc.teamcode.cache.CacheableServo;
-import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 @Config
 public class IntakeSubsystem extends SubsystemBase {
@@ -63,15 +62,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void handle() {
         setSlow(false);
-        if ((!pixel1 || !pixel2) && (gamepad.getButton(GamepadKeys.Button.X) || gamepad2.getButton(GamepadKeys.Button.X))) {
+        if ((!pixel1 || !pixel2) && (gamepad.getButton(ConstantValues.INTAKE) || gamepad2.getButton(ConstantValues.INTAKE))) {
             setReversed(true);
             this.activate();
-        } else if (gamepad.getButton(GamepadKeys.Button.B) || gamepad2.getButton(GamepadKeys.Button.B)) {
+        } else if (gamepad.getButton(ConstantValues.REVERSE_INTAKE) || gamepad2.getButton(ConstantValues.REVERSE_INTAKE)) {
             setReversed(false);
             this.activate();
         } else
             this.deactivate();
-        if (gamepad.getButton(GamepadKeys.Button.DPAD_UP) || gamepad2.getButton(GamepadKeys.Button.DPAD_UP)) {
+        if (gamepad.getButton(ConstantValues.EXTEND_INTAKE) || gamepad2.getButton(ConstantValues.EXTEND_INTAKE)) {
             this.extend();
         } else
             this.retract();
@@ -99,19 +98,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Pixels getPixel(NormalizedColorSensor sensor) {
         NormalizedRGBA rgba = sensor.getNormalizedColors();
-        if (withinRange(rgba.red * 255, ConstantValues.WHITE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.WHITE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.WHITE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+        if (ConstantValues.withinRange(rgba.red * 255, ConstantValues.WHITE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.green * 255, ConstantValues.WHITE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.blue * 255, ConstantValues.WHITE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
             return Pixels.WHITE;
-        else if (withinRange(rgba.red * 255, ConstantValues.YELLOW_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.YELLOW_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.YELLOW_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+        else if (ConstantValues.withinRange(rgba.red * 255, ConstantValues.YELLOW_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.green * 255, ConstantValues.YELLOW_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.blue * 255, ConstantValues.YELLOW_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
             return Pixels.YELLOW;
-        else if (withinRange(rgba.red * 255, ConstantValues.GREEN_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.GREEN_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.GREEN_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+        else if (ConstantValues.withinRange(rgba.red * 255, ConstantValues.GREEN_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.green * 255, ConstantValues.GREEN_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.blue * 255, ConstantValues.GREEN_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
             return Pixels.GREEN;
-        else if (withinRange(rgba.red * 255, ConstantValues.PURPLE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.green * 255, ConstantValues.PURPLE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && withinRange(rgba.blue * 255, ConstantValues.PURPLE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
+        else if (ConstantValues.withinRange(rgba.red * 255, ConstantValues.PURPLE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.green * 255, ConstantValues.PURPLE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.blue * 255, ConstantValues.PURPLE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
             return Pixels.PURPLE;
         return Pixels.NONE;
-    }
-
-    private boolean withinRange(double input1, double input2, double deviation) {
-        return Math.abs(input1 - input2) <= deviation;
     }
 
     private enum Pixels {

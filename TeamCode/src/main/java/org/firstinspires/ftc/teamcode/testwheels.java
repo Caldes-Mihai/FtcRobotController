@@ -34,7 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
-import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 @TeleOp(name = "test wheels")
 @Config

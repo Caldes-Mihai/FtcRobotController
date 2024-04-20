@@ -29,6 +29,7 @@ import android.graphics.Paint;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -150,7 +151,7 @@ public class PropProcessor implements VisionProcessor {
                 Rect rect = Imgproc.boundingRect(c);
                 if (rect.x < areaStart.x || rect.y < areaStart.y || rect.x + rect.width > areaEnd.x || rect.y + rect.height > areaEnd.y)
                     continue;
-                if ((rect.width > maxWProp || rect.height > maxHProp) && withinRange(rect.width * scaleBmpPxToCanvasPx, rect.height * scaleBmpPxToCanvasPx, maxHWDiff)) {
+                if ((rect.width > maxWProp || rect.height > maxHProp) && ConstantValues.withinRange(rect.width * scaleBmpPxToCanvasPx, rect.height * scaleBmpPxToCanvasPx, maxHWDiff)) {
                     maxWProp = rect.width;
                     maxHProp = rect.height;
                     foundProp = rect;
@@ -181,10 +182,6 @@ public class PropProcessor implements VisionProcessor {
 
     public Positions getPropPosition() {
         return position;
-    }
-
-    private boolean withinRange(double input1, double input2, double deviation) {
-        return Math.abs(input1 - input2) <= deviation;
     }
 
     public enum Positions {

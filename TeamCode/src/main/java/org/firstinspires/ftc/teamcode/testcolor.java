@@ -35,7 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
-import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 @TeleOp(name = "test color")
 @Config

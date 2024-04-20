@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 @TeleOp(name = "test intake")
 @Config

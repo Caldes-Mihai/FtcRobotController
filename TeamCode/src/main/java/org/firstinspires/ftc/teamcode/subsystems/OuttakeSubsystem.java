@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 import org.firstinspires.ftc.teamcode.cache.CacheableServo;
-import org.firstinspires.ftc.teamcode.drive.ConstantValues;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 @Config
 public class OuttakeSubsystem extends SubsystemBase {
@@ -104,15 +103,15 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void handle() {
-        if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-            releaseClaw2();
-        }
-        if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+        if (gamepad.getButton(ConstantValues.CLAW_1)) {
             releaseClaw1();
         }
-        if (gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3 && !isExtended()) {
+        if (gamepad.getButton(ConstantValues.CLAW_2)) {
+            releaseClaw2();
+        }
+        if (gamepad.getTrigger(ConstantValues.EXTEND_OUTTAKE) > 0.3 && !isExtended()) {
             extend();
-        } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.3 && !isRetracted())
+        } else if (gamepad.getTrigger(ConstantValues.RETRACT_OUTTAKE) > 0.3 && !isRetracted())
             retract();
         else {
             standBy();
@@ -120,14 +119,10 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public boolean isExtended() {
-        return withinRange(Math.abs(slider.getCurrentPosition()), ConstantValues.EXTENDED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
+        return ConstantValues.withinRange(Math.abs(slider.getCurrentPosition()), ConstantValues.EXTENDED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
     }
 
     public boolean isRetracted() {
-        return withinRange(Math.abs(slider.getCurrentPosition()), ConstantValues.RETRACTED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
-    }
-
-    private boolean withinRange(double input1, double input2, double deviation) {
-        return Math.abs(input1 - input2) <= deviation;
+        return ConstantValues.withinRange(Math.abs(slider.getCurrentPosition()), ConstantValues.RETRACTED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
     }
 }

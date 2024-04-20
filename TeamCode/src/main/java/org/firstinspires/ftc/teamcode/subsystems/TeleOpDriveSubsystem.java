@@ -5,7 +5,6 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,8 +12,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
-import org.firstinspires.ftc.teamcode.drive.ConstantValues;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 @Config
 public class TeleOpDriveSubsystem extends SubsystemBase {
@@ -27,8 +26,6 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
     private final GamepadEx gamepad;
     private final boolean isRed;
     private final CommandOpMode opMode;
-    private final double SLOW_SPEED = 0.3;
-    private final double NORMAL_SPEED = 1;
     private double yaw;
     private double CURRENT_SPEED = 1;
     private double imuDegrees;
@@ -58,13 +55,13 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
     }
 
     public void drive() {
-        if (gamepad.getButton(GamepadKeys.Button.START))
+        if (gamepad.getButton(ConstantValues.RESET_IMU))
             imu.resetYaw();
         imuDegrees = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-            CURRENT_SPEED = SLOW_SPEED;
+        if (gamepad.getButton(ConstantValues.PRECISION_MODE))
+            CURRENT_SPEED = ConstantValues.PRECISION_MODE_SPEED;
         else
-            CURRENT_SPEED = NORMAL_SPEED;
+            CURRENT_SPEED = ConstantValues.NORMAL_SPEED;
         drive.driveFieldCentric(gamepad.getLeftX() * CURRENT_SPEED, gamepad.getLeftY() * CURRENT_SPEED, gamepad.getRightX() * CURRENT_SPEED, imuDegrees + (isRed ? -90 : 90));
     }
 }
