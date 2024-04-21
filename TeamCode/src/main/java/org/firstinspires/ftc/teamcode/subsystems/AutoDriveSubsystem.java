@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.HandleAuto;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
@@ -30,8 +31,6 @@ public class AutoDriveSubsystem extends SubsystemBase {
     private final boolean fieldCentric = false;
     private final AprilTagProcessor processor;
     //camera offset from center (in inches)
-    private final double offsetY = 12;
-    private final double offsetX = 6;
     private double heading;
     private double x;
     private double y;
@@ -127,8 +126,8 @@ public class AutoDriveSubsystem extends SubsystemBase {
             y = aprilTag.metadata.fieldPosition.get(1);
             x = x - Math.signum(x) * aprilTag.ftcPose.y;
             y = y - Math.signum(y) * aprilTag.ftcPose.x;
-            x = x - Math.cos(Math.toRadians(heading)) * offsetY - Math.sin(Math.toRadians(heading)) * offsetX;
-            y = y - Math.sin(Math.toRadians(heading)) * offsetY - Math.cos(Math.toRadians(heading)) * offsetX;
+            x = x - Math.cos(Math.toRadians(heading)) * ConstantValues.CAMERA_OFFSET_Y - Math.sin(Math.toRadians(heading)) * ConstantValues.CAMERA_OFFSET_X;
+            y = y - Math.sin(Math.toRadians(heading)) * ConstantValues.CAMERA_OFFSET_Y - Math.cos(Math.toRadians(heading)) * ConstantValues.CAMERA_OFFSET_X;
             sumX += x;
             sumY += y;
         });

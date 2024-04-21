@@ -25,9 +25,6 @@ public class OuttakeSubsystem extends SubsystemBase {
     private final GamepadEx gamepad;
     private final double power = 1;
     private final ElapsedTime timer = new ElapsedTime();
-    private WristOrientation wristOrientation = WristOrientation.HORIZONTAL;
-    private boolean wristState = false;
-    private boolean oldWristState = false;
     private Telemetry telemetry;
 
     public OuttakeSubsystem(HardwareMap hardwareMap, IntakeSubsystem intake, GamepadEx gamepad) {
@@ -65,6 +62,7 @@ public class OuttakeSubsystem extends SubsystemBase {
         } else if (intake.pixel1 && intake.pixel2) {
             slider1_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
             slider2_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
+            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
             if (!intake.oldPixel1) timer.reset();
             if (timer.seconds() >= 1) {
                 hold();
@@ -72,6 +70,7 @@ public class OuttakeSubsystem extends SubsystemBase {
         } else {
             slider1_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
             slider2_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
+            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
         }
         telemetry.addData("pos", Math.abs(slider1.getCurrentPosition()));
         telemetry.addData("target", ConstantValues.EXTENDED_SLIDERS_POS);
@@ -119,37 +118,27 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void handle() {
-        if (gamepad.getButton(ConstantValues.CLAW_1)) {
+        if (gamepad.getButton(ConstantValues.CLAW_1) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
             releaseClaw1();
         }
-        if (gamepad.getButton(ConstantValues.CLAW_2)) {
+        if (gamepad.getButton(ConstantValues.CLAW_2) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
             releaseClaw2();
         }
-        wristState = gamepad.getButton(ConstantValues.CLAW_WRIST);
-        if (wristState != oldWristState)
-            if (wristOrientation.equals(WristOrientation.HORIZONTAL))
-                wristOrientation = WristOrientation.LEFT_DIAGONAL;
-            else if (wristOrientation.equals(WristOrientation.LEFT_DIAGONAL))
-                wristOrientation = WristOrientation.VERTICAL;
-            else if (wristOrientation.equals(WristOrientation.VERTICAL))
-                wristOrientation = WristOrientation.RIGHT_DIAGONAL;
-            else if (wristOrientation.equals(WristOrientation.RIGHT_DIAGONAL))
-                wristOrientation = WristOrientation.HORIZONTAL;
-        oldWristState = wristState;
-        if (wristOrientation.equals(WristOrientation.HORIZONTAL))
-            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_HORIZONTAL);
-        else if (wristOrientation.equals(WristOrientation.LEFT_DIAGONAL))
-            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_LEFT_DIAGONAL);
-        else if (wristOrientation.equals(WristOrientation.VERTICAL))
-            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_VERTICAL);
-        else if (wristOrientation.equals(WristOrientation.RIGHT_DIAGONAL))
-            claw_wrist.setPosition(ConstantValues.CLAW_WRIST_RIGHT_DIAGONAL);
         if (gamepad.getTrigger(ConstantValues.EXTEND_OUTTAKE) > 0.3 && !isExtended()) {
             extend();
         } else if (gamepad.getTrigger(ConstantValues.RETRACT_OUTTAKE) > 0.3 && !isRetracted())
             retract();
         else {
             standBy();
+        }
+        if (gamepad.getRightX() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_RIGHT_DIAGONAL);
+        } else if (gamepad.getRightX() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_LEFT_DIAGONAL);
+        } else if (gamepad.getRightY() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
+        } else if (gamepad.getRightY() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_VERTICAL);
         }
     }
 
@@ -159,12 +148,5 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     public boolean isRetracted() {
         return ConstantValues.withinRange(Math.abs(slider1.getCurrentPosition()), ConstantValues.RETRACTED_SLIDERS_POS, ConstantValues.SLIDERS_THRESHOLD);
-    }
-
-    private enum WristOrientation {
-        HORIZONTAL,
-        LEFT_DIAGONAL,
-        VERTICAL,
-        RIGHT_DIAGONAL
     }
 }

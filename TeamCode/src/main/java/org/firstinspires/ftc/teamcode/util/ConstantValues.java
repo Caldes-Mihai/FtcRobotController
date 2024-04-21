@@ -19,9 +19,9 @@ public class ConstantValues {
     public static double CLAW_HOLD_POS = 0.5;
     public static double CLAW_RELEASE_POS = 0;
     public static double CLAW_WRIST_HORIZONTAL = 0;
-    public static double CLAW_WRIST_LEFT_DIAGONAL = 0;
-    public static double CLAW_WRIST_VERTICAL = 0;
-    public static double CLAW_WRIST_RIGHT_DIAGONAL = 0;
+    public static double CLAW_WRIST_LEFT_DIAGONAL = 45;
+    public static double CLAW_WRIST_VERTICAL = 90;
+    public static double CLAW_WRIST_RIGHT_DIAGONAL = 135;
     public static double RETRACTED_SLIDERS_POS = 0;
     public static double RETRACTED_SLIDER_SERVO_POS = 1;
 
@@ -37,6 +37,8 @@ public class ConstantValues {
     public static double DRONE_END = 0.5;
     public static double NORMAL_SPEED = 1;
     public static double PRECISION_MODE_SPEED = 0.3;
+    public static double CAMERA_OFFSET_Y = 12;
+    public static double CAMERA_OFFSET_X = 6;
     public static int[] WHITE_PIXEL = {255, 255, 255};
     public static int[] GREEN_PIXEL = {0, 255, 0};
     public static int[] PURPLE_PIXEL = {128, 0, 128};
@@ -47,8 +49,6 @@ public class ConstantValues {
     public static GamepadKeys.Button EXTEND_INTAKE = GamepadKeys.Button.DPAD_UP;
     public static GamepadKeys.Button CLAW_1 = GamepadKeys.Button.LEFT_BUMPER;
     public static GamepadKeys.Button CLAW_2 = GamepadKeys.Button.RIGHT_BUMPER;
-
-    public static GamepadKeys.Button CLAW_WRIST = GamepadKeys.Button.A;
     public static GamepadKeys.Trigger EXTEND_OUTTAKE = GamepadKeys.Trigger.RIGHT_TRIGGER;
     public static GamepadKeys.Trigger RETRACT_OUTTAKE = GamepadKeys.Trigger.LEFT_TRIGGER;
     public static GamepadKeys.Button DRONE = GamepadKeys.Button.Y;
