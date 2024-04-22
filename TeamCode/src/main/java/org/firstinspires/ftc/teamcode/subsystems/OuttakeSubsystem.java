@@ -59,10 +59,9 @@ public class OuttakeSubsystem extends SubsystemBase {
         if (Math.abs(slider1.getCurrentPosition()) >= ConstantValues.EXTENDED_SLIDERS_POS / 2) {
             slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
             slider2_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
-        } else if (intake.pixel1 && intake.pixel2) {
+        } else if (intake.pixel1 && intake.pixel2 && isRetracted()) {
             slider1_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
             slider2_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
-            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
             if (!intake.oldPixel1) timer.reset();
             if (timer.seconds() >= 1) {
                 hold();
