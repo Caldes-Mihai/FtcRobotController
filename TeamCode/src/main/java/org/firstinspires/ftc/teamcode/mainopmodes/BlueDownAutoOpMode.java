@@ -1,12 +1,14 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.mainopmodes;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Blue Up Auto Op Mode", group = "Drive")
-public class BlueUpAutoOpMode extends CommandOpMode {
+import org.firstinspires.ftc.teamcode.handlers.HandleAuto;
 
-    private final HandleAuto.Positions currentSpawnPosition = HandleAuto.Positions.UP;
+@Autonomous(name = "Blue Down Auto Op Mode", group = "Drive")
+public class BlueDownAutoOpMode extends CommandOpMode {
+
+    private final HandleAuto.Positions currentSpawnPosition = HandleAuto.Positions.DOWN;
     private final boolean isRed = false;
 
     @Override

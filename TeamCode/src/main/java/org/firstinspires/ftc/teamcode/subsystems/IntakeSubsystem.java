@@ -4,10 +4,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 import org.firstinspires.ftc.teamcode.cache.CacheableServo;
 import org.firstinspires.ftc.teamcode.util.ConstantValues;
@@ -78,8 +79,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        pixel1 = !getPixel(pixel1sensor).equals(Pixels.NONE);
-        pixel2 = !getPixel(pixel2sensor).equals(Pixels.NONE);
+        pixel1 = getPixel(pixel1sensor);
+        pixel2 = getPixel(pixel2sensor);
         if (pixel1 != oldPixel1 || pixel2 != oldPixel2) {
             if (gamepad != null && gamepad2 != null) {
                 gamepad.gamepad.rumble(1, 1, 250);
@@ -88,33 +89,9 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         oldPixel1 = pixel1;
         oldPixel2 = pixel2;
-        if (gamepad != null && gamepad2 != null) {
-            NormalizedRGBA rgba1 = pixel1sensor.getNormalizedColors();
-            NormalizedRGBA rgba2 = pixel2sensor.getNormalizedColors();
-            gamepad.gamepad.setLedColor(rgba1.red * 255, rgba1.green * 255, rgba1.blue * 255, 12000);
-            gamepad2.gamepad.setLedColor(rgba2.red * 255, rgba2.green * 255, rgba2.blue * 255, 12000);
-        }
     }
 
-    public Pixels getPixel(NormalizedColorSensor sensor) {
-        NormalizedRGBA rgba = sensor.getNormalizedColors();
-        if (ConstantValues.withinRange(rgba.red * 255, ConstantValues.WHITE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.green * 255, ConstantValues.WHITE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.blue * 255, ConstantValues.WHITE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
-            return Pixels.WHITE;
-        else if (ConstantValues.withinRange(rgba.red * 255, ConstantValues.YELLOW_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.green * 255, ConstantValues.YELLOW_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.blue * 255, ConstantValues.YELLOW_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
-            return Pixels.YELLOW;
-        else if (ConstantValues.withinRange(rgba.red * 255, ConstantValues.GREEN_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.green * 255, ConstantValues.GREEN_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.blue * 255, ConstantValues.GREEN_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
-            return Pixels.GREEN;
-        else if (ConstantValues.withinRange(rgba.red * 255, ConstantValues.PURPLE_PIXEL[0], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.green * 255, ConstantValues.PURPLE_PIXEL[1], ConstantValues.PIXEL_COLOR_THRESHOLD) && ConstantValues.withinRange(rgba.blue * 255, ConstantValues.PURPLE_PIXEL[2], ConstantValues.PIXEL_COLOR_THRESHOLD))
-            return Pixels.PURPLE;
-        return Pixels.NONE;
+    public boolean getPixel(NormalizedColorSensor sensor) {
+        return ((DistanceSensor) sensor).getDistance(DistanceUnit.CM) < ConstantValues.PIXEL_DISTANCE_THRESHOLD;
     }
-
-    private enum Pixels {
-        WHITE,
-        PURPLE,
-        GREEN,
-        YELLOW,
-        NONE
-    }
-
 }

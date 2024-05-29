@@ -27,14 +27,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.mainopmodes;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Red Tele Op Mode", group = "Drive")
-public class RedTeleOpMode extends CommandOpMode {
-    private final boolean isRed = true;
+import org.firstinspires.ftc.teamcode.handlers.HandleTeleOp;
+
+@TeleOp(name = "Blue Tele Op Mode", group = "Drive")
+public class BlueTeleOp extends CommandOpMode {
+    private final boolean isRed = false;
 
     @Override
     public void initialize() {

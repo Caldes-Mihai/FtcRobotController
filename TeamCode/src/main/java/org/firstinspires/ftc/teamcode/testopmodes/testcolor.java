@@ -27,25 +27,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testopmodes;
 
-import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
-@TeleOp(name = "Blue Tele Op Mode", group = "Drive")
-public class BlueTeleOp extends CommandOpMode {
-    private final boolean isRed = false;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@TeleOp(name = "test color")
+@Config
+public class testcolor extends LinearOpMode {
     @Override
-    public void initialize() {
-        HandleTeleOp.init(
-                isRed, this
-        );
-    }
-
-    @Override
-    public void run() {
-        HandleTeleOp.run();
-        super.run();
+    public void runOpMode() throws InterruptedException {
+        NormalizedColorSensor pixel1 = hardwareMap.get(NormalizedColorSensor.class, "pixel1");
+        waitForStart();
+        while (opModeIsActive()) {
+            telemetry.addData("pixel", ((DistanceSensor) pixel1).getDistance(DistanceUnit.CM));
+            telemetry.update();
+        }
     }
 }

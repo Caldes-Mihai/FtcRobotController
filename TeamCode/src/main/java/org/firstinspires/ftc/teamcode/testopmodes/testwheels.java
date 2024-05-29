@@ -27,58 +27,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testopmodes;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
 import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
-@TeleOp(name = "test intake")
+@TeleOp(name = "test wheels")
 @Config
-public class testintake extends LinearOpMode {
-
-    public static double retract = 0;
-    public static double extend = 0.3;
-    public static double stage = 5;
+public class testwheels extends LinearOpMode {
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-        Servo claw1 = hardwareMap.get(Servo.class, "claw1");
-        Servo claw2 = hardwareMap.get(Servo.class, "claw2");
-        AnalogInput beam = hardwareMap.analogInput.get("beam");
-        int pixels = 0;
-        boolean state, oldState = false;
+    public void runOpMode() {
+        CacheableMotor leftFrontDrive = new CacheableMotor(hardwareMap, "front_left_motor");
+        CacheableMotor leftBackDrive = new CacheableMotor(hardwareMap, "back_left_motor");
+        CacheableMotor rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
+        CacheableMotor rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
+        leftFrontDrive.setInverted(ConstantValues.INVERT_LEFT_FRONT);
+        rightFrontDrive.setInverted(ConstantValues.INVERT_RIGHT_FRONT);
+        leftBackDrive.setInverted(ConstantValues.INVERT_LEFT_BACK);
+        rightBackDrive.setInverted(ConstantValues.INVERT_RIGHT_BACK);
         waitForStart();
         while (opModeIsActive()) {
-            if (gamepad2.x) {
-                intake.setPower(-1);
-            } else if (gamepad2.b) {
-                intake.setPower(1);
-            } else {
-                intake.setPower(0);
-            }
-            if (gamepad2.right_bumper)
-                pixels = 0;
-            state = beam.getVoltage() < 1;
-            if (state && !oldState)
-                pixels++;
-            if (pixels >= 2) {
-                claw1.setPosition(ConstantValues.CLAW_HOLD_POS);
-                claw2.setPosition(ConstantValues.CLAW_HOLD_POS);
-            } else {
-                claw1.setPosition(ConstantValues.CLAW_RELEASE_POS);
-                claw2.setPosition(ConstantValues.CLAW_RELEASE_POS);
-            }
-            oldState = state;
-            telemetry.addData("beam", state);
-            telemetry.addData("pixels", pixels);
-            telemetry.update();
+            if (gamepad1.x)
+                leftFrontDrive.set(1);
+            else
+                leftFrontDrive.set(0);
+            if (gamepad1.y)
+                rightFrontDrive.set(1);
+            else
+                rightFrontDrive.set(0);
+            if (gamepad1.a)
+                leftBackDrive.set(1);
+            else
+                leftBackDrive.set(0);
+            if (gamepad1.b)
+                rightBackDrive.set(1);
+            else
+                rightBackDrive.set(0);
         }
     }
 }

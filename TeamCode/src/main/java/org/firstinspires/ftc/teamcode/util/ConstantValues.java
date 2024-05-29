@@ -39,11 +39,7 @@ public class ConstantValues {
     public static double PRECISION_MODE_SPEED = 0.3;
     public static double CAMERA_OFFSET_Y = 12;
     public static double CAMERA_OFFSET_X = 6;
-    public static int[] WHITE_PIXEL = {255, 255, 255};
-    public static int[] GREEN_PIXEL = {0, 255, 0};
-    public static int[] PURPLE_PIXEL = {128, 0, 128};
-    public static int[] YELLOW_PIXEL = {255, 255, 0};
-    public static int PIXEL_COLOR_THRESHOLD = 50;
+    public static int PIXEL_DISTANCE_THRESHOLD = 8;
     public static GamepadKeys.Button INTAKE = GamepadKeys.Button.X;
     public static GamepadKeys.Button REVERSE_INTAKE = GamepadKeys.Button.B;
     public static GamepadKeys.Button EXTEND_INTAKE = GamepadKeys.Button.DPAD_UP;

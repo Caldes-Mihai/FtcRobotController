@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 @Config
-public class TeleOpDriveSubsystem extends SubsystemBase {
+public class FieldCentricDriveSubsystem extends SubsystemBase {
     private static CacheableMotor leftFrontDrive;
     private static CacheableMotor leftBackDrive;
     private static CacheableMotor rightFrontDrive;
@@ -26,11 +26,10 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
     private final GamepadEx gamepad;
     private final boolean isRed;
     private final CommandOpMode opMode;
-    private double yaw;
     private double CURRENT_SPEED = 1;
     private double imuDegrees;
 
-    public TeleOpDriveSubsystem(HardwareMap hardwareMap, GamepadEx gamepad, boolean isRed, CommandOpMode opMode) {
+    public FieldCentricDriveSubsystem(HardwareMap hardwareMap, GamepadEx gamepad, boolean isRed, CommandOpMode opMode) {
         this.imu = hardwareMap.get(IMU.class, "imu");
         imu.resetYaw();
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -62,6 +61,8 @@ public class TeleOpDriveSubsystem extends SubsystemBase {
             CURRENT_SPEED = ConstantValues.PRECISION_MODE_SPEED;
         else
             CURRENT_SPEED = ConstantValues.NORMAL_SPEED;
+        opMode.telemetry.addData("imu", imuDegrees);
+        opMode.telemetry.addData("reset", gamepad.getButton(ConstantValues.RESET_IMU));
         drive.driveFieldCentric(gamepad.getLeftX() * CURRENT_SPEED, gamepad.getLeftY() * CURRENT_SPEED, gamepad.getRightX() * CURRENT_SPEED, imuDegrees + (isRed ? -90 : 90));
     }
 }

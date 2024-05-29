@@ -27,47 +27,55 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testopmodes;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.cache.CacheableMotor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
-@TeleOp(name = "test wheels")
+@TeleOp(name = "test intake")
 @Config
-public class testwheels extends LinearOpMode {
+public class testintake extends LinearOpMode {
+
+    public static double retract = 0;
+    public static double extend = 0.3;
+    public static double stage = 5;
 
     @Override
-    public void runOpMode() {
-        CacheableMotor leftFrontDrive = new CacheableMotor(hardwareMap, "front_left_motor");
-        CacheableMotor leftBackDrive = new CacheableMotor(hardwareMap, "back_left_motor");
-        CacheableMotor rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
-        CacheableMotor rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
-        leftFrontDrive.setInverted(ConstantValues.INVERT_LEFT_FRONT);
-        rightFrontDrive.setInverted(ConstantValues.INVERT_RIGHT_FRONT);
-        leftBackDrive.setInverted(ConstantValues.INVERT_LEFT_BACK);
-        rightBackDrive.setInverted(ConstantValues.INVERT_RIGHT_BACK);
+    public void runOpMode() throws InterruptedException {
+        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
+        Servo claw1 = hardwareMap.get(Servo.class, "claw1");
+        Servo claw2 = hardwareMap.get(Servo.class, "claw2");
+        NormalizedColorSensor pixel1 = hardwareMap.get(NormalizedColorSensor.class, "pixel1");
+        NormalizedColorSensor pixel2 = hardwareMap.get(NormalizedColorSensor.class, "pixel2");
+        boolean isPixel1 = ((DistanceSensor) pixel1).getDistance(DistanceUnit.CM) < ConstantValues.PIXEL_DISTANCE_THRESHOLD;
+        boolean isPixel2 = ((DistanceSensor) pixel2).getDistance(DistanceUnit.CM) < ConstantValues.PIXEL_DISTANCE_THRESHOLD;
         waitForStart();
         while (opModeIsActive()) {
-            if (gamepad1.x)
-                leftFrontDrive.set(1);
-            else
-                leftFrontDrive.set(0);
-            if (gamepad1.y)
-                rightFrontDrive.set(1);
-            else
-                rightFrontDrive.set(0);
-            if (gamepad1.a)
-                leftBackDrive.set(1);
-            else
-                leftBackDrive.set(0);
-            if (gamepad1.b)
-                rightBackDrive.set(1);
-            else
-                rightBackDrive.set(0);
+            if (gamepad2.x) {
+                intake.setPower(-1);
+            } else if (gamepad2.b) {
+                intake.setPower(1);
+            } else {
+                intake.setPower(0);
+            }
+            if (isPixel1 && isPixel2) {
+                claw1.setPosition(ConstantValues.CLAW_HOLD_POS);
+                claw2.setPosition(ConstantValues.CLAW_HOLD_POS);
+            } else {
+                claw1.setPosition(ConstantValues.CLAW_RELEASE_POS);
+                claw2.setPosition(ConstantValues.CLAW_RELEASE_POS);
+            }
+            telemetry.addData("pixel1", isPixel1);
+            telemetry.addData("pixel2", isPixel2);
+            telemetry.update();
         }
     }
 }
