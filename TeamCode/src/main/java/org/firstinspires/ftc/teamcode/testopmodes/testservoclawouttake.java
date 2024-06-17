@@ -39,8 +39,7 @@ import org.firstinspires.ftc.teamcode.util.ConstantValues;
 @TeleOp(name = "test servo claw outtake")
 @Config
 public class testservoclawouttake extends LinearOpMode {
-    public static double pos1 = 0.5;
-    public static double pos2 = 0.5;
+    public static boolean hold = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -52,8 +51,13 @@ public class testservoclawouttake extends LinearOpMode {
             else brat1.setDirection(Servo.Direction.FORWARD);
             if (ConstantValues.INVERT_CLAW2) brat2.setDirection(Servo.Direction.REVERSE);
             else brat2.setDirection(Servo.Direction.FORWARD);
-            brat1.setPosition(pos1);
-            brat2.setPosition(pos2);
+            if(hold) {
+                brat1.setPosition(ConstantValues.CLAW1_HOLD_POS);
+                brat2.setPosition(ConstantValues.CLAW2_HOLD_POS);
+            } else {
+                brat1.setPosition(ConstantValues.CLAW1_RELEASE_POS);
+                brat2.setPosition(ConstantValues.CLAW2_RELEASE_POS);
+            }
         }
     }
 }
