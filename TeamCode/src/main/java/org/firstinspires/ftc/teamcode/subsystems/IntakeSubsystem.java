@@ -92,6 +92,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean getPixel(NormalizedColorSensor sensor) {
+        if (sensor == null) return false;
         return ((DistanceSensor) sensor).getDistance(DistanceUnit.CM) < ConstantValues.PIXEL_DISTANCE_THRESHOLD;
     }
 }

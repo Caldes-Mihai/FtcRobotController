@@ -67,11 +67,11 @@ public class testintake extends LinearOpMode {
                 intake.setPower(0);
             }
             if (isPixel1 && isPixel2) {
-                claw1.setPosition(ConstantValues.CLAW_HOLD_POS);
-                claw2.setPosition(ConstantValues.CLAW_HOLD_POS);
+                claw1.setPosition(ConstantValues.CLAW1_HOLD_POS);
+                claw2.setPosition(ConstantValues.CLAW2_HOLD_POS);
             } else {
-                claw1.setPosition(ConstantValues.CLAW_RELEASE_POS);
-                claw2.setPosition(ConstantValues.CLAW_RELEASE_POS);
+                claw1.setPosition(ConstantValues.CLAW1_RELEASE_POS);
+                claw2.setPosition(ConstantValues.CLAW2_RELEASE_POS);
             }
             telemetry.addData("pixel1", isPixel1);
             telemetry.addData("pixel2", isPixel2);

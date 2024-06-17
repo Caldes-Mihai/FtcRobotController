@@ -104,14 +104,14 @@ public class testouttake extends LinearOpMode {
                 slider2.setPower(0);
             }
             if (gamepad2.left_bumper) {
-                claw1.setPosition(ConstantValues.CLAW_HOLD_POS);
+                claw1.setPosition(ConstantValues.CLAW1_HOLD_POS);
             } else {
-                claw1.setPosition(ConstantValues.CLAW_RELEASE_POS);
+                claw1.setPosition(ConstantValues.CLAW2_RELEASE_POS);
             }
             if (gamepad2.right_bumper) {
-                claw2.setPosition(ConstantValues.CLAW_HOLD_POS);
+                claw2.setPosition(ConstantValues.CLAW1_HOLD_POS);
             } else {
-                claw2.setPosition(ConstantValues.CLAW_RELEASE_POS);
+                claw2.setPosition(ConstantValues.CLAW2_RELEASE_POS);
             }
             telemetry.addData("slider 1", slider1.getCurrentPosition());
             telemetry.update();

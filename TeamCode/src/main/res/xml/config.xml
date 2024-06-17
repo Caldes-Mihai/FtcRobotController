@@ -3,30 +3,34 @@
     <Webcam
         name="Webcam 1"
         serialNumber="VendorProduct:vendor=0x046d|product=0x08e5|connection=" />
-
     <LynxUsbDevice
-        name="Control Hub Portal"
-        parentModuleAddress="173"
-        serialNumber="(embedded)">
+        name="Expansion Hub Portal 1"
+        parentModuleAddress="2"
+        serialNumber="DQ8P02OX">
         <LynxModule
             name="Expansion Hub 2"
             port="2">
             <!--            <goBILDA5202SeriesMotor-->
             <!--                name="slider2"-->
             <!--                port="2" />-->
-            <!--            <Servo-->
-            <!--                name="slider2_servo"-->
-            <!--                port="0" />-->
-            <!--            <Servo-->
-            <!--                name="claw2"-->
-            <!--                port="2" />-->
-            <!--            <AnalogInput-->
+            <Servo
+                name="slider2_servo"
+                port="0" />
+            <Servo
+                name="claw2"
+                port="2" />
+            <!--                         <AnalogInput-->
             <!--                name="beam"-->
             <!--                port="0" />-->
             <!--            <Servo-->
             <!--                name="intake_servo"-->
             <!--                port="4" />-->
         </LynxModule>
+    </LynxUsbDevice>
+    <LynxUsbDevice
+        name="Control Hub Portal"
+        parentModuleAddress="173"
+        serialNumber="(embedded)">
         <LynxModule
             name="Control Hub"
             port="173">
@@ -52,12 +56,12 @@
             <!--            <goBILDA5202SeriesMotor-->
             <!--                name="intake"-->
             <!--                port="3" />-->
-            <!--            <Servo-->
-            <!--                name="slider1_servo"-->
-            <!--                port="0" />-->
-            <!--            <Servo-->
-            <!--                name="claw1"-->
-            <!--                port="2" />-->
+            <Servo
+                name="slider1_servo"
+                port="0" />
+            <Servo
+                name="claw1"
+                port="2" />
             <!--            <Servo-->
             <!--                name="drone"-->
             <!--                port="4" />-->

@@ -25,6 +25,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     private final GamepadEx gamepad;
     private final double power = 1;
     private final ElapsedTime timer = new ElapsedTime();
+    private double multiplier = 1;
     private Telemetry telemetry;
 
     public OuttakeSubsystem(HardwareMap hardwareMap, IntakeSubsystem intake, GamepadEx gamepad) {
@@ -57,17 +58,17 @@ public class OuttakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (Math.abs(slider1.getCurrentPosition()) >= ConstantValues.EXTENDED_SLIDERS_POS / 2) {
-            slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
+            slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET);
             slider2_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
         } else if (intake.pixel1 && intake.pixel2 && isRetracted()) {
-            slider1_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
+            slider1_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET);
             slider2_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
             if (!intake.oldPixel1) timer.reset();
             if (timer.seconds() >= 1) {
                 hold();
             }
         } else {
-            slider1_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
+            slider1_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET);
             slider2_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
             claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
         }
@@ -76,8 +77,9 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void extend() {
-        slider1.set(power);
-        slider2.set(power);
+        multiplier = (ConstantValues.EXTENDED_SLIDERS_POS - slider1.getCurrentPosition()) / (ConstantValues.EXTENDED_SLIDERS_POS / 3);
+        slider1.set(power * multiplier + 0.1);
+        slider2.set(power * multiplier + 0.1);
     }
 
     public void standBy() {
@@ -86,8 +88,9 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void retract() {
-        slider1.set(-power);
-        slider2.set(-power);
+        multiplier = (ConstantValues.RETRACTED_SLIDERS_POS - slider1.getCurrentPosition()) / (ConstantValues.RETRACTED_SLIDERS_POS / 3);
+        slider1.set(-power * multiplier + 0.1);
+        slider2.set(-power * multiplier + 0.1);
     }
 
     public void hold() {
@@ -101,26 +104,26 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void holdClaw1() {
-        claw1.setPosition(ConstantValues.CLAW_HOLD_POS);
+        claw1.setPosition(ConstantValues.CLAW1_HOLD_POS);
     }
 
     public void holdClaw2() {
-        claw2.setPosition(ConstantValues.CLAW_HOLD_POS);
+        claw2.setPosition(ConstantValues.CLAW2_HOLD_POS);
     }
 
     public void releaseClaw1() {
-        claw1.setPosition(ConstantValues.CLAW_RELEASE_POS);
+        claw1.setPosition(ConstantValues.CLAW1_RELEASE_POS);
     }
 
     public void releaseClaw2() {
-        claw2.setPosition(ConstantValues.CLAW_RELEASE_POS);
+        claw2.setPosition(ConstantValues.CLAW2_RELEASE_POS);
     }
 
     public void handle() {
-        if (gamepad.getButton(ConstantValues.CLAW_1) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+        if (gamepad.getButton(ConstantValues.CLAW_1) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
             releaseClaw1();
         }
-        if (gamepad.getButton(ConstantValues.CLAW_2) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+        if (gamepad.getButton(ConstantValues.CLAW_2) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
             releaseClaw2();
         }
         if (gamepad.getTrigger(ConstantValues.EXTEND_OUTTAKE) > 0.3 && !isExtended()) {
@@ -130,13 +133,13 @@ public class OuttakeSubsystem extends SubsystemBase {
         else {
             standBy();
         }
-        if (gamepad.getRightX() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+        if (gamepad.getRightX() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
             claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_RIGHT_DIAGONAL);
-        } else if (gamepad.getRightX() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+        } else if (gamepad.getRightX() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
             claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_LEFT_DIAGONAL);
-        } else if (gamepad.getRightY() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+        } else if (gamepad.getRightY() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
             claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
-        } else if (gamepad.getRightY() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+        } else if (gamepad.getRightY() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
             claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_VERTICAL);
         }
     }

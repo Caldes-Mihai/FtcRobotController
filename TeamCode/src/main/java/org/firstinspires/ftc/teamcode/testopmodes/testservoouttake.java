@@ -32,22 +32,28 @@ package org.firstinspires.ftc.teamcode.testopmodes;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
-@TeleOp(name = "test color")
+@TeleOp(name = "test servo outtake")
 @Config
-public class testcolor extends LinearOpMode {
+public class testservoouttake extends LinearOpMode {
+    public static double pos1 = 0.5;
+    public static double pos2 = 0.5;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        NormalizedColorSensor pixel1 = hardwareMap.get(NormalizedColorSensor.class, "pixel1");
+        Servo brat1 = hardwareMap.get(Servo.class, "slider1_servo");
+        Servo brat2 = hardwareMap.get(Servo.class, "slider2_servo");
         waitForStart();
         while (opModeIsActive()) {
-            telemetry.addData("pixel", ((DistanceSensor) pixel1).getDistance(DistanceUnit.CM) < ConstantValues.PIXEL_DISTANCE_THRESHOLD);
-            telemetry.update();
+            if (ConstantValues.INVERT_SLIDER1_SERVO) brat1.setDirection(Servo.Direction.REVERSE);
+            else brat1.setDirection(Servo.Direction.FORWARD);
+            if (ConstantValues.INVERT_SLIDER2_SERVO) brat2.setDirection(Servo.Direction.REVERSE);
+            else brat2.setDirection(Servo.Direction.FORWARD);
+            brat1.setPosition(pos1);
+            brat2.setPosition(pos2);
         }
     }
 }
