@@ -10,9 +10,9 @@
         <LynxModule
             name="Expansion Hub 2"
             port="2">
-            <!--            <goBILDA5202SeriesMotor-->
-            <!--                name="slider2"-->
-            <!--                port="2" />-->
+            <goBILDA5202SeriesMotor
+                name="slider2"
+                port="0" />
             <Servo
                 name="slider2_servo"
                 port="0" />

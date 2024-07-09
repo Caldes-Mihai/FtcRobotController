@@ -16,8 +16,8 @@ public class ConstantValues {
     public static boolean INVERT_CLAW1 = true;
     public static boolean INVERT_CLAW2 = false;
     public static boolean INVERT_CLAW_WRIST = false;
-    public static double CLAW1_HOLD_POS = 0.05;
-    public static double CLAW2_HOLD_POS = 0.5;
+    public static double CLAW1_HOLD_POS = 0.12;
+    public static double CLAW2_HOLD_POS = 0.65;
     public static double CLAW1_RELEASE_POS = 0.4;
     public static double CLAW2_RELEASE_POS = 0.9;
     public static double CLAW_WRIST_HORIZONTAL = 0;
