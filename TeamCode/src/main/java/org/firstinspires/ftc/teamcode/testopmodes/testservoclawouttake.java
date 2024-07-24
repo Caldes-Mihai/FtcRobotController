@@ -40,6 +40,10 @@ import org.firstinspires.ftc.teamcode.util.ConstantValues;
 @Config
 public class testservoclawouttake extends LinearOpMode {
     public static boolean hold = false;
+    public static double pos1_servo1 = 0;
+    public static double pos1_servo2 = 0;
+    public static double pos2_servo1 = 0;
+    public static double pos2_servo2 = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -51,12 +55,12 @@ public class testservoclawouttake extends LinearOpMode {
             else brat1.setDirection(Servo.Direction.FORWARD);
             if (ConstantValues.INVERT_CLAW2) brat2.setDirection(Servo.Direction.REVERSE);
             else brat2.setDirection(Servo.Direction.FORWARD);
-            if(hold) {
-                brat1.setPosition(ConstantValues.CLAW1_HOLD_POS);
-                brat2.setPosition(ConstantValues.CLAW2_HOLD_POS);
+            if (hold) {
+                brat1.setPosition(pos2_servo1);
+                brat2.setPosition(pos2_servo2);
             } else {
-                brat1.setPosition(ConstantValues.CLAW1_RELEASE_POS);
-                brat2.setPosition(ConstantValues.CLAW2_RELEASE_POS);
+                brat1.setPosition(pos1_servo1);
+                brat2.setPosition(pos1_servo2);
             }
         }
     }

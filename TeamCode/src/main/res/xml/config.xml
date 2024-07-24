@@ -2,7 +2,7 @@
 <Robot type="FirstInspires-FTC">
     <Webcam
         name="Webcam 1"
-        serialNumber="VendorProduct:vendor=0x046d|product=0x08e5|connection=" />
+        serialNumber="8E20D5FF" />
     <LynxUsbDevice
         name="Expansion Hub Portal 1"
         parentModuleAddress="2"
@@ -11,19 +11,45 @@
             name="Expansion Hub 2"
             port="2">
             <goBILDA5202SeriesMotor
+                name="slider1"
+                port="1" />
+            <goBILDA5202SeriesMotor
                 name="slider2"
+                port="0" />
+            <goBILDA5202SeriesMotor
+                name="intake"
+                port="2" />
+            <Servo
+                name="slider1_servo"
                 port="0" />
             <Servo
                 name="slider2_servo"
-                port="0" />
+                port="1" />
             <Servo
                 name="claw2"
+                port="3" />
+            <Servo
+                name="claw1"
+                port="4" />
+            <Servo
+                name="claw_wrist_horizontal"
+                port="5" />
+            <Servo
+                name="claw_wrist_vertical"
                 port="2" />
-            <!--                         <AnalogInput-->
-            <!--                name="beam"-->
-            <!--                port="0" />-->
+            <RevColorSensorV3
+                name="pixel1"
+                bus="0"
+                port="2" />
+            <RevColorSensorV3
+                name="pixel2"
+                bus="0"
+                port="3" />
+            <goBILDA5202SeriesMotor
+                name="intake"
+                port="3" />
             <!--            <Servo-->
-            <!--                name="intake_servo"-->
+            <!--                name="drone"-->
             <!--                port="4" />-->
         </LynxModule>
     </LynxUsbDevice>
@@ -34,37 +60,29 @@
         <LynxModule
             name="Control Hub"
             port="173">
-            <ControlHubImuBHI260AP
+            <LynxEmbeddedIMU
                 name="imu"
                 bus="0"
                 port="0" />
+            <!--            <ControlHubImuBHI260AP-->
+            <!--                name="imu"-->
+            <!--                bus="0"-->
+            <!--                port="0" />-->
             <goBILDA5202SeriesMotor
                 name="front_right_motor"
                 port="2" />
+            <!--            <Servo-->
+            <!--                name="intake_servo"-->
+            <!--                port="5" />-->
             <goBILDA5202SeriesMotor
                 name="back_right_motor"
                 port="3" />
             <goBILDA5202SeriesMotor
-                name="front_left_motor"
+                name="back_left_motor"
                 port="0" />
             <goBILDA5202SeriesMotor
-                name="back_left_motor"
+                name="front_left_motor"
                 port="1" />
-            <!--            <goBILDA5202SeriesMotor-->
-            <!--                name="slider1"-->
-            <!--                port="2" />-->
-            <!--            <goBILDA5202SeriesMotor-->
-            <!--                name="intake"-->
-            <!--                port="3" />-->
-            <Servo
-                name="slider1_servo"
-                port="0" />
-            <Servo
-                name="claw1"
-                port="2" />
-            <!--            <Servo-->
-            <!--                name="drone"-->
-            <!--                port="4" />-->
         </LynxModule>
     </LynxUsbDevice>
 </Robot>

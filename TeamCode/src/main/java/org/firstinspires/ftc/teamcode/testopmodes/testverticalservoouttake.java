@@ -32,53 +32,24 @@ package org.firstinspires.ftc.teamcode.testopmodes;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
-@TeleOp(name = "test intake")
+@TeleOp(name = "test vertical servo outtake")
 @Config
-public class testintake extends LinearOpMode {
-
-    public static double retract = 0;
-    public static double extend = 0.3;
-    public static double stage = 5;
+public class testverticalservoouttake extends LinearOpMode {
+    public static double pos = 0.5;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-        Servo intake_servo = hardwareMap.get(Servo.class, "intake_servo");
-
-//        Servo claw1 = hardwareMap.get(Servo.class, "claw1");
-//        Servo claw2 = hardwareMap.get(Servo.class, "claw2");
-//        NormalizedColorSensor pixel1 = hardwareMap.get(NormalizedColorSensor.class, "pixel1");
-//        NormalizedColorSensor pixel2 = hardwareMap.get(NormalizedColorSensor.class, "pixel2");
-//        boolean isPixel1 = ((DistanceSensor) pixel1).getDistance(DistanceUnit.CM) < ConstantValues.PIXEL_DISTANCE_THRESHOLD;
-//        boolean isPixel2 = ((DistanceSensor) pixel2).getDistance(DistanceUnit.CM) < ConstantValues.PIXEL_DISTANCE_THRESHOLD;
+        Servo claw_wrist_vertical = hardwareMap.get(Servo.class, "claw_wrist_vertical");
         waitForStart();
         while (opModeIsActive()) {
-            if (gamepad1.dpad_up)
-                intake_servo.setPosition(ConstantValues.INTAKE_SERVO_EXTEND_POS);
-            else
-                intake_servo.setPosition(ConstantValues.INTAKE_SERVO_RETRACT_POS);
-            if (gamepad2.x) {
-                intake.setPower(-1);
-            } else if (gamepad2.b) {
-                intake.setPower(1);
-            } else {
-                intake.setPower(0);
-            }
-//            if (isPixel1 && isPixel2) {
-//                claw1.setPosition(ConstantValues.CLAW1_HOLD_POS);
-//                claw2.setPosition(ConstantValues.CLAW2_HOLD_POS);
-//            } else {
-//                claw1.setPosition(ConstantValues.CLAW1_RELEASE_POS);
-//                claw2.setPosition(ConstantValues.CLAW2_RELEASE_POS);
-//            }
-//            telemetry.addData("pixel1", isPixel1);
-//            telemetry.addData("pixel2", isPixel2);
-//            telemetry.update();
+            if (ConstantValues.INVERT_CLAW_WRIST_VERTICAL)
+                claw_wrist_vertical.setDirection(Servo.Direction.REVERSE);
+            else claw_wrist_vertical.setDirection(Servo.Direction.FORWARD);
+            claw_wrist_vertical.setPosition(pos);
         }
     }
 }

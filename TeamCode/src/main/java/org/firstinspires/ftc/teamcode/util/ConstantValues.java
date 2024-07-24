@@ -15,27 +15,31 @@ public class ConstantValues {
     public static boolean INVERT_SLIDER2_SERVO = true;
     public static boolean INVERT_CLAW1 = true;
     public static boolean INVERT_CLAW2 = false;
-    public static boolean INVERT_CLAW_WRIST = false;
+    public static boolean INVERT_CLAW_WRIST_HORIZONTAL = false;
+    public static boolean INVERT_CLAW_WRIST_VERTICAL = false;
     public static double CLAW1_HOLD_POS = 0.12;
     public static double CLAW2_HOLD_POS = 0.65;
     public static double CLAW1_RELEASE_POS = 0.4;
     public static double CLAW2_RELEASE_POS = 0.9;
-    public static double CLAW_WRIST_HORIZONTAL = 0;
-    public static double CLAW_WRIST_LEFT_DIAGONAL = 45;
-    public static double CLAW_WRIST_VERTICAL = 90;
-    public static double CLAW_WRIST_RIGHT_DIAGONAL = 135;
-    public static double RETRACTED_SLIDERS_POS = 0;
-    public static double SLIDER_SERVO_POS_OFFSET = 0.007;
+    public static double CLAW_WRIST_HORIZONTAL = 0.47;
+    public static double CLAW_WRIST_LEFT_DIAGONAL = 0.65;
+    public static double CLAW_WRIST_VERTICAL = 0.12;
+    public static double CLAW_WRIST_RIGHT_DIAGONAL = 0.295;
+    public static double RETRACTED_SLIDERS_POS = 50;
     public static double RETRACTED_SLIDER_SERVO_POS = 0.5;
 
-    public static double PICKUP_SLIDER_SERVO_POS = 0.65;
-    public static double EXTENDED_SLIDERS_POS = 5200;
-    public static double EXTENDED_SLIDER_SERVO_POS = 0.2;
+    public static double RETRACTED_CLAW_WRIST_VERTICAL_SERVO_POS = 0.1;
+
+    public static double PICKUP_SLIDER_SERVO_POS = 0.45;
+    public static double EXTENDED_SLIDERS_POS = 3200;
+    public static double EXTENDED_SLIDER_SERVO_POS = 0;
+    public static double EXTENDED_CLAW_WRIST_VERTICAL_SERVO_POS = 0.75;
+
     public static double SLIDERS_THRESHOLD = 200;
     public static double INTAKE_MAX_SPEED = 1;
     public static double INTAKE_MAX_SLOW_SPEED = 0.3;
-    public static double INTAKE_SERVO_RETRACT_POS = 0;
-    public static double INTAKE_SERVO_EXTEND_POS = 0.3;
+    public static double INTAKE_SERVO_RETRACT_POS = 0.7;
+    public static double INTAKE_SERVO_EXTEND_POS = 0.7;
     public static double DRONE_START = 0.82;
     public static double DRONE_END = 0.5;
     public static double NORMAL_SPEED = 1;

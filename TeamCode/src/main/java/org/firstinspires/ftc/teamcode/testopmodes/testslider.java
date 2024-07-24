@@ -52,18 +52,23 @@ public class testslider extends LinearOpMode {
         waitForStart();
         slider1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slider1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slider2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         while (opModeIsActive()) {
-            if (gamepad2.right_trigger > 0.3) {
+            if (gamepad2.right_trigger > 0.1) {
                 //extinde
                 slider1.setPower(-gamepad2.right_trigger);
                 slider2.setPower(-gamepad2.right_trigger);
-            } else if (gamepad2.left_trigger > 0.3) {
+            } else if (gamepad2.left_trigger > 0.1) {
                 slider1.setPower(gamepad2.left_trigger);
                 slider2.setPower(gamepad2.left_trigger);
             } else {
                 slider1.setPower(0);
                 slider2.setPower(0);
             }
+            telemetry.addData("SLIDER1", slider1.getCurrentPosition());
+            telemetry.addData("SLIDER2", slider2.getCurrentPosition());
+            telemetry.update();
         }
     }
 }

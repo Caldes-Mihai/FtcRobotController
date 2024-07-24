@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,7 +21,9 @@ public class OuttakeSubsystem extends SubsystemBase {
     private final CacheableServo slider2_servo;
     private final CacheableServo claw1;
     private final CacheableServo claw2;
-    private final CacheableServo claw_wrist;
+    private final CacheableServo claw_wrist_horizontal;
+
+    private final CacheableServo claw_wrist_vertical;
     private final IntakeSubsystem intake;
     private final GamepadEx gamepad;
     private final double power = 1;
@@ -35,7 +38,8 @@ public class OuttakeSubsystem extends SubsystemBase {
         this.slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
         this.claw1 = new CacheableServo(hardwareMap, "claw1", 0, 270);
         this.claw2 = new CacheableServo(hardwareMap, "claw2", 0, 270);
-        this.claw_wrist = new CacheableServo(hardwareMap, "claw_wrist", 0, 270);
+        this.claw_wrist_horizontal = new CacheableServo(hardwareMap, "claw_wrist_horizontal", 0, 270);
+        this.claw_wrist_vertical = new CacheableServo(hardwareMap, "claw_wrist_vertical", 0, 270);
         this.intake = intake;
         this.gamepad = gamepad;
         slider1.setInverted(ConstantValues.INVERT_SLIDER1);
@@ -44,11 +48,14 @@ public class OuttakeSubsystem extends SubsystemBase {
         slider2_servo.setInverted(ConstantValues.INVERT_SLIDER2_SERVO);
         claw1.setInverted(ConstantValues.INVERT_CLAW1);
         claw2.setInverted(ConstantValues.INVERT_CLAW2);
-        claw_wrist.setInverted(ConstantValues.INVERT_CLAW_WRIST);
+        claw_wrist_horizontal.setInverted(ConstantValues.INVERT_CLAW_WRIST_HORIZONTAL);
+        claw_wrist_vertical.setInverted(ConstantValues.INVERT_CLAW_WRIST_VERTICAL);
         slider1.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slider2.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slider1.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slider2.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slider1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        slider2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
     }
 
     public void setTelemetry(Telemetry t) {
@@ -58,19 +65,21 @@ public class OuttakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (Math.abs(slider1.getCurrentPosition()) >= ConstantValues.EXTENDED_SLIDERS_POS / 2) {
-            slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET);
+            slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
             slider2_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
+            claw_wrist_vertical.setPosition(ConstantValues.EXTENDED_CLAW_WRIST_VERTICAL_SERVO_POS);
         } else if (intake.pixel1 && intake.pixel2 && isRetracted()) {
-            slider1_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET);
+            slider1_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
             slider2_servo.setPosition(ConstantValues.PICKUP_SLIDER_SERVO_POS);
             if (!intake.oldPixel1) timer.reset();
             if (timer.seconds() >= 1) {
                 hold();
             }
         } else {
-            slider1_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET);
+            slider1_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
             slider2_servo.setPosition(ConstantValues.RETRACTED_SLIDER_SERVO_POS);
-            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
+            claw_wrist_vertical.setPosition(ConstantValues.RETRACTED_CLAW_WRIST_VERTICAL_SERVO_POS);
+            claw_wrist_horizontal.setPosition(ConstantValues.CLAW_WRIST_HORIZONTAL);
         }
         telemetry.addData("pos", Math.abs(slider1.getCurrentPosition()));
         telemetry.addData("target", ConstantValues.EXTENDED_SLIDERS_POS);
@@ -120,27 +129,27 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public void handle() {
-        if (gamepad.getButton(ConstantValues.CLAW_1) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
+        if (gamepad.getButton(ConstantValues.CLAW_1) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
             releaseClaw1();
         }
-        if (gamepad.getButton(ConstantValues.CLAW_2) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
+        if (gamepad.getButton(ConstantValues.CLAW_2) && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
             releaseClaw2();
         }
-        if (gamepad.getTrigger(ConstantValues.EXTEND_OUTTAKE) > 0.3 && !isExtended()) {
+        if (gamepad.getTrigger(ConstantValues.EXTEND_OUTTAKE) > 0.1 && !isExtended()) {
             extend();
-        } else if (gamepad.getTrigger(ConstantValues.RETRACT_OUTTAKE) > 0.3 && !isRetracted())
+        } else if (gamepad.getTrigger(ConstantValues.RETRACT_OUTTAKE) > 0.1 && !isRetracted())
             retract();
         else {
             standBy();
         }
-        if (gamepad.getRightX() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
-            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_RIGHT_DIAGONAL);
-        } else if (gamepad.getRightX() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
-            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_LEFT_DIAGONAL);
-        } else if (gamepad.getRightY() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
-            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
-        } else if (gamepad.getRightY() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS + ConstantValues.SLIDER_SERVO_POS_OFFSET) {
-            claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_VERTICAL);
+        if (gamepad.getRightX() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+            claw_wrist_horizontal.setPosition(ConstantValues.CLAW_WRIST_RIGHT_DIAGONAL);
+        } else if (gamepad.getRightX() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+            claw_wrist_horizontal.setPosition(ConstantValues.CLAW_WRIST_LEFT_DIAGONAL);
+        } else if (gamepad.getRightY() >= 0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+            claw_wrist_horizontal.setPosition(ConstantValues.CLAW_WRIST_HORIZONTAL);
+        } else if (gamepad.getRightY() <= -0.7 && slider1_servo.getPosition() == ConstantValues.EXTENDED_SLIDER_SERVO_POS) {
+            claw_wrist_horizontal.setPosition(ConstantValues.CLAW_WRIST_VERTICAL);
         }
     }
 

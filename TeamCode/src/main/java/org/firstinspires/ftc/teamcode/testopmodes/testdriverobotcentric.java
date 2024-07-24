@@ -35,22 +35,28 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.TestDriveCommand;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.RobotCentricDriveSubsystem;
 
 @TeleOp(name = "test drive robot centric")
 public class testdriverobotcentric extends CommandOpMode {
 
     private static RobotCentricDriveSubsystem teleOpDriveSubsystem;
+    private static IntakeSubsystem intakeSubsystem;
     private GamepadEx driver;
+    private GamepadEx tool;
 
     @Override
     public void initialize() {
         driver = new GamepadEx(gamepad1);
+        tool = new GamepadEx(gamepad2);
         teleOpDriveSubsystem = new RobotCentricDriveSubsystem(
                 hardwareMap, driver, this
         );
+//        intakeSubsystem = new IntakeSubsystem(hardwareMap, driver, tool);
         register(teleOpDriveSubsystem);
         teleOpDriveSubsystem.setDefaultCommand(new TestDriveCommand(teleOpDriveSubsystem));
+//        intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));
         schedule(new RunCommand(telemetry::update));
     }
 }

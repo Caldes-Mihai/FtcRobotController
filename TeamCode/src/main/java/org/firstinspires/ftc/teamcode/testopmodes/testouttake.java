@@ -53,7 +53,8 @@ public class testouttake extends LinearOpMode {
         DcMotor slider2 = hardwareMap.get(DcMotor.class, "slider2");
         Servo claw1 = hardwareMap.get(Servo.class, "claw1");
         Servo claw2 = hardwareMap.get(Servo.class, "claw2");
-        CacheableServo claw_wrist = new CacheableServo(hardwareMap, "claw_wrist", 0, 270);
+        CacheableServo claw_wrist_horizontal = new CacheableServo(hardwareMap, "claw_wrist_horizontal", 0, 270);
+        CacheableServo claw_wrist_vertical = new CacheableServo(hardwareMap, "claw_wrist_vertical", 0, 270);
         if (ConstantValues.INVERT_SLIDER1)
             slider1.setDirection(DcMotor.Direction.REVERSE);
         if (ConstantValues.INVERT_SLIDER2)
@@ -66,7 +67,7 @@ public class testouttake extends LinearOpMode {
             claw1.setDirection(Servo.Direction.REVERSE);
         if (ConstantValues.INVERT_CLAW2)
             claw2.setDirection(Servo.Direction.REVERSE);
-        claw_wrist.setInverted(ConstantValues.INVERT_CLAW_WRIST);
+        claw_wrist_horizontal.setInverted(ConstantValues.INVERT_CLAW_WRIST_HORIZONTAL);
         slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slider2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
@@ -74,13 +75,13 @@ public class testouttake extends LinearOpMode {
         slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         while (opModeIsActive()) {
             if (wristState == 0) {
-                claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
+                claw_wrist_horizontal.turnToAngle(ConstantValues.CLAW_WRIST_HORIZONTAL);
             } else if (wristState == 1) {
-                claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_LEFT_DIAGONAL);
+                claw_wrist_horizontal.turnToAngle(ConstantValues.CLAW_WRIST_LEFT_DIAGONAL);
             } else if (wristState == 2) {
-                claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_VERTICAL);
+                claw_wrist_horizontal.turnToAngle(ConstantValues.CLAW_WRIST_VERTICAL);
             } else {
-                claw_wrist.turnToAngle(ConstantValues.CLAW_WRIST_RIGHT_DIAGONAL);
+                claw_wrist_horizontal.turnToAngle(ConstantValues.CLAW_WRIST_RIGHT_DIAGONAL);
             }
             if (state == 2) {
                 slider1_servo.setPosition(ConstantValues.EXTENDED_SLIDER_SERVO_POS);
