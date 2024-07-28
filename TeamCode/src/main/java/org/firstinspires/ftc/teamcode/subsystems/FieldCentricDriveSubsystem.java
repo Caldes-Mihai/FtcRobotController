@@ -39,10 +39,10 @@ public class FieldCentricDriveSubsystem extends SubsystemBase {
         leftBackDrive = new CacheableMotor(hardwareMap, "back_left_motor");
         rightFrontDrive = new CacheableMotor(hardwareMap, "front_right_motor");
         rightBackDrive = new CacheableMotor(hardwareMap, "back_right_motor");
-        leftFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        leftBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        rightFrontDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        rightBackDrive.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         leftFrontDrive.setInverted(ConstantValues.INVERT_LEFT_FRONT);
         leftBackDrive.setInverted(ConstantValues.INVERT_LEFT_BACK);
         rightFrontDrive.setInverted(ConstantValues.INVERT_RIGHT_FRONT);

@@ -25,7 +25,7 @@ public class ConstantValues {
     public static double CLAW_WRIST_LEFT_DIAGONAL = 0.65;
     public static double CLAW_WRIST_VERTICAL = 0.12;
     public static double CLAW_WRIST_RIGHT_DIAGONAL = 0.295;
-    public static double RETRACTED_SLIDERS_POS = 50;
+    public static double RETRACTED_SLIDERS_POS = 120;
     public static double RETRACTED_SLIDER_SERVO_POS = 0.5;
 
     public static double RETRACTED_CLAW_WRIST_VERTICAL_SERVO_POS = 0.1;
@@ -52,8 +52,9 @@ public class ConstantValues {
     public static GamepadKeys.Button EXTEND_INTAKE = GamepadKeys.Button.DPAD_UP;
     public static GamepadKeys.Button CLAW_1 = GamepadKeys.Button.LEFT_BUMPER;
     public static GamepadKeys.Button CLAW_2 = GamepadKeys.Button.RIGHT_BUMPER;
-    public static GamepadKeys.Trigger EXTEND_OUTTAKE = GamepadKeys.Trigger.RIGHT_TRIGGER;
-    public static GamepadKeys.Trigger RETRACT_OUTTAKE = GamepadKeys.Trigger.LEFT_TRIGGER;
+    public static GamepadKeys.Button TOGGLE_OUTTAKE = GamepadKeys.Button.A;
+    public static GamepadKeys.Trigger EXTEND_SLIDERS = GamepadKeys.Trigger.RIGHT_TRIGGER;
+    public static GamepadKeys.Trigger RETRACT_SLIDERS = GamepadKeys.Trigger.LEFT_TRIGGER;
     public static GamepadKeys.Button DRONE = GamepadKeys.Button.Y;
     public static GamepadKeys.Button RESET_IMU = GamepadKeys.Button.START;
 

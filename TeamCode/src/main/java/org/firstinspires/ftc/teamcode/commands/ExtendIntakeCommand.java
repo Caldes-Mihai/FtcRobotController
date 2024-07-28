@@ -4,15 +4,21 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
-public class HandleIntakeCommand extends CommandBase {
-    private IntakeSubsystem subsystem;
-    public HandleIntakeCommand(IntakeSubsystem intakeSubsystem) {
+public class ExtendIntakeCommand extends CommandBase {
+    private final IntakeSubsystem subsystem;
+
+    public ExtendIntakeCommand(IntakeSubsystem intakeSubsystem) {
         subsystem = intakeSubsystem;
         addRequirements(intakeSubsystem);
     }
 
     @Override
     public void execute() {
-        subsystem.handle();
+        subsystem.extend();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return true;
     }
 }

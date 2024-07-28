@@ -5,10 +5,10 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.SliderSubsystem;
 
 public class PickupCommand extends SequentialCommandGroup {
-    public PickupCommand(IntakeSubsystem subsystem, OuttakeSubsystem outtakeSubsystem) {
+    public PickupCommand(IntakeSubsystem subsystem, SliderSubsystem sliderSubsystem) {
         addCommands(
                 new ActivateIntakeCommand(subsystem, false, false),
                 new WaitUntilCommand(() -> subsystem.pixel1 && subsystem.pixel2),
@@ -16,6 +16,6 @@ public class PickupCommand extends SequentialCommandGroup {
                 new WaitCommand(500),
                 new DeactivateIntakeCommand(subsystem)
         );
-        addRequirements(subsystem, outtakeSubsystem);
+        addRequirements(subsystem, sliderSubsystem);
     }
 }

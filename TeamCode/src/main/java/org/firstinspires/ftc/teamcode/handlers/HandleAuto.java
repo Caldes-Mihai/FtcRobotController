@@ -22,12 +22,12 @@ import org.firstinspires.ftc.teamcode.commands.GoToPropCommand;
 import org.firstinspires.ftc.teamcode.commands.PickupCommand;
 import org.firstinspires.ftc.teamcode.commands.PlacePixelCommand;
 import org.firstinspires.ftc.teamcode.commands.PrepareOuttakeCommand;
-import org.firstinspires.ftc.teamcode.commands.RetractSlidersCommand;
-import org.firstinspires.ftc.teamcode.commands.StandBySlidersCommand;
+import org.firstinspires.ftc.teamcode.commands.RetractOuttakeCommand;
 import org.firstinspires.ftc.teamcode.processor.PropProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.AutoDriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.SliderSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.WristSubsystem;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
@@ -48,7 +48,8 @@ public class HandleAuto {
     private static VisionPortal visionPortal;
     private static AutoDriveSubsystem autoDriveSubsystem;
     private static IntakeSubsystem intakeSubsystem;
-    private static OuttakeSubsystem outtakeSubsystem;
+    private static SliderSubsystem sliderSubsystem;
+    private static WristSubsystem wristSubsystem;
     private static PropProcessor.Positions propPosition;
     private static CommandOpMode opMode;
     private static HardwareMap hardwareMap;
@@ -76,8 +77,9 @@ public class HandleAuto {
         setManualExposure(6, 250);
         autoDriveSubsystem = new AutoDriveSubsystem(hardwareMap, aprilTagProcessor, currentSpawnPosition, isRed);
         intakeSubsystem = new IntakeSubsystem(hardwareMap, null, null);
-        outtakeSubsystem = new OuttakeSubsystem(hardwareMap, intakeSubsystem, null);
-        opMode.register(autoDriveSubsystem, intakeSubsystem, outtakeSubsystem);
+        sliderSubsystem = new SliderSubsystem(hardwareMap, null);
+        wristSubsystem = new WristSubsystem(hardwareMap, null);
+        opMode.register(autoDriveSubsystem, intakeSubsystem, sliderSubsystem);
 
         if (currentSpawnPosition.equals(Positions.DOWN))
             opMode.schedule(new SequentialCommandGroup(
@@ -85,25 +87,24 @@ public class HandleAuto {
                     new PlacePixelCommand(intakeSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new GoToPixelStackCommand(autoDriveSubsystem, isRed, false),
-                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
+                    new PickupCommand(intakeSubsystem, sliderSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, false),
-                            new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
-                    new DeactivateClawCommand(outtakeSubsystem),
+                            new PrepareOuttakeCommand(sliderSubsystem, wristSubsystem, autoDriveSubsystem)),
+                    new DeactivateClawCommand(wristSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, false),
-                            new RetractSlidersCommand(outtakeSubsystem),
-                            new StandBySlidersCommand(outtakeSubsystem)),
-                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
+                            new RetractOuttakeCommand(sliderSubsystem, wristSubsystem)
+                    ),
+                    new PickupCommand(intakeSubsystem, sliderSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, false),
-                            new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
-                    new DeactivateClawCommand(outtakeSubsystem),
-                    new RetractSlidersCommand(outtakeSubsystem),
-                    new StandBySlidersCommand(outtakeSubsystem),
+                            new PrepareOuttakeCommand(sliderSubsystem, wristSubsystem, autoDriveSubsystem)),
+                    new DeactivateClawCommand(wristSubsystem),
+                    new RetractOuttakeCommand(sliderSubsystem, wristSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem)
             ));
         else
@@ -113,32 +114,29 @@ public class HandleAuto {
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, true),
-                            new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
-                    new DeactivateClawCommand(outtakeSubsystem),
+                            new PrepareOuttakeCommand(sliderSubsystem, wristSubsystem, autoDriveSubsystem)),
+                    new DeactivateClawCommand(wristSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
-                            new RetractSlidersCommand(outtakeSubsystem),
-                            new StandBySlidersCommand(outtakeSubsystem)),
-                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
+                            new RetractOuttakeCommand(sliderSubsystem, wristSubsystem)),
+                    new PickupCommand(intakeSubsystem, sliderSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, true),
-                            new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
-                    new DeactivateClawCommand(outtakeSubsystem),
+                            new PrepareOuttakeCommand(sliderSubsystem, wristSubsystem, autoDriveSubsystem)),
+                    new DeactivateClawCommand(wristSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoFromBoardToPixelStackCommand(autoDriveSubsystem, isRed, true),
-                            new RetractSlidersCommand(outtakeSubsystem),
-                            new StandBySlidersCommand(outtakeSubsystem)),
-                    new PickupCommand(intakeSubsystem, outtakeSubsystem),
+                            new RetractOuttakeCommand(sliderSubsystem, wristSubsystem)),
+                    new PickupCommand(intakeSubsystem, sliderSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem),
                     new ParallelCommandGroup(
                             new GoToBoardCommand(autoDriveSubsystem, isRed, true),
-                            new PrepareOuttakeCommand(outtakeSubsystem, autoDriveSubsystem)),
-                    new DeactivateClawCommand(outtakeSubsystem),
-                    new RetractSlidersCommand(outtakeSubsystem),
-                    new StandBySlidersCommand(outtakeSubsystem),
+                            new PrepareOuttakeCommand(sliderSubsystem, wristSubsystem, autoDriveSubsystem)),
+                    new DeactivateClawCommand(wristSubsystem),
+                    new RetractOuttakeCommand(sliderSubsystem, wristSubsystem),
                     new AdjustPositionCommand(autoDriveSubsystem)
             ));
     }

@@ -4,21 +4,17 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
-public class ActivateIntakeCommand extends CommandBase {
+public class RetractIntakeCommand extends CommandBase {
     private final IntakeSubsystem subsystem;
-    private final boolean reversed;
 
-    public ActivateIntakeCommand(IntakeSubsystem intakeSubsystem, boolean reversed, boolean slow) {
+    public RetractIntakeCommand(IntakeSubsystem intakeSubsystem) {
         subsystem = intakeSubsystem;
-        subsystem.setReversed(reversed);
-        subsystem.setSlow(slow);
-        this.reversed = reversed;
         addRequirements(intakeSubsystem);
     }
 
     @Override
     public void execute() {
-        subsystem.activate();
+        subsystem.retract();
     }
 
     @Override

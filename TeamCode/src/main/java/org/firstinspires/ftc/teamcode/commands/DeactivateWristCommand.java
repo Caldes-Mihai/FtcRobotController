@@ -4,17 +4,17 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.WristSubsystem;
 
-public class DeactivateClawCommand extends CommandBase {
+public class DeactivateWristCommand extends CommandBase {
     private final WristSubsystem subsystem;
 
-    public DeactivateClawCommand(WristSubsystem sliderSubsystem) {
-        subsystem = sliderSubsystem;
-        addRequirements(sliderSubsystem);
+    public DeactivateWristCommand(WristSubsystem wristSubsystem) {
+        subsystem = wristSubsystem;
+        addRequirements(wristSubsystem);
     }
 
     @Override
     public void execute() {
-        subsystem.release();
+        subsystem.deactivate();
     }
 
     @Override

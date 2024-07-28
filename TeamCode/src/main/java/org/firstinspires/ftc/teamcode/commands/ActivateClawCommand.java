@@ -2,19 +2,19 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.SliderSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.WristSubsystem;
 
-public class StandBySlidersCommand extends CommandBase {
-    private final SliderSubsystem subsystem;
+public class ActivateClawCommand extends CommandBase {
+    private final WristSubsystem subsystem;
 
-    public StandBySlidersCommand(SliderSubsystem sliderSubsystem) {
+    public ActivateClawCommand(WristSubsystem sliderSubsystem) {
         subsystem = sliderSubsystem;
         addRequirements(sliderSubsystem);
     }
 
     @Override
     public void execute() {
-        subsystem.standBy();
+        subsystem.hold();
     }
 
     @Override

@@ -18,10 +18,11 @@ public class DroneSubsystem extends SubsystemBase {
         this.drone = new CacheableServo(hardwareMap, "drone", 0, 270);
     }
 
-    public void handle() {
-        if (gamepad.getButton(ConstantValues.DRONE))
-            drone.setPosition(ConstantValues.DRONE_END);
-        else
-            drone.setPosition(ConstantValues.DRONE_START);
+    public void launch() {
+        drone.setPosition(ConstantValues.DRONE_END);
+    }
+
+    public void reset() {
+        drone.setPosition(ConstantValues.DRONE_START);
     }
 }

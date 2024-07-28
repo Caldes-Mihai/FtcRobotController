@@ -4,23 +4,21 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.SliderSubsystem;
 
-public class RetractSlidersCommand extends CommandBase {
+public class RetractSliderServoCommand extends CommandBase {
     private final SliderSubsystem subsystem;
-    private final double power;
 
-    public RetractSlidersCommand(SliderSubsystem sliderSubsystem, double p) {
+    public RetractSliderServoCommand(SliderSubsystem sliderSubsystem) {
         subsystem = sliderSubsystem;
-        power = p;
         addRequirements(sliderSubsystem);
     }
 
     @Override
     public void execute() {
-        subsystem.retract(power);
+        subsystem.retractServo();
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        return subsystem.isRetracted();
     }
 }

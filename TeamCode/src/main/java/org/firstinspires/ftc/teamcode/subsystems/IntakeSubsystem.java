@@ -61,22 +61,6 @@ public class IntakeSubsystem extends SubsystemBase {
         intake_servo.setPosition(ConstantValues.INTAKE_SERVO_RETRACT_POS);
     }
 
-    public void handle() {
-        setSlow(false);
-        if ((!pixel1 || !pixel2) && (gamepad.getButton(ConstantValues.INTAKE) || gamepad2.getButton(ConstantValues.INTAKE))) {
-            setReversed(true);
-            this.activate();
-        } else if (gamepad.getButton(ConstantValues.REVERSE_INTAKE) || gamepad2.getButton(ConstantValues.REVERSE_INTAKE)) {
-            setReversed(false);
-            this.activate();
-        } else
-            this.deactivate();
-        if (gamepad.getButton(ConstantValues.EXTEND_INTAKE) || gamepad2.getButton(ConstantValues.EXTEND_INTAKE)) {
-            this.extend();
-        } else
-            this.retract();
-    }
-
     @Override
     public void periodic() {
         pixel1 = getPixel(pixel1sensor);

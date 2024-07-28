@@ -33,19 +33,37 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.cache.CacheManager;
+import org.firstinspires.ftc.teamcode.commands.ActivateIntakeCommand;
+import org.firstinspires.ftc.teamcode.commands.AlignWristHorizontallyCommand;
+import org.firstinspires.ftc.teamcode.commands.AlignWristToLeftCommand;
+import org.firstinspires.ftc.teamcode.commands.AlignWristToRightCommand;
+import org.firstinspires.ftc.teamcode.commands.AlignWristVerticallyCommand;
+import org.firstinspires.ftc.teamcode.commands.DeactivateIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.DriveCommand;
-import org.firstinspires.ftc.teamcode.commands.HandleDroneCommand;
-import org.firstinspires.ftc.teamcode.commands.HandleIntakeCommand;
-import org.firstinspires.ftc.teamcode.commands.HandleOuttakeCommand;
+import org.firstinspires.ftc.teamcode.commands.ExtendIntakeCommand;
+import org.firstinspires.ftc.teamcode.commands.ExtendOuttakeCommand;
+import org.firstinspires.ftc.teamcode.commands.ExtendSlidersCommand;
+import org.firstinspires.ftc.teamcode.commands.LaunchDroneCommand;
+import org.firstinspires.ftc.teamcode.commands.OuttakePickupCommand;
+import org.firstinspires.ftc.teamcode.commands.ReleaseClaw1Command;
+import org.firstinspires.ftc.teamcode.commands.ReleaseClaw2Command;
+import org.firstinspires.ftc.teamcode.commands.ResetDroneCommand;
+import org.firstinspires.ftc.teamcode.commands.RetractIntakeCommand;
+import org.firstinspires.ftc.teamcode.commands.RetractOuttakeCommand;
+import org.firstinspires.ftc.teamcode.commands.RetractSlidersCommand;
+import org.firstinspires.ftc.teamcode.commands.StandBySlidersCommand;
 import org.firstinspires.ftc.teamcode.subsystems.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.FieldCentricDriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.SliderSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.WristSubsystem;
+import org.firstinspires.ftc.teamcode.util.ConstantValues;
 
 public class HandleTeleOp {
     public static long delta;
@@ -53,7 +71,8 @@ public class HandleTeleOp {
     private static GamepadEx tool;
     private static FieldCentricDriveSubsystem fieldCentricDriveSubsystem;
     private static IntakeSubsystem intakeSubsystem;
-    private static OuttakeSubsystem outtakeSubsystem;
+    private static SliderSubsystem sliderSubsystem;
+    private static WristSubsystem wristSubsystem;
     private static DroneSubsystem droneSubsystem;
     private static CommandOpMode opMode;
     private static HardwareMap hardwareMap;
@@ -74,15 +93,27 @@ public class HandleTeleOp {
                 hardwareMap, driver, isRed, opMode
         );
         intakeSubsystem = new IntakeSubsystem(hardwareMap, tool, driver);
-        outtakeSubsystem = new OuttakeSubsystem(hardwareMap, intakeSubsystem, tool);
+        sliderSubsystem = new SliderSubsystem(hardwareMap, tool);
+        wristSubsystem = new WristSubsystem(hardwareMap, tool);
         droneSubsystem = new DroneSubsystem(hardwareMap, driver);
-        opMode.register(fieldCentricDriveSubsystem, intakeSubsystem, outtakeSubsystem, droneSubsystem);
+        driver.getGamepadButton(ConstantValues.DRONE).whenHeld(new LaunchDroneCommand(droneSubsystem)).whenReleased(new ResetDroneCommand(droneSubsystem));
+        tool.getGamepadButton(ConstantValues.TOGGLE_OUTTAKE).toggleWhenPressed(new ExtendOuttakeCommand(sliderSubsystem, wristSubsystem), new RetractOuttakeCommand(sliderSubsystem, wristSubsystem));
+        tool.getGamepadButton(ConstantValues.INTAKE).and(new Trigger(() -> !intakeSubsystem.pixel1 || !intakeSubsystem.pixel2)).whenActive(new ActivateIntakeCommand(intakeSubsystem, false, false)).whenInactive(new DeactivateIntakeCommand(intakeSubsystem));
+        tool.getGamepadButton(ConstantValues.REVERSE_INTAKE).whenHeld(new ActivateIntakeCommand(intakeSubsystem, true, false)).whenReleased(new DeactivateIntakeCommand(intakeSubsystem));
+        tool.getGamepadButton(ConstantValues.EXTEND_INTAKE).whenHeld(new ExtendIntakeCommand(intakeSubsystem)).whenReleased(new RetractIntakeCommand(intakeSubsystem));
+        tool.getGamepadButton(ConstantValues.CLAW_1).whenPressed(new ReleaseClaw1Command(wristSubsystem));
+        tool.getGamepadButton(ConstantValues.CLAW_2).whenPressed(new ReleaseClaw2Command(wristSubsystem));
+        new Trigger(() -> tool.getRightX() >= 0.7).whenActive(new AlignWristToRightCommand(wristSubsystem));
+        new Trigger(() -> tool.getRightX() <= -0.7).whenActive(new AlignWristToLeftCommand(wristSubsystem));
+        new Trigger(() -> tool.getRightY() >= 0.7).whenActive(new AlignWristHorizontallyCommand(wristSubsystem));
+        new Trigger(() -> tool.getRightY() <= -0.7).whenActive(new AlignWristVerticallyCommand(wristSubsystem));
+        new Trigger(() -> tool.getTrigger(ConstantValues.EXTEND_SLIDERS) >= 0.1 && !sliderSubsystem.isExtended()).whenActive(new ExtendSlidersCommand(sliderSubsystem, tool.getTrigger(ConstantValues.EXTEND_SLIDERS))).whenInactive(new StandBySlidersCommand(sliderSubsystem));
+        new Trigger(() -> tool.getTrigger(ConstantValues.RETRACT_SLIDERS) >= 0.1 && !sliderSubsystem.isRetracted()).whenActive(new RetractSlidersCommand(sliderSubsystem, tool.getTrigger(ConstantValues.RETRACT_SLIDERS))).whenInactive(new StandBySlidersCommand(sliderSubsystem));
+        opMode.register(fieldCentricDriveSubsystem, intakeSubsystem, sliderSubsystem, droneSubsystem);
         fieldCentricDriveSubsystem.setDefaultCommand(new DriveCommand(fieldCentricDriveSubsystem));
-        intakeSubsystem.setDefaultCommand(new HandleIntakeCommand(intakeSubsystem));
-        outtakeSubsystem.setDefaultCommand(new HandleOuttakeCommand(outtakeSubsystem));
-        droneSubsystem.setDefaultCommand(new HandleDroneCommand(droneSubsystem));
-        outtakeSubsystem.setTelemetry(telemetry);
+        sliderSubsystem.setTelemetry(telemetry);
         opMode.schedule(new RunCommand(telemetry::update));
+        new Trigger(() -> !intakeSubsystem.oldPixel1 && intakeSubsystem.pixel1 && !intakeSubsystem.oldPixel2 && intakeSubsystem.pixel2 && sliderSubsystem.isRetracted() && sliderSubsystem.isArmRetracted()).whenActive(new OuttakePickupCommand(sliderSubsystem, wristSubsystem));
     }
 
     public static void run() {
