@@ -109,10 +109,10 @@ public class HandleTeleOp {
         new Trigger(() -> tool.getRightY() <= -0.7).whenActive(new AlignWristVerticallyCommand(wristSubsystem));
         new Trigger(() -> tool.getTrigger(ConstantValues.EXTEND_SLIDERS) >= 0.1 && !sliderSubsystem.isExtended()).whenActive(new ExtendSlidersCommand(sliderSubsystem, tool.getTrigger(ConstantValues.EXTEND_SLIDERS))).whenInactive(new StandBySlidersCommand(sliderSubsystem));
         new Trigger(() -> tool.getTrigger(ConstantValues.RETRACT_SLIDERS) >= 0.1 && !sliderSubsystem.isRetracted()).whenActive(new RetractSlidersCommand(sliderSubsystem, tool.getTrigger(ConstantValues.RETRACT_SLIDERS))).whenInactive(new StandBySlidersCommand(sliderSubsystem));
+        new Trigger(() -> !intakeSubsystem.oldPixel1 && intakeSubsystem.pixel1 && !intakeSubsystem.oldPixel2 && intakeSubsystem.pixel2 && sliderSubsystem.isRetracted() && sliderSubsystem.isArmRetracted()).whenActive(new OuttakePickupCommand(sliderSubsystem, wristSubsystem));
         opMode.register(fieldCentricDriveSubsystem, intakeSubsystem, sliderSubsystem, droneSubsystem);
         fieldCentricDriveSubsystem.setDefaultCommand(new DriveCommand(fieldCentricDriveSubsystem));
         opMode.schedule(new RunCommand(telemetry::update));
-        new Trigger(() -> !intakeSubsystem.oldPixel1 && intakeSubsystem.pixel1 && !intakeSubsystem.oldPixel2 && intakeSubsystem.pixel2 && sliderSubsystem.isRetracted() && sliderSubsystem.isArmRetracted()).whenActive(new OuttakePickupCommand(sliderSubsystem, wristSubsystem));
     }
 
     public static void run() {

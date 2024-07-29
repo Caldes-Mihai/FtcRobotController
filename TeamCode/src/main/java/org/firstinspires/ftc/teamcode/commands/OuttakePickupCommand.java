@@ -10,8 +10,7 @@ public class OuttakePickupCommand extends SequentialCommandGroup {
     public OuttakePickupCommand(SliderSubsystem subsystem, WristSubsystem wristSubsystem) {
         addCommands(
                 new SliderPickupCommand(subsystem),
-                new WaitCommand(150),
-                new ActivateWristCommand(wristSubsystem),
+                new WaitCommand(300),
                 new ActivateClawCommand(wristSubsystem)
         );
         addRequirements(subsystem, wristSubsystem);
