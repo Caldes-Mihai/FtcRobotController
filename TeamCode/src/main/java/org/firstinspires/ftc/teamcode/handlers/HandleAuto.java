@@ -77,8 +77,8 @@ public class HandleAuto {
         setManualExposure(6, 250);
         autoDriveSubsystem = new AutoDriveSubsystem(hardwareMap, aprilTagProcessor, currentSpawnPosition, isRed);
         intakeSubsystem = new IntakeSubsystem(hardwareMap, null, null);
-        sliderSubsystem = new SliderSubsystem(hardwareMap, null);
-        wristSubsystem = new WristSubsystem(hardwareMap, null);
+        sliderSubsystem = new SliderSubsystem(hardwareMap);
+        wristSubsystem = new WristSubsystem(hardwareMap);
         opMode.register(autoDriveSubsystem, intakeSubsystem, sliderSubsystem);
 
         if (currentSpawnPosition.equals(Positions.DOWN))

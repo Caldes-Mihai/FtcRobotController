@@ -65,7 +65,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         pixel1 = getPixel(pixel1sensor);
         pixel2 = getPixel(pixel2sensor);
-        if (pixel1 != oldPixel1 || pixel2 != oldPixel2) {
+        if ((pixel1 != oldPixel1 && !oldPixel1) || (pixel2 != oldPixel2 && !oldPixel2)) {
             if (gamepad != null && gamepad2 != null) {
                 gamepad.gamepad.rumble(1, 1, 250);
                 gamepad2.gamepad.rumble(1, 1, 250);

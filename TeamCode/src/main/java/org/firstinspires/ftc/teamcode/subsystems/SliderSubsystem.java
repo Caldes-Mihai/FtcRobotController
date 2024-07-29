@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,16 +17,14 @@ public class SliderSubsystem extends SubsystemBase {
     private final CacheableMotor slider2;
     private final CacheableServo slider1_servo;
     private final CacheableServo slider2_servo;
-    private final GamepadEx gamepad;
     private double multiplier = 1;
     private Telemetry telemetry;
 
-    public SliderSubsystem(HardwareMap hardwareMap, GamepadEx gamepad) {
+    public SliderSubsystem(HardwareMap hardwareMap) {
         this.slider1 = new CacheableMotor(hardwareMap, "slider1");
         this.slider2 = new CacheableMotor(hardwareMap, "slider2");
         this.slider1_servo = new CacheableServo(hardwareMap, "slider1_servo", 0, 270);
         this.slider2_servo = new CacheableServo(hardwareMap, "slider2_servo", 0, 270);
-        this.gamepad = gamepad;
         slider1.setInverted(ConstantValues.INVERT_SLIDER1);
         slider2.setInverted(ConstantValues.INVERT_SLIDER2);
         slider1_servo.setInverted(ConstantValues.INVERT_SLIDER1_SERVO);

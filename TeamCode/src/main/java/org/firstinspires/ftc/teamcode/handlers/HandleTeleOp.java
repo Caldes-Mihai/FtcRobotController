@@ -93,9 +93,9 @@ public class HandleTeleOp {
                 hardwareMap, driver, isRed, opMode
         );
         intakeSubsystem = new IntakeSubsystem(hardwareMap, tool, driver);
-        sliderSubsystem = new SliderSubsystem(hardwareMap, tool);
-        wristSubsystem = new WristSubsystem(hardwareMap, tool);
-        droneSubsystem = new DroneSubsystem(hardwareMap, driver);
+        sliderSubsystem = new SliderSubsystem(hardwareMap);
+        wristSubsystem = new WristSubsystem(hardwareMap);
+        droneSubsystem = new DroneSubsystem(hardwareMap);
         driver.getGamepadButton(ConstantValues.DRONE).whenHeld(new LaunchDroneCommand(droneSubsystem)).whenReleased(new ResetDroneCommand(droneSubsystem));
         tool.getGamepadButton(ConstantValues.TOGGLE_OUTTAKE).toggleWhenPressed(new ExtendOuttakeCommand(sliderSubsystem, wristSubsystem), new RetractOuttakeCommand(sliderSubsystem, wristSubsystem));
         tool.getGamepadButton(ConstantValues.INTAKE).and(new Trigger(() -> !intakeSubsystem.pixel1 || !intakeSubsystem.pixel2)).whenActive(new ActivateIntakeCommand(intakeSubsystem, false, false)).whenInactive(new DeactivateIntakeCommand(intakeSubsystem));
@@ -111,7 +111,6 @@ public class HandleTeleOp {
         new Trigger(() -> tool.getTrigger(ConstantValues.RETRACT_SLIDERS) >= 0.1 && !sliderSubsystem.isRetracted()).whenActive(new RetractSlidersCommand(sliderSubsystem, tool.getTrigger(ConstantValues.RETRACT_SLIDERS))).whenInactive(new StandBySlidersCommand(sliderSubsystem));
         opMode.register(fieldCentricDriveSubsystem, intakeSubsystem, sliderSubsystem, droneSubsystem);
         fieldCentricDriveSubsystem.setDefaultCommand(new DriveCommand(fieldCentricDriveSubsystem));
-        sliderSubsystem.setTelemetry(telemetry);
         opMode.schedule(new RunCommand(telemetry::update));
         new Trigger(() -> !intakeSubsystem.oldPixel1 && intakeSubsystem.pixel1 && !intakeSubsystem.oldPixel2 && intakeSubsystem.pixel2 && sliderSubsystem.isRetracted() && sliderSubsystem.isArmRetracted()).whenActive(new OuttakePickupCommand(sliderSubsystem, wristSubsystem));
     }
